@@ -1,0 +1,26 @@
+<idea-plugin>
+    <id>com.gektor650.okhttp_debugger</id>
+    <name>okhttp_debugger</name>
+    <vendor email="support@okhttp_debugger.com" url="http://www.okhttp_debugger.com">YourCompany</vendor>
+
+    <description><![CDATA[
+    okhttp_debugger
+    ]]></description>
+
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+         on how to target different products -->
+    <!-- uncomment to enable plugin in all products
+    <depends>com.intellij.modules.lang</depends>
+    -->
+    <depends>org.jetbrains.android</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Add your extensions here -->
+        <toolWindow id="OkHttp Requests" secondary="true" icon="/icons/plus.png" anchor="bottom"
+                    factoryClass="com.gektor650.DebuggerToolWindowFactory"/>
+    </extensions>
+
+    <actions>
+        <!-- Add your actions here -->
+    </actions>
+</idea-plugin>
