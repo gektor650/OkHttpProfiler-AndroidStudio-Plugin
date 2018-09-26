@@ -20,6 +20,7 @@ class DebuggerToolWindowFactory : ToolWindowFactory {
     private val debugger = DebuggerForm()
     private val logCatListener = AndroidLogcatService.getInstance()
     private val requestListModel = ArrayListModel<DebugRequest>()
+    private val logListModel = ArrayListModel<String>()
 
     private var selectedDevice: IDevice? = null
     private var selectedProcess: DebugProcess? = null
@@ -28,7 +29,7 @@ class DebuggerToolWindowFactory : ToolWindowFactory {
         override fun onLogLineReceived(line: LogCatMessage) {
             if (selectedProcess?.pid == line.pid && line.tag == TAG_KEY) {
                 val debugRequest = RequestDataSource.logMessage(line.message)
-                if(! requestListModel.contains(debugRequest)) {
+                if(! requestListModel.contains(debugRequest) && debugRequest != null) {
                     requestListModel.add(debugRequest)
                 }
                 if(debugger.requestList.isSelectionEmpty) {
@@ -43,6 +44,7 @@ class DebuggerToolWindowFactory : ToolWindowFactory {
         toolWindow.component.add(debugger.panel)
         initDeviceList(AndroidSdkUtils.getDebugBridge(project))
         debugger.requestList.model = requestListModel
+        debugger.logList.model = logListModel
         debugger.scrollToBottomButton.addActionListener {
             debugger.requestList.clearSelection()
             debugger.requestList.ensureIndexIsVisible(requestListModel.size.minus(1))
@@ -119,13 +121,14 @@ class DebuggerToolWindowFactory : ToolWindowFactory {
     }
 
     private fun log(text: String) {
-        debugger.area.text = debugger.area.text + text + "\r\n"
+        logListModel.add(text)
     }
 
     private fun setListener(device: IDevice) {
         val prevDevice = selectedDevice
         if(prevDevice != null) {
             logCatListener.removeListener(prevDevice, deviceListener)
+            debugger.logList.ensureIndexIsVisible(requestListModel.size.minus(1))
         }
         logCatListener.addListener(device, deviceListener)
         selectedDevice = device

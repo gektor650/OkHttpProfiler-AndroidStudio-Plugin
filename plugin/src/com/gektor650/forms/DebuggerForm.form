@@ -3,7 +3,7 @@
   <grid id="27dc6" binding="panel" layout-manager="GridLayoutManager" row-count="3" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
-      <xy x="20" y="20" width="677" height="400"/>
+      <xy x="20" y="20" width="837" height="400"/>
     </constraints>
     <properties/>
     <border type="none"/>
@@ -44,44 +44,12 @@
           </component>
         </children>
       </grid>
-      <grid id="5ca8c" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-        <margin top="0" left="0" bottom="0" right="0"/>
-        <constraints>
-          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="2" fill="1" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties/>
-        <border type="none"/>
-        <children>
-          <scrollpane id="79ee">
-            <constraints>
-              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties/>
-            <border type="none"/>
-            <children>
-              <scrollpane id="d9ba2">
-                <constraints/>
-                <properties>
-                  <verticalScrollBarPolicy value="20"/>
-                </properties>
-                <border type="none"/>
-                <children>
-                  <component id="b591b" class="javax.swing.JTextArea" binding="area">
-                    <constraints/>
-                    <properties>
-                      <editable value="false"/>
-                    </properties>
-                  </component>
-                </children>
-              </scrollpane>
-            </children>
-          </scrollpane>
-        </children>
-      </grid>
       <grid id="457df" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
-          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
+            <preferred-size width="260" height="235"/>
+          </grid>
         </constraints>
         <properties/>
         <border type="none"/>
@@ -101,6 +69,24 @@
               </component>
             </children>
           </scrollpane>
+        </children>
+      </grid>
+      <grid id="7a8f8" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+        <margin top="0" left="0" bottom="0" right="0"/>
+        <constraints>
+          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="1" anchor="2" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="d5876" class="javax.swing.JList" binding="logList">
+            <constraints>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="4" hsize-policy="2" anchor="2" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="150" height="50"/>
+              </grid>
+            </constraints>
+            <properties/>
+          </component>
         </children>
       </grid>
     </children>

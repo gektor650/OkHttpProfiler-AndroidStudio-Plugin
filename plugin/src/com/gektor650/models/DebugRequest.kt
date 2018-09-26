@@ -23,4 +23,8 @@ data class DebugRequest(val id: Long) {
     fun trash(message: String) {
         trash.append(message)
     }
+
+    override fun toString(): String {
+        return "$id $url $bodyBuilder $trash"
+    }
 }

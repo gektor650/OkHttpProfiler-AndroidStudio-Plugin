@@ -7,22 +7,22 @@ import javax.swing.*;
 
 public class DebuggerForm {
     private JPanel panel;
-    private JTextArea area;
     private JComboBox<DebugDevice>  deviceList;
     private JComboBox<DebugProcess>  appList;
     private JList requestList;
     private JButton scrollToBottomButton;
+    private JList logList;
 
     public JPanel getPanel() {
         return panel;
     }
 
-    public JTextArea getArea() {
-        return area;
-    }
-
     public JComboBox<DebugDevice> getDeviceList() {
         return deviceList;
+    }
+
+    public JList getLogList() {
+        return logList;
     }
 
     public JComboBox<DebugProcess>  getAppList() {
