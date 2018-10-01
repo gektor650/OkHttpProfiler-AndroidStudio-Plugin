@@ -70,11 +70,12 @@
                 <properties/>
                 <border type="none"/>
                 <children>
-                  <component id="de137" class="javax.swing.JList" binding="requestList">
+                  <component id="afc7c" class="javax.swing.JTable" binding="requestTable">
                     <constraints/>
                     <properties>
-                      <layoutOrientation value="0"/>
-                      <selectionMode value="0"/>
+                      <cellSelectionEnabled value="false"/>
+                      <columnSelectionAllowed value="false"/>
+                      <enabled value="true"/>
                     </properties>
                   </component>
                 </children>

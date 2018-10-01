@@ -1,5 +1,6 @@
 package com.gektor650.okhttp_profiler_interceptor;
 
+import android.os.SystemClock;
 import android.util.Log;
 
 import java.io.IOException;
@@ -29,13 +30,15 @@ public class OkHttpProfilerInterceptor implements Interceptor {
     }
 
     class Profiler {
+        private static final int LOG_LENGTH = 255;
         private final Long id = idsGenerator.incrementAndGet();
+        private final long startTime = System.currentTimeMillis();
 
         Profiler(Request request) {
-            String method = request.method();
+            log(MessageType.REQUEST_METHOD, request.method());
             String url = request.url().toString();
+            log(MessageType.REQUEST_URL, url);
             Headers headers = request.headers();
-            log(MessageType.INITIAL, method + " " + url);
             if (headers != null) {
                 for (String name : headers.names()) {
                     log(MessageType.REQUEST_HEADER, name + ":" + headers.get(name));
@@ -44,24 +47,37 @@ public class OkHttpProfilerInterceptor implements Interceptor {
 
             RequestBody body = request.body();
             if (body != null) {
-                log(MessageType.REQUEST_BODY, body.toString());
+                largeLog(MessageType.REQUEST_BODY, body.toString());
             }
         }
 
         private void printResponse(Response response) throws IOException {
             Headers headers = response.headers();
+            log(MessageType.RESPONSE_TIME, String.valueOf(System.currentTimeMillis() - startTime));
+            log(MessageType.RESPONSE_STATUS, String.valueOf(response.code()));
             if (headers != null) {
                 for (String name : headers.names()) {
                     log(MessageType.RESPONSE_HEADER, name + HEADER_DELIMITER + headers.get(name));
                 }
             }
             if (response.body() != null) {
-                log(MessageType.RESPONSE_BODY, response.body().string());
+                largeLog(MessageType.RESPONSE_BODY, response.body().string());
             }
+            log(MessageType.RESPONSE_END, "-->");
         }
 
         private void log(MessageType type, String message) {
             Log.d(LOG_PREFIX + DELIMITER + id + DELIMITER + type.name, message);
+        }
+
+        private void largeLog(MessageType type, String content) {
+            if (content.length() > LOG_LENGTH) {
+                String part = content.substring(0, LOG_LENGTH);
+                log(type, part);
+                largeLog(type, content.substring(LOG_LENGTH));
+            } else {
+                log(type, content);
+            }
         }
     }
 }

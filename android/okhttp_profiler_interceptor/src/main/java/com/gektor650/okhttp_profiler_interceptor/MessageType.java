@@ -1,10 +1,13 @@
 package com.gektor650.okhttp_profiler_interceptor;
 
 enum MessageType {
-    INITIAL("INL"),
+    REQUEST_URL("RQU"),
+    REQUEST_METHOD("RQM"),
     REQUEST_HEADER("RQH"),
     REQUEST_BODY("RQB"),
     REQUEST_END("RQD"),
+    RESPONSE_TIME("RST"),
+    RESPONSE_STATUS("RSS"),
     RESPONSE_HEADER("RSH"),
     RESPONSE_BODY("RSB"),
     RESPONSE_END("RSD"),

@@ -29,10 +29,13 @@ class RequestDataSource {
 
         private fun log(messageType: MessageType, request: DebugRequest, message: String) {
             when (messageType) {
-                MessageType.INITIAL -> request.addUrl(message)
+                MessageType.REQUEST_URL -> request.url = message
+                MessageType.REQUEST_METHOD -> request.method = message
                 MessageType.REQUEST_BODY -> request.addRequestBody(message)
                 MessageType.REQUEST_HEADER -> request.addRequestHeader(message)
                 MessageType.REQUEST_END -> request.addRequestHeader(message)
+                MessageType.RESPONSE_TIME -> request.duration = message.toLong()
+                MessageType.RESPONSE_STATUS -> request.status = message
                 MessageType.RESPONSE_HEADER -> request.addResponseHeader(message)
                 MessageType.RESPONSE_BODY -> request.addResponseBody(message)
                 MessageType.RESPONSE_END -> request.closeResponse()
