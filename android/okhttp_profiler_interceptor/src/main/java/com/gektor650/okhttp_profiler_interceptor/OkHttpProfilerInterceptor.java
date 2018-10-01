@@ -7,11 +7,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-import okhttp3.Headers;
-import okhttp3.Interceptor;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+import okhttp3.*;
 
 /**
  * @author gektor650
@@ -20,14 +16,13 @@ import okhttp3.Response;
 public class OkHttpProfilerInterceptor implements Interceptor {
 
     private static final AtomicLong idsGenerator = new AtomicLong();
-    private static final String LOG_PREFIX = "_OKPRFL";
-    private static final String DELIMITER = ":";
-    public static final int LOG_LENGTH = 256;
+    private static final String LOG_PREFIX = "OKPRFL";
+    private static final String DELIMITER = "_";
+    private static final String HEADER_DELIMITER = ":";
 
     @Override
     public Response intercept(Chain chain) throws IOException {
         Profiler profiler = new Profiler(chain.request());
-        profiler.printInitial();
         Response response = chain.proceed(chain.request());
         profiler.printResponse(response);
         return response;
@@ -35,41 +30,38 @@ public class OkHttpProfilerInterceptor implements Interceptor {
 
     class Profiler {
         private final Long id = idsGenerator.incrementAndGet();
-        private final String url;
-        private final Headers headers;
-        private final RequestBody body;
-        private final String method;
 
         Profiler(Request request) {
-            method = request.method();
-            url = request.url().toString();
-            headers = request.headers();
-            body = request.body();
-        }
+            String method = request.method();
+            String url = request.url().toString();
+            Headers headers = request.headers();
+            log(MessageType.INITIAL, method + " " + url);
+            if (headers != null) {
+                for (String name : headers.names()) {
+                    log(MessageType.REQUEST_HEADER, name + ":" + headers.get(name));
+                }
+            }
 
-        private void printInitial() {
-            Log.d(LOG_PREFIX, id + DELIMITER + MessageType.INITIAL.name + DELIMITER + method + " " + url);
+            RequestBody body = request.body();
+            if (body != null) {
+                log(MessageType.REQUEST_BODY, body.toString());
+            }
         }
 
         private void printResponse(Response response) throws IOException {
+            Headers headers = response.headers();
+            if (headers != null) {
+                for (String name : headers.names()) {
+                    log(MessageType.RESPONSE_HEADER, name + HEADER_DELIMITER + headers.get(name));
+                }
+            }
             if (response.body() != null) {
-                String body = response.body().string();
-                largeLog(body);
+                log(MessageType.RESPONSE_BODY, response.body().string());
             }
         }
 
-        private void logBody(String message) {
-            Log.d(LOG_PREFIX, id + DELIMITER + MessageType.RESPONSE_BODY.name + DELIMITER + message);
-        }
-
-        private void largeLog(String content) {
-            if (content.length() > LOG_LENGTH) {
-                String part = content.substring(0, LOG_LENGTH);
-                logBody(part);
-                largeLog(content.substring(LOG_LENGTH));
-            } else {
-                logBody(content);
-            }
+        private void log(MessageType type, String message) {
+            Log.d(LOG_PREFIX + DELIMITER + id + DELIMITER + type.name, message);
         }
     }
 }

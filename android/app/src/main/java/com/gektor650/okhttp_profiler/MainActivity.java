@@ -48,6 +48,6 @@ public class MainActivity extends AppCompatActivity {
                     tick();
                 }
             });
-        }, 2000);
+        }, 10000);
     }
 }
