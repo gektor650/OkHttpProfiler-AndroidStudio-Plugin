@@ -20,23 +20,31 @@ class DebuggerToolWindowFactory : ToolWindowFactory {
     private val debugger = DebuggerForm()
     private val logCatListener = AndroidLogcatService.getInstance()
     private val requestListModel = ArrayListModel<DebugRequest>()
-    private val logListModel = ArrayListModel<String>()
 
     private var selectedDevice: IDevice? = null
     private var selectedProcess: DebugProcess? = null
 
     private val deviceListener = object : AndroidLogcatService.LogcatListener {
         override fun onLogLineReceived(line: LogCatMessage) {
-            if (selectedProcess?.pid == line.pid && line.tag == TAG_KEY) {
-                val debugRequest = RequestDataSource.logMessage(line.message)
-                if(! requestListModel.contains(debugRequest) && debugRequest != null) {
-                    requestListModel.add(debugRequest)
-                }
-                if(debugger.requestList.isSelectionEmpty) {
-                    debugger.requestList.ensureIndexIsVisible(requestListModel.size.minus(1))
+            val tag = line.tag
+            if (selectedProcess?.pid == line.pid && tag.startsWith(TAG_KEY)) {
+                val sequences = tag.split(TAG_DELIMITER)
+                if (sequences.size == 3) {
+                    val id = sequences[1].toLong()
+                    val messageType = MessageType.fromString(sequences[2])
+                    if (id != 0L) {
+                        val debugRequest = RequestDataSource.logMessage(id, messageType, line.message)
+                        if (!requestListModel.contains(debugRequest) && debugRequest != null) {
+                            requestListModel.add(debugRequest)
+                        }
+                        if (debugger.requestList.isSelectionEmpty) {
+                            debugger.requestList.ensureIndexIsVisible(requestListModel.size.minus(1))
+                        }
+                    }
                 }
             }
         }
+
         override fun onCleared() {}
     }
 
@@ -44,7 +52,13 @@ class DebuggerToolWindowFactory : ToolWindowFactory {
         toolWindow.component.add(debugger.panel)
         initDeviceList(AndroidSdkUtils.getDebugBridge(project))
         debugger.requestList.model = requestListModel
-        debugger.logList.model = logListModel
+        debugger.requestList.addListSelectionListener {
+            if(! it.valueIsAdjusting) {
+                val request = debugger.requestList.selectedValue as DebugRequest
+                debugger.rawRequest.text = request.getRawRequest()
+                debugger.rawResponse.text = request.getRawResponse()
+            }
+        }
         debugger.scrollToBottomButton.addActionListener {
             debugger.requestList.clearSelection()
             debugger.requestList.ensureIndexIsVisible(requestListModel.size.minus(1))
@@ -121,21 +135,21 @@ class DebuggerToolWindowFactory : ToolWindowFactory {
     }
 
     private fun log(text: String) {
-        logListModel.add(text)
+        println(text)
     }
 
     private fun setListener(device: IDevice) {
         val prevDevice = selectedDevice
-        if(prevDevice != null) {
+        if (prevDevice != null) {
             logCatListener.removeListener(prevDevice, deviceListener)
-            debugger.logList.ensureIndexIsVisible(requestListModel.size.minus(1))
         }
         logCatListener.addListener(device, deviceListener)
         selectedDevice = device
     }
 
     companion object {
-        private const val TAG_KEY = "_OKPRFL"
+        private const val TAG_KEY = "OKPRFL"
+        private const val TAG_DELIMITER = "_"
     }
 
 }

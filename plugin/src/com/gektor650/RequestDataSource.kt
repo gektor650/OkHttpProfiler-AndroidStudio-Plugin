@@ -6,44 +6,36 @@ class RequestDataSource {
 
     companion object {
 
-        // Format of request "{id(Long):{TYPE(MessageType)}:MESSAGE(String)}"
-        private const val DELIMITER = ':'
-
-        fun logMessage(message: String): DebugRequest? {
-            val indexOfId = message.indexOf(DELIMITER)
-            if (indexOfId > 0) {
-                try {
-                    val id = message.subSequence(0, indexOfId).toString().toLong()
-                    val withoutId = message.subSequence(indexOfId + 1, message.length)
-                    val indexOfType = withoutId.indexOf(DELIMITER)
-                    val typeString = withoutId.subSequence(0, indexOfType)
-                    val messageType = MessageType.fromString(typeString.toString())
-                    val messageWithoutType = withoutId.subSequence(indexOfType + 1, withoutId.length).toString()
-                    if (indexOfType > 0) {
-                        val request = requestMap[id]
-                        return if (request == null) {
-                            val newRequest = DebugRequest(id)
-                            log(messageType, newRequest, messageWithoutType)
-                            requestMap[id] = newRequest
-                            newRequest
-                        } else {
-                            log(messageType, request, messageWithoutType)
-                            request
-                        }
-
+        fun logMessage(id: Long, type: MessageType, message: String): DebugRequest? {
+            try {
+                if (type != MessageType.UNKNOWN) {
+                    val request = requestMap[id]
+                    return if (request == null) {
+                        val newRequest = DebugRequest(id)
+                        log(type, newRequest, message)
+                        requestMap[id] = newRequest
+                        newRequest
+                    } else {
+                        log(type, request, message)
+                        request
                     }
-                } catch (e : NumberFormatException) {
-                    e.printStackTrace()
+
                 }
+            } catch (e : NumberFormatException) {
+                e.printStackTrace()
             }
             return null
         }
 
         private fun log(messageType: MessageType, request: DebugRequest, message: String) {
             when (messageType) {
-                MessageType.REQUEST_BODY -> request.addBody(message)
-                MessageType.REQUEST_HEADER -> request.addHeader(message)
                 MessageType.INITIAL -> request.addUrl(message)
+                MessageType.REQUEST_BODY -> request.addRequestBody(message)
+                MessageType.REQUEST_HEADER -> request.addRequestHeader(message)
+                MessageType.REQUEST_END -> request.addRequestHeader(message)
+                MessageType.RESPONSE_HEADER -> request.addResponseHeader(message)
+                MessageType.RESPONSE_BODY -> request.addResponseBody(message)
+                MessageType.RESPONSE_END -> request.closeResponse()
                 else -> {
                     request.trash(message)
                 }

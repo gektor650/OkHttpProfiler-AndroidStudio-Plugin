@@ -11,7 +11,9 @@ public class DebuggerForm {
     private JComboBox<DebugProcess>  appList;
     private JList requestList;
     private JButton scrollToBottomButton;
-    private JList logList;
+    private JTabbedPane tabs;
+    private JTextPane rawRequest;
+    private JTextPane rawResponse;
 
     public JPanel getPanel() {
         return panel;
@@ -19,10 +21,6 @@ public class DebuggerForm {
 
     public JComboBox<DebugDevice> getDeviceList() {
         return deviceList;
-    }
-
-    public JList getLogList() {
-        return logList;
     }
 
     public JComboBox<DebugProcess>  getAppList() {
@@ -35,5 +33,17 @@ public class DebuggerForm {
 
     public JButton getScrollToBottomButton() {
         return scrollToBottomButton;
+    }
+
+    public JTabbedPane getTabs() {
+        return tabs;
+    }
+
+    public JTextPane getRawRequest() {
+        return rawRequest;
+    }
+
+    public JTextPane getRawResponse() {
+        return rawResponse;
     }
 }
