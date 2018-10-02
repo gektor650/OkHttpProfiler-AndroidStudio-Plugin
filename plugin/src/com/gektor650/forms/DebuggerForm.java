@@ -14,6 +14,10 @@ public class DebuggerForm {
     private JTextPane rawRequest;
     private JTextPane rawResponse;
     private JTable requestTable;
+    private JPanel requestJson;
+    private JPanel responseJson;
+    private JEditorPane requestEditorPane;
+    private JTree tree1;
 
     public JPanel getPanel() {
         return panel;
@@ -45,5 +49,21 @@ public class DebuggerForm {
 
     public JTextPane getRawResponse() {
         return rawResponse;
+    }
+
+    public JPanel getRequestJson() {
+        return requestJson;
+    }
+
+    public JPanel getResponseJson() {
+        return responseJson;
+    }
+
+    public JEditorPane getRequestEditorPane() {
+        return requestEditorPane;
+    }
+
+    public JTree getTree1() {
+        return tree1;
     }
 }

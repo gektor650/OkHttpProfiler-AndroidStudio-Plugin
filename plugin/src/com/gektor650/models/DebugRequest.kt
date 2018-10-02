@@ -1,7 +1,8 @@
 package com.gektor650.models
 
+import gherkin.deps.com.google.gson.JsonObject
+import org.json.JSONObject
 import java.lang.StringBuilder
-import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -13,13 +14,18 @@ data class DebugRequest(val id: Long) {
     var duration: Long? = null
     var status: String? = null
     private val startTime = Date()
-
+    var isClosed = false
     private val responseHeaders = ArrayList<String>()
     private val responseBody = StringBuilder()
+    var requestContentType: ContentType? = null
+    var responseContentType: ContentType? = null
 
     private val trash = StringBuilder()
 
     fun addRequestHeader(header: String) {
+        if(requestContentType == null) {
+            requestContentType = getContentType(header)
+        }
         requestHeaders.add(header)
     }
 
@@ -28,6 +34,9 @@ data class DebugRequest(val id: Long) {
     }
 
     fun addResponseHeader(header: String) {
+        if(responseContentType == null) {
+            responseContentType = getContentType(header)
+        }
         responseHeaders.add(header)
     }
 
@@ -37,6 +46,22 @@ data class DebugRequest(val id: Long) {
 
     fun trash(message: String) {
         trash.append(message)
+    }
+
+    fun getContentType(headerString: String): ContentType? {
+        val headerLowerCase = headerString.toLowerCase()
+        for (value in ContentType.values()) {
+            for (type in value.types) {
+                if(headerLowerCase == type) {
+                    return value
+                }
+            }
+        }
+        return null
+    }
+
+    fun getResponseJson(): JSONObject {
+        return JSONObject(responseBody.toString())
     }
 
     override fun toString(): String {
@@ -71,7 +96,7 @@ data class DebugRequest(val id: Long) {
     }
 
     fun closeResponse() {
-
+        isClosed = true
     }
 
     companion object {

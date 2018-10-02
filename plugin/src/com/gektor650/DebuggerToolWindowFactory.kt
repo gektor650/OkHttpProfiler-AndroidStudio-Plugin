@@ -5,11 +5,9 @@ import com.android.ddmlib.IDevice
 import com.android.ddmlib.logcat.LogCatMessage
 import com.android.tools.idea.logcat.AndroidLogcatService
 import com.gektor650.forms.DebuggerForm
-import com.gektor650.forms.table.ForcedListSelectionModel
-import com.gektor650.forms.table.RequestTableModel
+import com.gektor650.forms.table.DebuggerFormController
 import com.gektor650.models.DebugDevice
 import com.gektor650.models.DebugProcess
-import com.gektor650.models.DebugRequest
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
@@ -18,10 +16,12 @@ import java.awt.event.ItemEvent
 import javax.swing.DefaultComboBoxModel
 
 class DebuggerToolWindowFactory : ToolWindowFactory {
+
+
     private val debugger = DebuggerForm()
+    private val requestTableController = DebuggerFormController(debugger)
+
     private val logCatListener = AndroidLogcatService.getInstance()
-    private val requestListModel = RequestTableModel()
-    private val table = debugger.requestTable
 
     private var selectedDevice: IDevice? = null
     private var selectedProcess: DebugProcess? = null
@@ -36,14 +36,9 @@ class DebuggerToolWindowFactory : ToolWindowFactory {
                     val messageType = MessageType.fromString(sequences[2])
                     if (id != 0L) {
                         val debugRequest = RequestDataSource.logMessage(id, messageType, line.message)
-//                        if (!requestListModel.contains(debugRequest) && debugRequest != null) {
                         if(debugRequest != null) {
-                            requestListModel.addOrUpdate(debugRequest)
+                            requestTableController.insertOrUpdate(debugRequest)
                         }
-//                        }
-//                        if (table.isSelectionEmpty) {
-//                            table.ensureIndexIsVisible(requestListModel.size.minus(1))
-//                        }
                     }
                 }
             }
@@ -55,18 +50,9 @@ class DebuggerToolWindowFactory : ToolWindowFactory {
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         toolWindow.component.add(debugger.panel)
         initDeviceList(AndroidSdkUtils.getDebugBridge(project))
-        table.model = requestListModel
-        table.selectionModel = ForcedListSelectionModel()
-        table.selectionModel.addListSelectionListener { it ->
-            if(! it.valueIsAdjusting) {
-                requestListModel.getRequest(table.selectedRow)?.let {
-                    debugger.rawRequest.text = it.getRawRequest()
-                    debugger.rawResponse.text = it.getRawResponse()
-                }
-            }
-        }
+
         debugger.scrollToBottomButton.addActionListener {
-            table.clearSelection()
+            requestTableController.clearSelection()
         }
     }
 
@@ -126,7 +112,7 @@ class DebuggerToolWindowFactory : ToolWindowFactory {
                 val client = debugger.appList.selectedItem as DebugProcess
                 selectedProcess = client
                 log("selectedProcess $selectedProcess")
-                requestListModel.clear()
+                requestTableController.clear()
             }
         }
         if (debugProcessList.isNotEmpty()) {
