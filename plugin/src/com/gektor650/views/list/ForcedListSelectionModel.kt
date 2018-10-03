@@ -1,4 +1,4 @@
-package com.gektor650.forms.table
+package com.gektor650.views.list
 
 import javax.swing.*
 

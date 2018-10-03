@@ -5,6 +5,7 @@ import com.gektor650.models.DebugRequest
 class RequestDataSource {
 
     companion object {
+        private val requestMap = LinkedHashMap<Long, DebugRequest>()
 
         fun logMessage(id: Long, type: MessageType, message: String): DebugRequest? {
             try {
@@ -45,7 +46,6 @@ class RequestDataSource {
             }
         }
 
-        private val requestMap = LinkedHashMap<Long, DebugRequest>()
     }
 
 

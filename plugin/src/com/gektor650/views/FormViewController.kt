@@ -1,22 +1,16 @@
-package com.gektor650.forms.table
+package com.gektor650.views
 
-import com.gektor650.forms.DebuggerForm
 import com.gektor650.models.DebugRequest
-import com.intellij.ui.components.JBScrollPane
-import java.awt.BorderLayout
-import org.netbeans.swing.outline.DefaultOutlineModel
-import org.netbeans.swing.outline.Outline
-import org.netbeans.swing.outline.OutlineModel
-import javax.swing.JScrollPane
+import com.gektor650.views.json.JsonTreeModel
+import com.gektor650.views.list.ForcedListSelectionModel
+import com.gektor650.views.list.RequestTableModel
 
 
-
-
-
-class DebuggerFormController(private val form: DebuggerForm) {
+class FormViewController(private val form: DebuggerForm) {
 
     private val requestListModel = RequestTableModel()
     private val requestTable = form.requestTable
+    private val tabsHelper = TabsHelper(form.tabs)
 
     init {
         requestTable.model = requestListModel
@@ -28,11 +22,6 @@ class DebuggerFormController(private val form: DebuggerForm) {
                 }
             }
         }
-//        form.responseJsonTree.model = null
-//        form.responseJsonTree.cellRenderer = JsonJTreeRenderer()
-
-        form.requestJsonTree.model = null
-        form.requestJsonTree.cellRenderer = JsonJTreeRenderer()
     }
 
     private fun fillRequestInfo(debugRequest: DebugRequest) {
@@ -42,19 +31,14 @@ class DebuggerFormController(private val form: DebuggerForm) {
             val responseJson = debugRequest.getResponseJsonNode()
             if (responseJson != null) {
                 form.responseJson.isVisible = true
-                val mdl = DefaultOutlineModel.createOutlineModel(JsonTreeObject(responseJson), JsonTreeRowModel())
-                val outline = Outline()
-                outline.isRootVisible = true
-                outline.model = mdl
-                val scroll = JBScrollPane(outline)
-                form.responseJson.add(scroll)
+                tabsHelper.addJsonTab(form.responseJson, responseJson)
             } else {
                 form.responseJson.isVisible = false
             }
             val requestJson = debugRequest.getRequestJsonNode()
             if (requestJson != null) {
                 form.requestJson.isVisible = true
-                form.requestJsonTree.model = JsonTreeObject(requestJson)
+                tabsHelper.addJsonTab(form.requestJson, requestJson)
             } else {
                 form.requestJson.isVisible = false
             }

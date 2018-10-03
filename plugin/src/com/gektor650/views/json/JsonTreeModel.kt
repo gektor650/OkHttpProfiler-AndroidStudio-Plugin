@@ -1,10 +1,10 @@
-package com.gektor650.forms.table
+package com.gektor650.views.json
 
 import com.fasterxml.jackson.databind.JsonNode
 import javax.swing.tree.DefaultTreeModel
 
 
-class JsonTreeObject(json: JsonNode) : DefaultTreeModel(JsonTreeObject.buildTree("", json)) {
+class JsonTreeModel(json: JsonNode) : DefaultTreeModel(JsonTreeModel.buildTree("", json)) {
 
     companion object {
         /**
@@ -16,12 +16,13 @@ class JsonTreeObject(json: JsonNode) : DefaultTreeModel(JsonTreeObject.buildTree
          * @return root TreeNode
          */
         private fun buildTree(name: String, node: JsonNode): JsonMutableTreeNode {
-            val treeNode = JsonMutableTreeNode(name)
+            val parentType = if(node.isArray) JsonMutableTreeNode.NodeType.ARRAY else JsonMutableTreeNode.NodeType.OBJECT
+            val treeNode = JsonMutableTreeNode(name, parentType)
             val it = node.fields()
             while (it.hasNext()) {
                 val entry = it.next()
                 if(entry.value.isValueNode) {
-                    treeNode.add(JsonMutableTreeNode(entry.key, entry.value.asText()))
+                    treeNode.add(JsonMutableTreeNode(entry.key, entry.value))
                 } else {
                     treeNode.add(buildTree(entry.key, entry.value))
                 }
@@ -31,23 +32,15 @@ class JsonTreeObject(json: JsonNode) : DefaultTreeModel(JsonTreeObject.buildTree
                 for (i in 0 until node.size()) {
                     val child = node.get(i)
                     if (child.isValueNode)
-                        treeNode.add(JsonMutableTreeNode(name, child.asText()))
+                        treeNode.add(JsonMutableTreeNode(name, child))
                     else
                         treeNode.add(buildTree(String.format("[%d]", i), child))
                 }
             } else if (node.isValueNode) {
-                treeNode.add(JsonMutableTreeNode(name, node.asText()))
+                treeNode.add(JsonMutableTreeNode(name, node))
             }
 
             return treeNode
-        }
-
-        enum class NodeType(val nodeName: String) {
-            STRING("String"),
-            OBJECT("Array"),
-            ARRAY("Array"),
-//            STRING("String"),
-//            STRING("String")
         }
 
 //        private fun getValueTreeNode(name: String, jsonNode: JsonNode) {

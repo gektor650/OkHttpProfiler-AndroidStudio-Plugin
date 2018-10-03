@@ -1,4 +1,4 @@
-package com.gektor650.forms;
+package com.gektor650.views;
 
 import com.gektor650.models.DebugDevice;
 import com.gektor650.models.DebugProcess;

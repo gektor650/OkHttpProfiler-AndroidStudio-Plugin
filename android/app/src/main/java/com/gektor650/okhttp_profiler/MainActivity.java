@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private void tick() {
         mHandler.postDelayed(() -> {
             sendRequest();
-        }, 10000);
+        }, 100000);
     }
 
     private void sendRequest() {

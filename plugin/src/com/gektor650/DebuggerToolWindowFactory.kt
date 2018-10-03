@@ -4,8 +4,8 @@ import com.android.ddmlib.AndroidDebugBridge
 import com.android.ddmlib.IDevice
 import com.android.ddmlib.logcat.LogCatMessage
 import com.android.tools.idea.logcat.AndroidLogcatService
-import com.gektor650.forms.DebuggerForm
-import com.gektor650.forms.table.DebuggerFormController
+import com.gektor650.views.DebuggerForm
+import com.gektor650.views.FormViewController
 import com.gektor650.models.DebugDevice
 import com.gektor650.models.DebugProcess
 import com.intellij.openapi.project.Project
@@ -19,7 +19,7 @@ class DebuggerToolWindowFactory : ToolWindowFactory {
 
 
     private val debugger = DebuggerForm()
-    private val requestTableController = DebuggerFormController(debugger)
+    private val requestTableController = FormViewController(debugger)
 
     private val logCatListener = AndroidLogcatService.getInstance()
 
