@@ -16,7 +16,6 @@ public class DebuggerForm {
     private JTable requestTable;
     private JPanel requestJson;
     private JPanel responseJson;
-    private JTree responseJsonTree;
     private JTree requestJsonTree;
 
     public JPanel getPanel() {
@@ -57,10 +56,6 @@ public class DebuggerForm {
 
     public JPanel getResponseJson() {
         return responseJson;
-    }
-
-    public JTree getResponseJsonTree() {
-        return responseJsonTree;
     }
 
     public JTree getRequestJsonTree() {

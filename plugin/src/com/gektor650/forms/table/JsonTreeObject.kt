@@ -17,7 +17,6 @@ class JsonTreeObject(json: JsonNode) : DefaultTreeModel(JsonTreeObject.buildTree
          */
         private fun buildTree(name: String, node: JsonNode): JsonMutableTreeNode {
             val treeNode = JsonMutableTreeNode(name)
-
             val it = node.fields()
             while (it.hasNext()) {
                 val entry = it.next()
@@ -41,6 +40,14 @@ class JsonTreeObject(json: JsonNode) : DefaultTreeModel(JsonTreeObject.buildTree
             }
 
             return treeNode
+        }
+
+        enum class NodeType(val nodeName: String) {
+            STRING("String"),
+            OBJECT("Array"),
+            ARRAY("Array"),
+//            STRING("String"),
+//            STRING("String")
         }
 
 //        private fun getValueTreeNode(name: String, jsonNode: JsonNode) {

@@ -12,5 +12,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="json-20180813" level="project" />
+    <orderEntry type="library" name="org-netbeans-swing-outline" level="project" />
   </component>
 </module>
