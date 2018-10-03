@@ -6,6 +6,11 @@ class JsonMutableTreeNode: DefaultMutableTreeNode {
 
     private val isText: Boolean
 
+    constructor(): super() {
+        isText = false
+    }
+
+
     constructor(name: String): super(name) {
         isText = false
     }

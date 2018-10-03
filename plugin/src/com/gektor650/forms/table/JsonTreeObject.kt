@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import javax.swing.tree.DefaultTreeModel
 
 
-class JsonTreeObject(json: JsonNode) : DefaultTreeModel(JsonTreeObject.buildTree("root", json)) {
+class JsonTreeObject(json: JsonNode) : DefaultTreeModel(JsonTreeObject.buildTree("", json)) {
 
     companion object {
         /**
@@ -21,7 +21,11 @@ class JsonTreeObject(json: JsonNode) : DefaultTreeModel(JsonTreeObject.buildTree
             val it = node.fields()
             while (it.hasNext()) {
                 val entry = it.next()
-                treeNode.add(buildTree(entry.key, entry.value))
+                if(entry.value.isValueNode) {
+                    treeNode.add(JsonMutableTreeNode(entry.key, entry.value.asText()))
+                } else {
+                    treeNode.add(buildTree(entry.key, entry.value))
+                }
             }
 
             if (node.isArray) {
@@ -38,6 +42,11 @@ class JsonTreeObject(json: JsonNode) : DefaultTreeModel(JsonTreeObject.buildTree
 
             return treeNode
         }
-    }
 
+//        private fun getValueTreeNode(name: String, jsonNode: JsonNode) {
+//            when {
+//                jsonNode.isNull -> JsonMutableTreeNode(name, child.asText())
+//            }
+//        }
+    }
 }
