@@ -34,7 +34,7 @@ class RequestTableModel : DefaultTableModel() {
     }
 
     private fun getRowData(request: DebugRequest): Array<Any?> {
-        return arrayOf(request.id, request.method, request.url, request.duration, request.getStartTimeString(), request.status)
+        return arrayOf(request.id, request.method, request.url, request.duration, request.getStartTimeString(), request.status ?: "Loading...")
     }
 
     fun clear() {

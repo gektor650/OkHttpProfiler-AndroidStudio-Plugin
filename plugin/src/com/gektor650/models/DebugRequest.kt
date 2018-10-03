@@ -1,5 +1,9 @@
 package com.gektor650.models
 
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.google.gson.Gson
+import com.google.gson.JsonElement
 import gherkin.deps.com.google.gson.JsonObject
 import org.json.JSONObject
 import java.lang.StringBuilder
@@ -60,8 +64,9 @@ data class DebugRequest(val id: Long) {
         return null
     }
 
-    fun getResponseJson(): JSONObject {
-        return JSONObject(responseBody.toString())
+    fun getResponseJsonNode(): JsonNode? {
+        val objectMapper = ObjectMapper()
+        return objectMapper.readTree(responseBody.toString())
     }
 
     override fun toString(): String {

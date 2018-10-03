@@ -21,7 +21,6 @@ class DebuggerFormController(private val form: DebuggerForm) {
         }
         form.requestEditorPane.contentType = "text/html"
 
-//        form.tree1.model
     }
 
     private fun fillRequestInfo(debugRequest: DebugRequest) {
@@ -30,7 +29,10 @@ class DebuggerFormController(private val form: DebuggerForm) {
         if(debugRequest.isClosed) {
             form.responseJson.isVisible = debugRequest.responseContentType == ContentType.JSON
             form.requestJson.isVisible = debugRequest.requestContentType == ContentType.JSON
-            form.requestEditorPane.text = debugRequest.getResponseJson().toString()
+            val json = debugRequest.getResponseJsonNode()
+            if(json != null) {
+                form.tree1.model = JsonTreeObject(json)
+            }
         }
     }
 
