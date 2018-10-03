@@ -38,9 +38,9 @@ class RequestTableModel : DefaultTableModel() {
     }
 
     fun clear() {
-        for (i in 0 until rowCount) {
-            removeRow(i)
-        }
+//        for (i in 0 until rowCount) {
+//            removeRow(i)
+//        }
     }
 
     fun getRequest(selectedRow: Int): DebugRequest? {

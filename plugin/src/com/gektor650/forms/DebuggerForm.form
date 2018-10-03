@@ -150,12 +150,9 @@
                     <properties/>
                     <border type="none"/>
                     <children>
-                      <component id="74028" class="javax.swing.JEditorPane" binding="requestEditorPane">
+                      <component id="ae586" class="javax.swing.JTree" binding="requestJsonTree">
                         <constraints/>
-                        <properties>
-                          <contentType value="text/plain"/>
-                          <editable value="false"/>
-                        </properties>
+                        <properties/>
                       </component>
                     </children>
                   </scrollpane>
@@ -169,14 +166,19 @@
                 <properties/>
                 <border type="none"/>
                 <children>
-                  <component id="d4e28" class="javax.swing.JTree" binding="tree1" default-binding="true">
+                  <scrollpane id="45d8f">
                     <constraints>
-                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
-                        <preferred-size width="150" height="50"/>
-                      </grid>
+                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties/>
-                  </component>
+                    <border type="none"/>
+                    <children>
+                      <component id="d4e28" class="javax.swing.JTree" binding="responseJsonTree">
+                        <constraints/>
+                        <properties/>
+                      </component>
+                    </children>
+                  </scrollpane>
                 </children>
               </grid>
             </children>

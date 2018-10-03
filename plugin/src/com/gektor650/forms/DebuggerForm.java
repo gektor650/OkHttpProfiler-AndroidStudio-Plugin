@@ -16,8 +16,8 @@ public class DebuggerForm {
     private JTable requestTable;
     private JPanel requestJson;
     private JPanel responseJson;
-    private JEditorPane requestEditorPane;
-    private JTree tree1;
+    private JTree responseJsonTree;
+    private JTree requestJsonTree;
 
     public JPanel getPanel() {
         return panel;
@@ -59,11 +59,11 @@ public class DebuggerForm {
         return responseJson;
     }
 
-    public JEditorPane getRequestEditorPane() {
-        return requestEditorPane;
+    public JTree getResponseJsonTree() {
+        return responseJsonTree;
     }
 
-    public JTree getTree1() {
-        return tree1;
+    public JTree getRequestJsonTree() {
+        return requestJsonTree;
     }
 }

@@ -1,91 +1,43 @@
 package com.gektor650.forms.table
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.google.gson.JsonElement
-import javax.swing.event.TreeModelListener
-import javax.swing.tree.TreeModel
-import javax.swing.tree.TreePath
+import javax.swing.tree.DefaultTreeModel
 
-class JsonTreeObject(private val json: JsonNode) : TreeModel {
 
-    override fun getRoot(): Any {
-        return  json
-    }
-
-    override fun isLeaf(node: Any?): Boolean {
-//        (node as JsonNode).l
-        return  false//if(node === ROOT) false else cast(node).isJsonPrimitive
-    }
-
-    override fun getChildCount(parent: Any?): Int {
-        return (parent as JsonNode).size()
-//        val jsonParent = if(parent === ROOT)  {
-//            json
-//        } else {
-//            parent
-//        }
-//        val element = cast(jsonParent)
-//        return when {
-//            element.isJsonArray -> element.asJsonArray.size()
-//            element.isJsonObject -> element.asJsonObject.keySet().size
-//            else -> 0
-//        }
-    }
-
-    override fun valueForPathChanged(path: TreePath?, newValue: Any?) {
-
-    }
-
-    override fun getIndexOfChild(parent: Any?, child: Any?): Int {
-        return (parent as JsonNode).indexOf(child)
-//        return (cast(parent).asJsonArray).indexOf(child)
-    }
-
-    override fun getChild(parent: Any?, index: Int): Any {
-        return (parent as JsonNode).get((parent as JsonNode).fieldNames().[index])
-//
-//        val jsonParent = if(parent === ROOT)  {
-//            json
-//        } else {
-//            parent
-//        }
-//        val element = cast(jsonParent)
-//        return when {
-//            element.isJsonObject -> {
-//                val jObject = element.asJsonObject
-//                jObject[jObject.keySet().toTypedArray()[index]]
-//            }
-//            element.isJsonArray -> {
-//                element.asJsonArray[index]
-//            }
-//            else -> {
-//                element.asJsonPrimitive
-//            }
-//        }
-    }
-
-    override fun addTreeModelListener(l: TreeModelListener?) {
-
-    }
-
-    override fun removeTreeModelListener(l: TreeModelListener?) {
-
-    }
-
-    private fun cast(element: Any?): JsonElement {
-        val jElement = (element as JsonElement)
-        return when {
-            jElement.isJsonArray -> jElement.asJsonArray
-            jElement.isJsonObject -> jElement.asJsonObject
-            jElement.isJsonNull -> jElement.asJsonNull
-            else -> {
-                jElement.asJsonPrimitive
-            }
-        }
-    }
+class JsonTreeObject(json: JsonNode) : DefaultTreeModel(JsonTreeObject.buildTree("root", json)) {
 
     companion object {
-        const val ROOT = "root"
+        /**
+         * Builds a tree of TreeNode objects using the tree under the
+         * given JsonNode.
+         *
+         * @param name Text to be associated with node
+         * @param node
+         * @return root TreeNode
+         */
+        private fun buildTree(name: String, node: JsonNode): JsonMutableTreeNode {
+            val treeNode = JsonMutableTreeNode(name)
+
+            val it = node.fields()
+            while (it.hasNext()) {
+                val entry = it.next()
+                treeNode.add(buildTree(entry.key, entry.value))
+            }
+
+            if (node.isArray) {
+                for (i in 0 until node.size()) {
+                    val child = node.get(i)
+                    if (child.isValueNode)
+                        treeNode.add(JsonMutableTreeNode(name, child.asText()))
+                    else
+                        treeNode.add(buildTree(String.format("[%d]", i), child))
+                }
+            } else if (node.isValueNode) {
+                treeNode.add(JsonMutableTreeNode(name, node.asText()))
+            }
+
+            return treeNode
+        }
     }
 
 }

@@ -18,7 +18,8 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
-    private static final String GOOGLE_URL = "https://raw.githubusercontent.com/corysimmons/colors.json/master/colors.json";
+    private static final String GOOGLE_URL = "https://api.stash.rentberry.com/v1/apartment/935597/";
+//    private static final String GOOGLE_URL = "https://raw.githubusercontent.com/corysimmons/colors.json/master/colors.json";
     private Handler mHandler = new Handler();
     private OkHttpClient mClient = new OkHttpClient.Builder().addInterceptor(
             new OkHttpProfilerInterceptor()

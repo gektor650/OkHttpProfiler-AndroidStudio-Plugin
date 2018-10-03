@@ -1,7 +1,6 @@
 package com.gektor650.forms.table
 
 import com.gektor650.forms.DebuggerForm
-import com.gektor650.models.ContentType
 import com.gektor650.models.DebugRequest
 
 class DebuggerFormController(private val form: DebuggerForm) {
@@ -19,19 +18,30 @@ class DebuggerFormController(private val form: DebuggerForm) {
                 }
             }
         }
-        form.requestEditorPane.contentType = "text/html"
+        form.responseJsonTree.model = null
+        form.responseJsonTree.cellRenderer = JsonJTreeRenderer()
 
+        form.requestJsonTree.model = null
+        form.requestJsonTree.cellRenderer = JsonJTreeRenderer()
     }
 
     private fun fillRequestInfo(debugRequest: DebugRequest) {
         form.rawResponse.text = debugRequest.getRawResponse()
         form.rawRequest.text = debugRequest.getRawRequest()
-        if(debugRequest.isClosed) {
-            form.responseJson.isVisible = debugRequest.responseContentType == ContentType.JSON
-            form.requestJson.isVisible = debugRequest.requestContentType == ContentType.JSON
-            val json = debugRequest.getResponseJsonNode()
-            if(json != null) {
-                form.tree1.model = JsonTreeObject(json)
+        if (debugRequest.isClosed) {
+            val responseJson = debugRequest.getResponseJsonNode()
+            if (responseJson != null) {
+                form.responseJson.isVisible = true
+                form.responseJsonTree.model = JsonTreeObject(responseJson)
+            } else {
+                form.responseJson.isVisible = false
+            }
+            val requestJson = debugRequest.getRequestJsonNode()
+            if (requestJson != null) {
+                form.requestJson.isVisible = true
+                form.requestJsonTree.model = JsonTreeObject(requestJson)
+            } else {
+                form.requestJson.isVisible = false
             }
         }
     }
