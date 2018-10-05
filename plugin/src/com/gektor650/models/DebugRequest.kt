@@ -58,6 +58,16 @@ data class DebugRequest(val id: Long) {
         }
     }
 
+    fun prettifyNode(jsonNode: JsonNode): String? {
+        return try {
+            val mapper = ObjectMapper()
+            mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonNode)
+        } catch (e: IOException) {
+            e.printStackTrace()
+            null
+        }
+    }
+
     override fun toString(): String {
         return "$id $url $duration"
     }
@@ -91,6 +101,14 @@ data class DebugRequest(val id: Long) {
 
     fun closeResponse() {
         isClosed = true
+    }
+
+    fun getRequestBody(): String {
+        return requestBody.toString()
+    }
+
+    fun getResponseBody(): String {
+        return responseBody.toString()
     }
 
     companion object {

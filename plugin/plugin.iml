@@ -14,5 +14,6 @@
     <orderEntry type="library" name="json-20180813" level="project" />
     <orderEntry type="library" name="org-netbeans-swing-outline" level="project" />
     <orderEntry type="library" name="jackson-databind-2.9.7" level="project" />
+    <orderEntry type="library" name="jsyntaxpane-1.0.0" level="project" />
   </component>
 </module>

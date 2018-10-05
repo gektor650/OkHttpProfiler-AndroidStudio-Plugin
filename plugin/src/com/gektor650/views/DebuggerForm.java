@@ -11,12 +11,14 @@ public class DebuggerForm {
     private JComboBox<DebugProcess>  appList;
     private JButton scrollToBottomButton;
     private JTabbedPane tabs;
-    private JTextPane rawRequest;
-    private JTextPane rawResponse;
     private JTable requestTable;
-    private JPanel requestJson;
-    private JPanel responseJson;
-    private JTree requestJsonTree;
+    private JEditorPane rawRequest;
+    private JEditorPane rawResponse;
+
+    public DebuggerForm() {
+        rawRequest.setContentType("text/plain");
+        rawResponse.setContentType("text/plain");
+    }
 
     public JPanel getPanel() {
         return panel;
@@ -42,23 +44,11 @@ public class DebuggerForm {
         return tabs;
     }
 
-    public JTextPane getRawRequest() {
+    public JEditorPane getRawRequest() {
         return rawRequest;
     }
 
-    public JTextPane getRawResponse() {
+    public JEditorPane getRawResponse() {
         return rawResponse;
-    }
-
-    public JPanel getRequestJson() {
-        return requestJson;
-    }
-
-    public JPanel getResponseJson() {
-        return responseJson;
-    }
-
-    public JTree getRequestJsonTree() {
-        return requestJsonTree;
     }
 }

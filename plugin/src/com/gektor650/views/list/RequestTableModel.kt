@@ -1,7 +1,7 @@
 package com.gektor650.views.list
 
 import com.gektor650.models.DebugRequest
-import com.gektor650.views.list.TableColumn
+import javax.swing.JTable
 import javax.swing.table.DefaultTableModel
 
 

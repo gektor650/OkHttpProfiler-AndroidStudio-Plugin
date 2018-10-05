@@ -43,10 +43,5 @@ class JsonTreeModel(json: JsonNode) : DefaultTreeModel(JsonTreeModel.buildTree("
             return treeNode
         }
 
-//        private fun getValueTreeNode(name: String, jsonNode: JsonNode) {
-//            when {
-//                jsonNode.isNull -> JsonMutableTreeNode(name, child.asText())
-//            }
-//        }
     }
 }
