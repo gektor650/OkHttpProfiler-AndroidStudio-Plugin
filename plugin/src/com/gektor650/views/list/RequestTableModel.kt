@@ -1,12 +1,13 @@
 package com.gektor650.views.list
 
 import com.gektor650.models.DebugRequest
-import javax.swing.JTable
+import java.awt.Color
 import javax.swing.table.DefaultTableModel
 
 
 class RequestTableModel : DefaultTableModel() {
     private val requestMap = HashMap<DebugRequest, Int>()
+    private val requestList = ArrayList<DebugRequest>()
 
     init {
         columnCount = TableColumn.values().size
@@ -20,11 +21,13 @@ class RequestTableModel : DefaultTableModel() {
         if (!requestMap.keys.contains(request)) {
             requestMap[request] = rowCount
             super.addRow(getRowData(request))
+            requestList.add(request)
         } else {
             val rowIndex = requestMap[request]
             if (rowIndex != null) {
                 for ((i, any) in getRowData(request).withIndex()) {
                     setValueAt(any, rowIndex, i)
+                    requestList[rowIndex] = request
                 }
             }
         }
@@ -35,7 +38,7 @@ class RequestTableModel : DefaultTableModel() {
     }
 
     private fun getRowData(request: DebugRequest): Array<Any?> {
-        return arrayOf(request.id, request.method, request.url, request.duration, request.getStartTimeString(), request.status ?: "Loading...")
+        return arrayOf(request.responseCode ?: "Loading...", request.method, request.url, request.duration, request.requestTime)
     }
 
     fun clear() {
@@ -49,6 +52,13 @@ class RequestTableModel : DefaultTableModel() {
             if (mutableEntry.value == selectedRow) {
                 return mutableEntry.key
             }
+        }
+        return null
+    }
+
+    fun getBackgroundColor(row: Int): Color? {
+        if(requestList[row].isFallenDown()) {
+            return Color.RED
         }
         return null
     }

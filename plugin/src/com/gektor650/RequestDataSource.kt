@@ -5,9 +5,9 @@ import com.gektor650.models.DebugRequest
 class RequestDataSource {
 
     companion object {
-        private val requestMap = LinkedHashMap<Long, DebugRequest>()
+        private val requestMap = LinkedHashMap<String, DebugRequest>()
 
-        fun logMessage(id: Long, type: MessageType, message: String): DebugRequest? {
+        fun logMessage(id: String, type: MessageType, message: String): DebugRequest? {
             try {
                 if (type != MessageType.UNKNOWN) {
                     val request = requestMap[id]
@@ -22,7 +22,7 @@ class RequestDataSource {
                     }
 
                 }
-            } catch (e : NumberFormatException) {
+            } catch (e: NumberFormatException) {
                 e.printStackTrace()
             }
             return null
@@ -32,11 +32,17 @@ class RequestDataSource {
             when (messageType) {
                 MessageType.REQUEST_URL -> request.url = message
                 MessageType.REQUEST_METHOD -> request.method = message
+                MessageType.REQUEST_TIME -> request.requestTime = message
                 MessageType.REQUEST_BODY -> request.addRequestBody(message)
                 MessageType.REQUEST_HEADER -> request.addRequestHeader(message)
                 MessageType.REQUEST_END -> request.addRequestHeader(message)
-                MessageType.RESPONSE_TIME -> request.duration = message.toLong()
-                MessageType.RESPONSE_STATUS -> request.status = message
+                MessageType.RESPONSE_TIME -> request.duration = message
+                MessageType.RESPONSE_STATUS -> {
+                    try {
+                        request.responseCode = message.toInt()
+                    } catch (_: NumberFormatException) {
+                    }
+                }
                 MessageType.RESPONSE_HEADER -> request.addResponseHeader(message)
                 MessageType.RESPONSE_BODY -> request.addResponseBody(message)
                 MessageType.RESPONSE_END -> request.closeResponse()

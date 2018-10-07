@@ -1,7 +1,8 @@
-package com.gektor650.okhttp_profiler_interceptor;
+package com.gektor650.okhttp_profiler_interceptor.transfer;
 
-enum MessageType {
+public enum MessageType {
     REQUEST_URL("RQU"),
+    REQUEST_TIME("RQT"),
     REQUEST_METHOD("RQM"),
     REQUEST_HEADER("RQH"),
     REQUEST_BODY("RQB"),

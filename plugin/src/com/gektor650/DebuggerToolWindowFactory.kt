@@ -1,6 +1,7 @@
 package com.gektor650
 
 import com.android.ddmlib.AndroidDebugBridge
+import com.android.ddmlib.Client
 import com.android.ddmlib.IDevice
 import com.android.ddmlib.logcat.LogCatMessage
 import com.android.tools.idea.logcat.AndroidLogcatService
@@ -32,13 +33,11 @@ class DebuggerToolWindowFactory : ToolWindowFactory {
             if (selectedProcess?.pid == line.pid && tag.startsWith(TAG_KEY)) {
                 val sequences = tag.split(TAG_DELIMITER)
                 if (sequences.size == 3) {
-                    val id = sequences[1].toLong()
+                    val id = sequences[1]
                     val messageType = MessageType.fromString(sequences[2])
-                    if (id != 0L) {
-                        val debugRequest = RequestDataSource.logMessage(id, messageType, line.message)
-                        if(debugRequest != null) {
-                            requestTableController.insertOrUpdate(debugRequest)
-                        }
+                    val debugRequest = RequestDataSource.logMessage(id, messageType, line.message)
+                    if (debugRequest != null) {
+                        requestTableController.insertOrUpdate(debugRequest)
                     }
                 }
             }
@@ -49,21 +48,38 @@ class DebuggerToolWindowFactory : ToolWindowFactory {
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         toolWindow.component.add(debugger.panel)
-        initDeviceList(AndroidSdkUtils.getDebugBridge(project))
-
+        initDeviceList()
         debugger.scrollToBottomButton.addActionListener {
             requestTableController.clearSelection()
         }
     }
 
-    private fun initDeviceList(debugBridge: AndroidDebugBridge?) {
+    private fun initDeviceList() {
+        AndroidDebugBridge.addClientChangeListener { client: Client, i: Int ->
+            log("addClientChangeListener ${client.device}")
+            createProcessList(client.device)
+        }
+        AndroidDebugBridge.addDeviceChangeListener(object: AndroidDebugBridge.IDeviceChangeListener {
+            override fun deviceChanged(device: IDevice?, p1: Int) {
+                log("deviceChanged $device")
+            }
+
+            override fun deviceConnected(device: IDevice?) {
+                log("deviceConnected $device")
+
+            }
+
+            override fun deviceDisconnected(device: IDevice?) {
+                log("deviceDisconnected $device")
+            }
+        })
         AndroidDebugBridge.addDebugBridgeChangeListener {
             val devices = it.devices
             if (devices.isNotEmpty()) {
                 log("addDebugBridgeChangeListener $it")
                 createDeviceList(devices)
             } else {
-                log("addDebugBridgeChangeListener EMPTY $it and connected ${debugBridge?.isConnected}")
+                log("addDebugBridgeChangeListener EMPTY $it and connected ${it?.isConnected}")
             }
         }
     }

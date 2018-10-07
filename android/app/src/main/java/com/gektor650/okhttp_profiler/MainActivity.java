@@ -18,8 +18,8 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
-    private static final String GOOGLE_URL = "https://api.stash.rentberry.com/v1/apartment/935597/";
-    private int time = 10000;
+    private static final String GOOGLE_URL = "https://docs.oracle.com/jaasdasdasdasdas";
+    private int time = 10;
 //    private static final String GOOGLE_URL = "https://raw.githubusercontent.com/corysimmons/colors.json/master/colors.json";
     private Handler mHandler = new Handler();
     private OkHttpClient mClient = new OkHttpClient.Builder().addInterceptor(
@@ -34,10 +34,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void tick() {
-        mHandler.postDelayed(() -> {
-            sendRequest();
-        }, time);
-        time += time;
+        mHandler.postDelayed(this::sendRequest, time);
+        time *= time;
     }
 
     private void sendRequest() {

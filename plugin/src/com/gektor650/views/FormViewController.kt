@@ -3,8 +3,8 @@ package com.gektor650.views
 import com.gektor650.StringValues
 import com.gektor650.models.DebugRequest
 import com.gektor650.views.list.ForcedListSelectionModel
+import com.gektor650.views.list.RequestTableCellRenderer
 import com.gektor650.views.list.RequestTableModel
-import com.gektor650.views.list.TableColumn
 import javax.swing.JTable
 
 
@@ -21,7 +21,9 @@ class FormViewController(private val form: DebuggerForm) {
     )
 
     init {
+        requestTable.autoResizeMode = JTable.AUTO_RESIZE_ALL_COLUMNS
         requestTable.model = requestListModel
+        requestTable.setDefaultRenderer(Any::class.java, RequestTableCellRenderer())
         requestTable.selectionModel = ForcedListSelectionModel()
         requestTable.selectionModel.addListSelectionListener { it ->
             if (!it.valueIsAdjusting) {
@@ -29,11 +31,6 @@ class FormViewController(private val form: DebuggerForm) {
                     fillRequestInfo(it)
                 }
             }
-        }
-
-        for(i in 0 until requestListModel.columnCount) {
-            requestTable.autoResizeMode = JTable.AUTO_RESIZE_OFF
-            requestTable.columnModel.getColumn(i).preferredWidth = TableColumn.values()[i].width
         }
     }
 

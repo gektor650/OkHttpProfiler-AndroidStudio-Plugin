@@ -2,6 +2,7 @@ package com.gektor650
 
 enum class MessageType(val api: String) {
     REQUEST_URL("RQU"),
+    REQUEST_TIME("RQT"),
     REQUEST_METHOD("RQM"),
     REQUEST_HEADER("RQH"),
     REQUEST_BODY("RQB"),

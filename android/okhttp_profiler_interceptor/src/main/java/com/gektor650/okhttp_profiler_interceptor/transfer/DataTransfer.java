@@ -1,0 +1,10 @@
+package com.gektor650.okhttp_profiler_interceptor.transfer;
+
+import okhttp3.Request;
+import okhttp3.Response;
+
+public interface DataTransfer {
+    void sendRequest(String id, Request request);
+    void sendResponse(String id, Response response);
+    void sendDuration(String id, long duration);
+}

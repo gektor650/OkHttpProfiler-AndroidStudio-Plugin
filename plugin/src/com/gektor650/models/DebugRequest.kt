@@ -6,14 +6,25 @@ import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
-data class DebugRequest(val id: Long) {
+data class DebugRequest(val id: String) {
     var url: String? = null
     var method: String? = null
     private val requestHeaders = ArrayList<String>()
     private val requestBody = StringBuilder()
-    var duration: Long? = null
-    var status: String? = null
-    private val startTime = Date()
+    var duration: String? = null
+    var responseCode: Int? = null
+    var requestTime: String? = null
+        set(value) {
+            field = if (value != null) {
+                try {
+                    SimpleDateFormat("HH:mm:ss").format(Date(value.toLong()))
+                } catch (e: Exception) {
+                    null
+                }
+            } else {
+                null
+            }
+        }
     var isClosed = false
     private val responseHeaders = ArrayList<String>()
     private val responseBody = StringBuilder()
@@ -73,26 +84,26 @@ data class DebugRequest(val id: Long) {
     }
 
     fun getRawRequest(): String? {
-        val request = getRawDataString(requestHeaders, requestBody)
-        request.insert(0, NEW_LINE)
-        request.insert(0, url)
-        request.insert(0, SPACE)
-        request.insert(0, method)
-        return request.toString()
+        return getRawDataString(requestHeaders, requestBody).toString()
     }
 
     fun getRawResponse(): String? {
-        return getRawDataString(responseHeaders, responseBody).toString()
-    }
-
-    fun getStartTimeString(): String? {
-        return SimpleDateFormat("HH:mm:ss").format(startTime)
+        val data = getRawDataString(responseHeaders, responseBody)
+        data.insert(0, SPACE)
+        data.insert(0, responseCode)
+        return data.toString()
     }
 
     private fun getRawDataString(headers: List<String>, body: StringBuilder): StringBuilder {
         val builder = StringBuilder()
+        builder.append(method)
+                .append(SPACE)
+                .append(url)
+                .append(NEW_LINE)
+                .append(NEW_LINE)
         for (requestHeader in headers) {
-            builder.append(requestHeader).append(NEW_LINE)
+            builder.append(requestHeader)
+                    .append(NEW_LINE)
         }
         builder.append(NEW_LINE)
         builder.append(body)
@@ -103,12 +114,9 @@ data class DebugRequest(val id: Long) {
         isClosed = true
     }
 
-    fun getRequestBody(): String {
-        return requestBody.toString()
-    }
-
-    fun getResponseBody(): String {
-        return responseBody.toString()
+    fun isFallenDown(): Boolean {
+        val code = responseCode
+        return code?.compareTo(400) == 1
     }
 
     companion object {
