@@ -56,7 +56,7 @@ class FormViewController(private val form: DebuggerForm) {
             val responseBody = debugRequest.getResponseBodyString()
             tabsHelper.addHeaderTab(Tabs.TAB_RESPONSE_HEADERS.resName, debugRequest.responseHeaders)
             tabsHelper.addJsonTab(Tabs.TAB_JSON_RESPONSE.resName, responseBody)
-            tabsHelper.addFormattedTab(Tabs.TAB_REQUEST_FORMATTED.resName, responseBody)
+            tabsHelper.addFormattedTab(Tabs.TAB_RESPONSE_FORMATTED.resName, responseBody)
         }
     }
 

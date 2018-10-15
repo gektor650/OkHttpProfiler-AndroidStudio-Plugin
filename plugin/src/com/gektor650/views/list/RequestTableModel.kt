@@ -42,9 +42,6 @@ class RequestTableModel : DefaultTableModel() {
     }
 
     fun clear() {
-//        for (i in 0 until rowCount) {
-//            removeRow(i)
-//        }
     }
 
     fun getRequest(selectedRow: Int): DebugRequest? {
@@ -56,10 +53,7 @@ class RequestTableModel : DefaultTableModel() {
         return null
     }
 
-    fun getBackgroundColor(row: Int): Color? {
-        if(requestList[row].isFallenDown()) {
-            return Color.PINK
-        }
-        return null
+    fun isFallenDown(row: Int): Boolean {
+        return requestList[row].isFallenDown()
     }
 }
