@@ -13,6 +13,7 @@ import com.gektor650.data.RequestDataSource
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
+import org.jetbrains.android.sdk.AndroidSdkUtils
 import java.awt.event.ItemEvent
 import javax.swing.DefaultComboBoxModel
 
@@ -48,64 +49,74 @@ class DebuggerToolWindowFactory : ToolWindowFactory {
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         toolWindow.component.add(debugger.panel)
-        initDeviceList()
+        initDeviceList(project)
         debugger.scrollToBottomButton.addActionListener {
             requestTableController.clearSelection()
         }
     }
 
-    private fun initDeviceList() {
-        AndroidDebugBridge.addClientChangeListener { client: Client, i: Int ->
-            log("addClientChangeListener ${client.device}")
-            createProcessList(client.device)
-        }
+    private fun initDeviceList(project: Project) {
+//        AndroidDebugBridge.addClientChangeListener { client: Client, _: Int ->
+//            log("addClientChangeListener ${client.device}")
+//            createProcessList(client.device)
+//        }
         AndroidDebugBridge.addDeviceChangeListener(object: AndroidDebugBridge.IDeviceChangeListener {
             override fun deviceChanged(device: IDevice?, p1: Int) {
                 log("deviceChanged $device")
+                device?.let {
+                    attachToDevice(device)
+                }
             }
 
             override fun deviceConnected(device: IDevice?) {
                 log("deviceConnected $device")
-
+                updateDeviceList(AndroidDebugBridge.getBridge()?.devices)
             }
 
             override fun deviceDisconnected(device: IDevice?) {
                 log("deviceDisconnected $device")
+                updateDeviceList(AndroidDebugBridge.getBridge()?.devices)
             }
         })
         AndroidDebugBridge.addDebugBridgeChangeListener {
             val devices = it.devices
             if (devices.isNotEmpty()) {
                 log("addDebugBridgeChangeListener $it")
-                createDeviceList(devices)
+                updateDeviceList(devices)
             } else {
                 log("addDebugBridgeChangeListener EMPTY $it and connected ${it?.isConnected}")
             }
         }
+        val bridge0 : AndroidDebugBridge? = AndroidSdkUtils.getDebugBridge(project)
+        log("initDeviceList bridge0 ${bridge0?.isConnected}")
     }
 
-    private fun createDeviceList(devices: Array<IDevice>) {
-        log("createDeviceList ${devices.size}")
-        val debugDevices = ArrayList<DebugDevice>()
-        for (device in devices) {
-            debugDevices.add(DebugDevice(device))
-        }
-        val model = DefaultComboBoxModel<DebugDevice>(debugDevices.toTypedArray())
-        val list = debugger.deviceList
-        list.model = model
-        list.addItemListener {
-            if (it.stateChange == ItemEvent.SELECTED) {
-                val device = list.selectedItem as DebugDevice
-                attachToDevice(device.device)
+    private fun updateDeviceList(devices: Array<IDevice>?) {
+        log("updateDeviceList ${devices?.size}")
+        if(devices != null) {
+            debugger.mainContainer.isVisible = true
+            val debugDevices = ArrayList<DebugDevice>()
+            for (device in devices) {
+                debugDevices.add(DebugDevice(device))
             }
+            val model = DefaultComboBoxModel<DebugDevice>(debugDevices.toTypedArray())
+            val list = debugger.deviceList
+            list.model = model
+            list.addItemListener {
+                if (it.stateChange == ItemEvent.SELECTED) {
+                    log("Selected ${list.selectedItem}")
+                    val device = list.selectedItem as DebugDevice
+                    attachToDevice(device.device)
+                }
+            }
+        } else {
+            debugger.mainContainer.isVisible = false
         }
-        attachToDevice(devices[0])
     }
 
     private fun attachToDevice(device: IDevice) {
         createProcessList(device)
         setListener(device)
-        attach(device)
     }
 
     private fun createProcessList(device: IDevice) {
@@ -136,16 +147,13 @@ class DebuggerToolWindowFactory : ToolWindowFactory {
         }
     }
 
-    private fun attach(device: IDevice) {
-        log(device.toString())
-        setListener(device)
-    }
 
     private fun log(text: String) {
         println(text)
     }
 
     private fun setListener(device: IDevice) {
+        log(device.toString())
         val prevDevice = selectedDevice
         if (prevDevice != null) {
             logCatListener.removeListener(prevDevice, deviceListener)

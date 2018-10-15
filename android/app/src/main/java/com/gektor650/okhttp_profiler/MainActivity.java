@@ -8,6 +8,7 @@ import android.os.Bundle;
 import com.gektor650.okhttp_profiler_interceptor.OkHttpProfilerInterceptor;
 
 import java.io.IOException;
+import java.util.Random;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -18,9 +19,9 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
-//    private static final String GOOGLE_URL = "https://docs.oracle.com/jaasdasdasdasdas";
     private int time = 10;
-    private static final String GOOGLE_URL = "https://raw.githubusercontent.com/corysimmons/colors.json/master/colors.json";
+    private static final String GOOGLE_URL1 = "https://raw.githubusercontent.com/corysimmons/colors.json/master/colors.json";
+    private static final String GOOGLE_URL2 = "https://docs.oracle.com/jaasdasdasdasdas";
     private Handler mHandler = new Handler();
     private OkHttpClient mClient = new OkHttpClient.Builder().addInterceptor(
             new OkHttpProfilerInterceptor()
@@ -39,8 +40,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void sendRequest() {
+        String[] array = new String[]{GOOGLE_URL1, GOOGLE_URL2};
+        int random = new Random().nextInt(array.length);
         Request request = new Request.Builder()
-                .url(GOOGLE_URL)
+                .url(array[random])
                 .get()
                 .build();
 
