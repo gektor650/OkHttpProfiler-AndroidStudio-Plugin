@@ -1,6 +1,4 @@
-package com.gektor650
-
-import com.gektor650.models.DebugRequest
+package com.gektor650.data
 
 class RequestDataSource {
 

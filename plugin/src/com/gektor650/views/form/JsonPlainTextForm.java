@@ -1,16 +1,16 @@
-package com.gektor650.views;
+package com.gektor650.views.form;
 
 import javax.swing.*;
 
 public class JsonPlainTextForm {
     private JPanel panel;
-    private JEditorPane editorPane;
+    private JTextPane editorPane;
 
     public JPanel getPanel() {
         return panel;
     }
 
-    public JEditorPane getEditorPane() {
+    public JTextPane getEditorPane() {
         return editorPane;
     }
 }

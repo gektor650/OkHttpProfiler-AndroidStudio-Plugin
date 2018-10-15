@@ -5,14 +5,14 @@ import com.android.ddmlib.Client
 import com.android.ddmlib.IDevice
 import com.android.ddmlib.logcat.LogCatMessage
 import com.android.tools.idea.logcat.AndroidLogcatService
-import com.gektor650.views.DebuggerForm
-import com.gektor650.views.FormViewController
-import com.gektor650.models.DebugDevice
-import com.gektor650.models.DebugProcess
+import com.gektor650.views.form.DebuggerForm
+import com.gektor650.data.DebugDevice
+import com.gektor650.data.DebugProcess
+import com.gektor650.data.MessageType
+import com.gektor650.data.RequestDataSource
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
-import org.jetbrains.android.sdk.AndroidSdkUtils
 import java.awt.event.ItemEvent
 import javax.swing.DefaultComboBoxModel
 
@@ -157,6 +157,7 @@ class DebuggerToolWindowFactory : ToolWindowFactory {
     companion object {
         private const val TAG_KEY = "OKPRFL"
         private const val TAG_DELIMITER = "_"
+        const val STRING_BUNDLE = "strings"
     }
 
 }

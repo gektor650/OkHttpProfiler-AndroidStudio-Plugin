@@ -1,6 +1,6 @@
 package com.gektor650.views.list
 
-import com.gektor650.models.DebugRequest
+import com.gektor650.data.DebugRequest
 import java.awt.Color
 import javax.swing.table.DefaultTableModel
 
@@ -58,7 +58,7 @@ class RequestTableModel : DefaultTableModel() {
 
     fun getBackgroundColor(row: Int): Color? {
         if(requestList[row].isFallenDown()) {
-            return Color.RED
+            return Color.PINK
         }
         return null
     }

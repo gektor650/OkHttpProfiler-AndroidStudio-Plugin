@@ -1,4 +1,4 @@
-package com.gektor650
+package com.gektor650.data
 
 enum class MessageType(val api: String) {
     REQUEST_URL("RQU"),

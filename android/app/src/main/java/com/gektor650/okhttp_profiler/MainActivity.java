@@ -18,9 +18,9 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
-    private static final String GOOGLE_URL = "https://docs.oracle.com/jaasdasdasdasdas";
+//    private static final String GOOGLE_URL = "https://docs.oracle.com/jaasdasdasdasdas";
     private int time = 10;
-//    private static final String GOOGLE_URL = "https://raw.githubusercontent.com/corysimmons/colors.json/master/colors.json";
+    private static final String GOOGLE_URL = "https://raw.githubusercontent.com/corysimmons/colors.json/master/colors.json";
     private Handler mHandler = new Handler();
     private OkHttpClient mClient = new OkHttpClient.Builder().addInterceptor(
             new OkHttpProfilerInterceptor()

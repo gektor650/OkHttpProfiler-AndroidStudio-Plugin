@@ -1,15 +1,12 @@
-package com.gektor650.models
+package com.gektor650.data
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
-import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
 data class DebugRequest(val id: String) {
     var url: String? = null
     var method: String? = null
-    private val requestHeaders = ArrayList<String>()
+    val requestHeaders = ArrayList<String>()
     private val requestBody = StringBuilder()
     var duration: String? = null
     var responseCode: Int? = null
@@ -26,7 +23,7 @@ data class DebugRequest(val id: String) {
             }
         }
     var isClosed = false
-    private val responseHeaders = ArrayList<String>()
+    val responseHeaders = ArrayList<String>()
     private val responseBody = StringBuilder()
 
     private val trash = StringBuilder()
@@ -51,32 +48,12 @@ data class DebugRequest(val id: String) {
         trash.append(message)
     }
 
-    fun getResponseJsonNode(): JsonNode? {
-        val objectMapper = ObjectMapper()
-        return try {
-            objectMapper.readTree(responseBody.toString())
-        } catch (e: IOException) {
-            null
-        }
+    fun getRequestBodyString(): String {
+        return requestBody.toString()
     }
 
-    fun getRequestJsonNode(): JsonNode? {
-        val objectMapper = ObjectMapper()
-        return try {
-            objectMapper.readTree(requestBody.toString())
-        } catch (e: IOException) {
-            null
-        }
-    }
-
-    fun prettifyNode(jsonNode: JsonNode): String? {
-        return try {
-            val mapper = ObjectMapper()
-            mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonNode)
-        } catch (e: IOException) {
-            e.printStackTrace()
-            null
-        }
+    fun getResponseBodyString(): String {
+        return responseBody.toString()
     }
 
     override fun toString(): String {

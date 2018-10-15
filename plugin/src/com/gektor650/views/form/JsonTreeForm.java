@@ -1,4 +1,4 @@
-package com.gektor650.views;
+package com.gektor650.views.form;
 
 import javax.swing.*;
 

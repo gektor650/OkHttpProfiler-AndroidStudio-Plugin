@@ -1,4 +1,4 @@
-package com.gektor650.models
+package com.gektor650.data
 
 import com.android.ddmlib.IDevice
 
