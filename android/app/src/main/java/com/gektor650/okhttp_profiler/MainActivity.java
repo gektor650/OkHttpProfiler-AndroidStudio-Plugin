@@ -22,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
     private int time = 10;
     private static final String GOOGLE_URL1 = "https://raw.githubusercontent.com/corysimmons/colors.json/master/colors.json";
     private static final String GOOGLE_URL2 = "https://docs.oracle.com/jaasdasdasdasdas";
+    private static final String GOOGLE_URL3 = "https://api.stash.rentberry.com/v1/apartment/935597/";
     private Handler mHandler = new Handler();
     private OkHttpClient mClient = new OkHttpClient.Builder().addInterceptor(
             new OkHttpProfilerInterceptor()
@@ -40,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void sendRequest() {
-        String[] array = new String[]{GOOGLE_URL1, GOOGLE_URL2};
+        String[] array = new String[]{GOOGLE_URL1, GOOGLE_URL2, GOOGLE_URL3};
         int random = new Random().nextInt(array.length);
         Request request = new Request.Builder()
                 .url(array[random])
