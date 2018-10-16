@@ -1,4 +1,4 @@
-package com.itkacher.okhttp_profiler_interceptor.transfer;
+package com.itkacher.okhttpprofiler.transfer;
 
 import okhttp3.Request;
 import okhttp3.Response;

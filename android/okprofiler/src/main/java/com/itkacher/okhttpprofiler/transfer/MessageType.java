@@ -1,4 +1,4 @@
-package com.itkacher.okhttp_profiler_interceptor.transfer;
+package com.itkacher.okhttpprofiler.transfer;
 
 public enum MessageType {
     REQUEST_URL("RQU"),

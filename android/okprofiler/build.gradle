@@ -10,7 +10,7 @@ android {
         minSdkVersion 16
         targetSdkVersion 28
         versionCode 1
-        versionName "1.0"
+        versionName "0.1"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         buildConfigField "String", "LOG_PREFIX",  "\"_OKPRFL:\""
@@ -31,7 +31,7 @@ android {
 }
 
 task deleteJar(type: Delete) {
-    delete 'libs/jars/logmanagementlib.jar'
+    delete 'libs/jars/okprofiler.jar'
 }
 
 task createJar(type: Copy) {
@@ -50,3 +50,31 @@ dependencies {
 repositories {
     mavenCentral()
 }
+
+ext {
+    bintrayRepo = 'maven'
+    bintrayName = 'itkacher'
+
+    publishedGroupId = 'com.itkacher.okhttpprofiler'
+    libraryName = 'Okhttp Profiler'
+    artifact = 'okhttpprofiler'
+
+    libraryDescription = 'This library is using for Android Studio plugin'
+
+    siteUrl = 'https://github.com/LissF/DiagonalScrollView'
+    gitUrl = 'https://github.com/LissF/DiagonalScrollView.git'
+
+    libraryVersion = '0.0.1'
+
+    developerId = 'itkacher'
+    developerName = 'Ievgenii Tkachenko'
+    developerEmail = 'itkacher@gmail.com'
+
+    licenseName = 'The Apache Software License, Version 2.0'
+    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    allLicenses = ["Apache-2.0"]
+}
+
+
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.jfrog.bintray'

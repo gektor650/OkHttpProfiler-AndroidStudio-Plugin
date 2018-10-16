@@ -1,6 +1,8 @@
-package com.itkacher.okhttp_profiler_interceptor.transfer;
+package com.itkacher.okhttpprofiler.transfer;
 
 import android.util.Log;
+
+import java.io.IOException;
 
 import okhttp3.Headers;
 import okhttp3.Request;
@@ -8,8 +10,6 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 import okio.Buffer;
-
-import java.io.IOException;
 
 public class LogDataTransfer implements DataTransfer {
     private static final int LOG_LENGTH = 255;

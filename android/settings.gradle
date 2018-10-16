@@ -1,1 +1,1 @@
-include ':app', ':okhttp_profiler_interceptor'
+include ':app', ':okprofiler'

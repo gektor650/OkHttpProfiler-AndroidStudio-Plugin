@@ -1,4 +1,4 @@
-package com.itkacher.okhttp_profiler_interceptor;
+package com.itkacher.okhttpprofiler;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -6,8 +6,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import com.itkacher.okhttp_profiler_interceptor.transfer.LogDataTransfer;
-import com.itkacher.okhttp_profiler_interceptor.transfer.DataTransfer;
+import com.itkacher.okhttpprofiler.transfer.LogDataTransfer;
+import com.itkacher.okhttpprofiler.transfer.DataTransfer;
 import okhttp3.*;
 
 /**

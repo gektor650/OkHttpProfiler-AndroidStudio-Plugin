@@ -1,21 +1,19 @@
 package com.itkacher.okhttp_profiler;
 
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 
-import com.itkacher.okhttp_profiler_interceptor.OkHttpProfilerInterceptor;
+import com.itkacher.okhttpprofiler.OkHttpProfilerInterceptor;
 
 import java.io.IOException;
 import java.util.Random;
 
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
@@ -27,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
     private OkHttpClient mClient = new OkHttpClient.Builder().addInterceptor(
             new OkHttpProfilerInterceptor()
     ).build();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
