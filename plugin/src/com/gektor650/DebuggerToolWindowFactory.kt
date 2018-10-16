@@ -10,6 +10,7 @@ import com.gektor650.data.DebugDevice
 import com.gektor650.data.DebugProcess
 import com.gektor650.data.MessageType
 import com.gektor650.data.RequestDataSource
+import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
@@ -17,7 +18,7 @@ import org.jetbrains.android.sdk.AndroidSdkUtils
 import java.awt.event.ItemEvent
 import javax.swing.DefaultComboBoxModel
 
-class DebuggerToolWindowFactory : ToolWindowFactory {
+class DebuggerToolWindowFactory : ToolWindowFactory, DumbAware {
 
 
     private val debugger = DebuggerForm()

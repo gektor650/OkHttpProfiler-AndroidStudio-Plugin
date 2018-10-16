@@ -30,6 +30,19 @@ android {
 
 }
 
+task deleteJar(type: Delete) {
+    delete 'libs/jars/logmanagementlib.jar'
+}
+
+task createJar(type: Copy) {
+    from('build/intermediates/bundles/release/')
+    into('libs/jars/')
+    include('classes.jar')
+    rename('classes.jar', 'okprofiler.jar')
+}
+
+createJar.dependsOn(deleteJar, build)
+
 dependencies {
     api 'com.squareup.okhttp3:okhttp:3.10.0'
     testImplementation 'junit:junit:4.12'

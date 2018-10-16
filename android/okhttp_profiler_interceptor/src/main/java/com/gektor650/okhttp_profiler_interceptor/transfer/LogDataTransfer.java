@@ -5,6 +5,7 @@ import okhttp3.Headers;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 import java.io.IOException;
 
@@ -42,12 +43,12 @@ public class LogDataTransfer implements DataTransfer {
                 log(id, MessageType.RESPONSE_HEADER, name + HEADER_DELIMITER + headers.get(name));
             }
         }
-        if (response.body() != null) {
-            try {
-                largeLog(id, MessageType.RESPONSE_BODY, response.body().string());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+
+        try {
+            ResponseBody responseBodyCopy = response.peekBody(Long.MAX_VALUE);
+            largeLog(id, MessageType.RESPONSE_BODY, responseBodyCopy.string());
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
