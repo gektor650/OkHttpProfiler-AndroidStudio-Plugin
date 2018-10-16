@@ -59,10 +59,10 @@ ext {
     libraryName = 'Okhttp Profiler'
     artifact = 'okhttpprofiler'
 
-    libraryDescription = 'This library is using for Android Studio plugin'
+    libraryDescription = 'This library is using for Android Studio plugin Okhttp Profiler'
 
-    siteUrl = 'https://github.com/LissF/DiagonalScrollView'
-    gitUrl = 'https://github.com/LissF/DiagonalScrollView.git'
+    siteUrl = 'https://github.com/itkacher/OkHttpProfiler'
+    gitUrl = 'https://github.com/itkacher/OkHttpProfiler.git'
 
     libraryVersion = '0.0.1'
 
@@ -78,3 +78,4 @@ ext {
 
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
+apply from: './jcenter.gradle'
