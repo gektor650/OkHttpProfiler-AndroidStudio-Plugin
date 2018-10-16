@@ -1,4 +1,4 @@
-package com.itkacher.okhttp_profiler;
+package com.itkacher.okhttp_profiler_interceptor;
 
 import org.junit.Test;
 

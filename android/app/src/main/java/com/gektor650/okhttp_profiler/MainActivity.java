@@ -1,11 +1,11 @@
-package com.gektor650.okhttp_profiler;
+package com.itkacher.okhttp_profiler;
 
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import com.gektor650.okhttp_profiler_interceptor.OkHttpProfilerInterceptor;
+import com.itkacher.okhttp_profiler_interceptor.OkHttpProfilerInterceptor;
 
 import java.io.IOException;
 import java.util.Random;

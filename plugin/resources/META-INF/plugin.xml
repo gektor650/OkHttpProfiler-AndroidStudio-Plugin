@@ -1,5 +1,5 @@
 <idea-plugin>
-    <id>com.gektor650.okhttp_debugger</id>
+    <id>com.itkacher.okhttp_debugger</id>
     <name>okhttp_debugger</name>
     <vendor email="support@okhttp_debugger.com" url="http://www.okhttp_debugger.com">YourCompany</vendor>
 
@@ -17,7 +17,7 @@
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
         <toolWindow id="OkHttp Requests" secondary="true" icon="/icons/plus.png" anchor="bottom"
-                    factoryClass="com.gektor650.DebuggerToolWindowFactory"/>
+                    factoryClass="com.itkacher.DebuggerToolWindowFactory"/>
     </extensions>
 
     <actions>

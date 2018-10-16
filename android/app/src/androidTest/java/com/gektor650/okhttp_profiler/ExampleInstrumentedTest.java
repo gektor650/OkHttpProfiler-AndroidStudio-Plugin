@@ -1,4 +1,4 @@
-package com.gektor650.okhttp_profiler;
+package com.itkacher.okhttp_profiler;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.gektor650.okhttp_profiler", appContext.getPackageName());
+        assertEquals("com.itkacher.okhttp_profiler", appContext.getPackageName());
     }
 }
