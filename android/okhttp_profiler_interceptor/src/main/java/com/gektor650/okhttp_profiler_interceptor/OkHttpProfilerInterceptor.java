@@ -24,11 +24,16 @@ public class OkHttpProfilerInterceptor implements Interceptor {
         String id = generateId();
         long startTime = System.currentTimeMillis();
         dataTransfer.sendRequest(id, chain.request());
-        Response response = chain.proceed(chain.request());
-        dataTransfer.sendResponse(id, response);
-        dataTransfer.sendDuration(id, System.currentTimeMillis() - startTime);
-        return response;
-
+        try {
+            Response response = chain.proceed(chain.request());
+            dataTransfer.sendResponse(id, response);
+            dataTransfer.sendDuration(id, System.currentTimeMillis() - startTime);
+            return response;
+        } catch (Exception e) {
+            dataTransfer.sendException(id, e);
+            dataTransfer.sendDuration(id, System.currentTimeMillis() - startTime);
+            throw e;
+        }
     }
 
     private String generateId() {

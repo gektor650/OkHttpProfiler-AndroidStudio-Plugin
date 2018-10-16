@@ -38,7 +38,12 @@ class RequestTableModel : DefaultTableModel() {
     }
 
     private fun getRowData(request: DebugRequest): Array<Any?> {
-        return arrayOf(request.responseCode ?: "Loading...", request.method, request.url, request.duration, request.requestTime)
+        val code: String = when {
+            request.errorMessage?.isNotEmpty() == true -> "Fallen"
+            request.responseCode == null -> "Loading..."
+            else -> request.responseCode.toString()
+        }
+        return arrayOf(code, request.method, request.url, request.duration, request.requestTime)
     }
 
     fun clear() {

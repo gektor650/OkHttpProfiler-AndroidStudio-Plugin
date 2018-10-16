@@ -12,6 +12,7 @@ enum class MessageType(val api: String) {
     RESPONSE_HEADER("RSH"),
     RESPONSE_BODY("RSB"),
     RESPONSE_END("RSD"),
+    RESPONSE_ERROR("REE"),
     UNKNOWN("UNKNOWN");
     companion object {
         fun fromString(type: String): MessageType {

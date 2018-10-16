@@ -18,15 +18,6 @@ class FormViewController(private val form: DebuggerForm) {
     private val requestTable = dataForm.requestTable
     private val requestListModel = RequestTableModel()
     private val tabsHelper = TabsHelper(dataForm.tabsPane)
-    private val genericTabTitles = listOf(
-            Tabs.TAB_RAW_REQUEST,
-            Tabs.TAB_RAW_RESPONSE,
-            Tabs.TAB_JSON_RESPONSE,
-            Tabs.TAB_JSON_REQUEST,
-            Tabs.TAB_REQUEST_FORMATTED,
-            Tabs.TAB_RESPONSE_FORMATTED
-    )
-
     private var firstLaunch = true
 
     init {
@@ -57,6 +48,9 @@ class FormViewController(private val form: DebuggerForm) {
             tabsHelper.addHeaderTab(Tabs.TAB_RESPONSE_HEADERS.resName, debugRequest.responseHeaders)
             tabsHelper.addJsonTab(Tabs.TAB_JSON_RESPONSE.resName, responseBody)
             tabsHelper.addFormattedTab(Tabs.TAB_RESPONSE_FORMATTED.resName, responseBody)
+            if(debugRequest.errorMessage?.isNotEmpty() == true) {
+                tabsHelper.addRawTab(Tabs.TAB_ERROR_MESSAGE.resName, debugRequest.errorMessage)
+            }
         }
     }
 

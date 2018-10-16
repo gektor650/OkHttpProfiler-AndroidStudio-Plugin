@@ -43,6 +43,7 @@ class RequestDataSource {
                 }
                 MessageType.RESPONSE_HEADER -> request.addResponseHeader(message)
                 MessageType.RESPONSE_BODY -> request.addResponseBody(message)
+                MessageType.RESPONSE_ERROR -> request.errorMessage = message
                 MessageType.RESPONSE_END -> request.closeResponse()
                 else -> {
                     request.trash(message)

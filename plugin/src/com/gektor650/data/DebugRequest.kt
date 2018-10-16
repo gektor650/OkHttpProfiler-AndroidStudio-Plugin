@@ -25,6 +25,7 @@ data class DebugRequest(val id: String) {
     var isClosed = false
     val responseHeaders = ArrayList<String>()
     private val responseBody = StringBuilder()
+    var errorMessage: String? = null
 
     private val trash = StringBuilder()
 
@@ -93,7 +94,7 @@ data class DebugRequest(val id: String) {
 
     fun isFallenDown(): Boolean {
         val code = responseCode
-        return code?.compareTo(400) == 1
+        return code?.compareTo(400) == 1 || isClosed && errorMessage != null
     }
 
     companion object {

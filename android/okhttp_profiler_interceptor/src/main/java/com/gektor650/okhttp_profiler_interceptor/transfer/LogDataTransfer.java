@@ -1,6 +1,7 @@
 package com.gektor650.okhttp_profiler_interceptor.transfer;
 
 import android.util.Log;
+
 import okhttp3.Headers;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -50,6 +51,11 @@ public class LogDataTransfer implements DataTransfer {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void sendException(String id, Exception response) {
+        log(id, MessageType.RESPONSE_ERROR, response.getLocalizedMessage());
     }
 
     @Override

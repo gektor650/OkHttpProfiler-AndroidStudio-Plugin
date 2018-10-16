@@ -12,6 +12,7 @@ public enum MessageType {
     RESPONSE_HEADER("RSH"),
     RESPONSE_BODY("RSB"),
     RESPONSE_END("RSD"),
+    RESPONSE_ERROR("REE"),
     UNKNOWN("UNKNOWN");
 
     public final String name;
