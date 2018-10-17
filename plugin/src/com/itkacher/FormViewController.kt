@@ -32,6 +32,12 @@ class FormViewController(private val form: DebuggerForm) {
                 }
             }
         }
+        dataForm.deleteButton.addActionListener {
+            requestListModel.clear()
+        }
+        dataForm.scrollButton.addActionListener {
+            requestTable.scrollRectToVisible(requestTable.getCellRect(requestTable.rowCount -1, 0, true));
+        }
     }
 
     private fun fillRequestInfo(debugRequest: DebugRequest) {
@@ -66,6 +72,7 @@ class FormViewController(private val form: DebuggerForm) {
             form.mainContainer.add(dataForm.dataPanel)
             firstLaunch = false
         }
+        requestTable.scrollRectToVisible(requestTable.getCellRect(requestTable.rowCount -1, 0, true));
         requestListModel.addOrUpdate(debugRequest)
     }
 

@@ -1,5 +1,6 @@
 package com.itkacher.views.list
 
+import com.itkacher.Resources
 import com.itkacher.data.DebugRequest
 import java.awt.Color
 import javax.swing.table.DefaultTableModel
@@ -39,14 +40,19 @@ class RequestTableModel : DefaultTableModel() {
 
     private fun getRowData(request: DebugRequest): Array<Any?> {
         val code: String = when {
-            request.errorMessage?.isNotEmpty() == true -> "Fallen"
-            request.responseCode == null -> "Loading..."
+            request.errorMessage?.isNotEmpty() == true -> Resources.getString("request_list_fallen")
+            request.responseCode == null -> Resources.getString("request_list_loading")
             else -> request.responseCode.toString()
         }
         return arrayOf(code, request.method, request.url, request.duration, request.requestTime)
     }
 
     fun clear() {
+        requestMap.clear()
+        requestList.clear()
+        while (super.getRowCount().compareTo(0) == 1) {
+            super.removeRow(0)
+        }
     }
 
     fun getRequest(selectedRow: Int): DebugRequest? {

@@ -51,9 +51,6 @@ class DebuggerToolWindowFactory : ToolWindowFactory, DumbAware {
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         toolWindow.component.add(debugger.panel)
         initDeviceList(project)
-        debugger.scrollToBottomButton.addActionListener {
-            requestTableController.clearSelection()
-        }
     }
 
     private fun initDeviceList(project: Project) {
