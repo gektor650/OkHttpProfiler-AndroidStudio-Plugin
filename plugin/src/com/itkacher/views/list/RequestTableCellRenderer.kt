@@ -8,7 +8,7 @@ import javax.swing.JTable
 
 
 class RequestTableCellRenderer: DefaultTableCellRenderer() {
-    lateinit var foregroundColor: Color
+    private lateinit var foregroundColor: Color
 
     override fun getTableCellRendererComponent(table: JTable?, value: Any?, isSelected: Boolean, hasFocus: Boolean, row: Int, column: Int): Component? {
         val c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column)

@@ -1,7 +1,5 @@
 package com.itkacher.views.form;
 
-import com.intellij.util.ui.JBUI;
-
 import javax.swing.*;
 
 public class DataForm {

@@ -26,8 +26,8 @@
           </component>
           <component id="92a1a" class="javax.swing.JComboBox" binding="appList">
             <constraints>
-              <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="0" indent="0" use-parent-layout="false">
-                <preferred-size width="194" height="30"/>
+              <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false">
+                <preferred-size width="300" height="30"/>
               </grid>
             </constraints>
             <properties>

@@ -2,7 +2,6 @@ package com.itkacher.views.list
 
 import com.itkacher.Resources
 import com.itkacher.data.DebugRequest
-import java.awt.Color
 import javax.swing.table.DefaultTableModel
 
 

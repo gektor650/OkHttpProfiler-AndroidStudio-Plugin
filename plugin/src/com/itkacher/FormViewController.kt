@@ -34,9 +34,11 @@ class FormViewController(private val form: MainForm) {
         }
         form.clearButton.addActionListener {
             requestListModel.clear()
+            tabsHelper.removeAllTabs()
         }
         form.scrollToBottomButton.addActionListener {
-            requestTable.scrollRectToVisible(requestTable.getCellRect(requestTable.rowCount -1, 0, true));
+            requestTable.clearSelection()
+            requestTable.scrollRectToVisible(requestTable.getCellRect(requestTable.rowCount -1, 0, true))
         }
     }
 
@@ -60,10 +62,6 @@ class FormViewController(private val form: MainForm) {
         }
     }
 
-    fun clearSelection() {
-        requestTable.clearSelection()
-    }
-
     fun insertOrUpdate(debugRequest: DebugRequest) {
         if (firstLaunch) {
             form.mainContainer.removeAll()
@@ -72,7 +70,9 @@ class FormViewController(private val form: MainForm) {
             form.mainContainer.add(dataForm.dataPanel)
             firstLaunch = false
         }
-        requestTable.scrollRectToVisible(requestTable.getCellRect(requestTable.rowCount -1, 0, true));
+        if(requestTable.selectedColumn == -1) {
+            requestTable.scrollRectToVisible(requestTable.getCellRect(requestTable.rowCount -1, 0, true))
+        }
         requestListModel.addOrUpdate(debugRequest)
     }
 

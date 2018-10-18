@@ -1,7 +1,6 @@
 package com.itkacher.views.json
 
 import com.fasterxml.jackson.databind.JsonNode
-import org.apache.batik.anim.dom.AbstractSVGAnimatedLength
 import java.util.concurrent.atomic.AtomicInteger
 import javax.swing.tree.DefaultMutableTreeNode
 

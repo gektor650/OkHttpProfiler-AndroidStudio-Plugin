@@ -1,6 +1,7 @@
 package com.itkacher
 
 import com.android.ddmlib.AndroidDebugBridge
+import com.android.ddmlib.Client
 import com.android.ddmlib.IDevice
 import com.android.ddmlib.logcat.LogCatMessage
 import com.android.tools.idea.logcat.AndroidLogcatService
@@ -53,10 +54,6 @@ class DebuggerToolWindowFactory : ToolWindowFactory, DumbAware {
     }
 
     private fun initDeviceList(project: Project) {
-//        AndroidDebugBridge.addClientChangeListener { client: Client, _: Int ->
-//            log("addClientChangeListener ${client.device}")
-//            createProcessList(client.device)
-//        }
         AndroidDebugBridge.addDeviceChangeListener(object: AndroidDebugBridge.IDeviceChangeListener {
             override fun deviceChanged(device: IDevice?, p1: Int) {
                 log("deviceChanged $device")
@@ -84,8 +81,32 @@ class DebuggerToolWindowFactory : ToolWindowFactory, DumbAware {
                 log("addDebugBridgeChangeListener EMPTY $it and connected ${it?.isConnected}")
             }
         }
+        AndroidDebugBridge.addClientChangeListener { client: Client?, _: Int ->
+            val clients = client?.device?.clients
+            if(clients != null) {
+                for (client in clients) {
+                    updateClient(client)
+                }
+            }
+        }
         val bridge0 : AndroidDebugBridge? = AndroidSdkUtils.getDebugBridge(project)
         log("initDeviceList bridge0 ${bridge0?.isConnected}")
+    }
+
+    private fun updateClient(client: Client) {
+        val clientData = client.clientData
+        val clientModel = debugger.appList.model
+        if(clientData != null && clientModel != null) {
+            for(i in 0 until clientModel.size) {
+                val model = clientModel.getElementAt(i)
+                if(model.pid == clientData.pid) {
+                    log("updateClient ${clientData.pid}")
+                    model.packageName = clientData.packageName
+                    break
+                }
+            }
+            debugger.appList.invalidate()
+        }
     }
 
     private fun updateDeviceList(devices: Array<IDevice>?) {
@@ -157,6 +178,12 @@ class DebuggerToolWindowFactory : ToolWindowFactory, DumbAware {
         }
         logCatListener.addListener(device, deviceListener)
         selectedDevice = device
+        val clients = device.clients
+        if(clients != null) {
+            for (client in clients) {
+                updateClient(client)
+            }
+        }
     }
 
     companion object {
