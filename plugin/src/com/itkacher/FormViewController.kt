@@ -4,7 +4,7 @@ import com.itkacher.data.DebugRequest
 import com.itkacher.views.Tabs
 import com.itkacher.views.TabsHelper
 import com.itkacher.views.form.DataForm
-import com.itkacher.views.form.DebuggerForm
+import com.itkacher.views.form.MainForm
 import com.itkacher.views.list.ForcedListSelectionModel
 import com.itkacher.views.list.RequestTableCellRenderer
 import com.itkacher.views.list.RequestTableModel
@@ -12,7 +12,7 @@ import java.awt.GridLayout
 import javax.swing.JTable
 
 
-class FormViewController(private val form: DebuggerForm) {
+class FormViewController(private val form: MainForm) {
 
     private val dataForm = DataForm()
     private val requestTable = dataForm.requestTable
@@ -32,10 +32,10 @@ class FormViewController(private val form: DebuggerForm) {
                 }
             }
         }
-        dataForm.deleteButton.addActionListener {
+        form.clearButton.addActionListener {
             requestListModel.clear()
         }
-        dataForm.scrollButton.addActionListener {
+        form.scrollToBottomButton.addActionListener {
             requestTable.scrollRectToVisible(requestTable.getCellRect(requestTable.rowCount -1, 0, true));
         }
     }

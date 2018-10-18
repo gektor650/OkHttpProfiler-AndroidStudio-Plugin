@@ -1,11 +1,10 @@
 package com.itkacher
 
 import com.android.ddmlib.AndroidDebugBridge
-import com.android.ddmlib.Client
 import com.android.ddmlib.IDevice
 import com.android.ddmlib.logcat.LogCatMessage
 import com.android.tools.idea.logcat.AndroidLogcatService
-import com.itkacher.views.form.DebuggerForm
+import com.itkacher.views.form.MainForm
 import com.itkacher.data.DebugDevice
 import com.itkacher.data.DebugProcess
 import com.itkacher.data.MessageType
@@ -21,7 +20,7 @@ import javax.swing.DefaultComboBoxModel
 class DebuggerToolWindowFactory : ToolWindowFactory, DumbAware {
 
 
-    private val debugger = DebuggerForm()
+    private val debugger = MainForm()
     private val requestTableController = FormViewController(debugger)
 
     private val logCatListener = AndroidLogcatService.getInstance()

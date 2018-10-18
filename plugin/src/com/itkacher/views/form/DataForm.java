@@ -21,27 +21,5 @@ public class DataForm {
     }
 
     private JTabbedPane tabsPane;
-    private JButton deleteButton;
-    private JButton scrollButton;
-
-    public DataForm() {
-        deleteButton.setBorderPainted(false);
-        deleteButton.setBorder(null);
-        deleteButton.setMargin(JBUI.emptyInsets());
-        deleteButton.setContentAreaFilled(false);
-
-        scrollButton.setBorderPainted(false);
-        scrollButton.setBorder(null);
-        scrollButton.setMargin(JBUI.emptyInsets());
-        scrollButton.setContentAreaFilled(false);
-    }
-
-    public JButton getDeleteButton() {
-        return deleteButton;
-    }
-
-    public JButton getScrollButton() {
-        return scrollButton;
-    }
 
 }
