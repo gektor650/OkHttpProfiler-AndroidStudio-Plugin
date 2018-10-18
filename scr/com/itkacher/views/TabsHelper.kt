@@ -9,8 +9,10 @@ import com.itkacher.views.form.JsonTreeForm
 import com.itkacher.views.form.RawForm
 import com.itkacher.views.json.JsonTreeModel
 import com.jgoodies.common.collect.ArrayListModel
+import java.awt.Dimension
 import java.io.IOException
 import java.util.ArrayList
+import javax.swing.JPanel
 import javax.swing.JTabbedPane
 
 

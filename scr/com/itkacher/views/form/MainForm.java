@@ -5,7 +5,12 @@ import com.itkacher.data.DebugDevice;
 import com.itkacher.data.DebugProcess;
 
 import javax.swing.*;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
 import java.awt.*;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 public class MainForm {
     private JPanel panel;
@@ -32,6 +37,28 @@ public class MainForm {
 
         buttonContainer.add(scrollToBottomButton, scrollConstraints);
         buttonContainer.add(clearButton, clearConstraints);
+
+        initialHtml.setEditorKit(JEditorPane.createEditorKitForContentType("text/html"));
+        initialHtml.setEditable(false);
+
+        initialHtml.addHyperlinkListener(e -> {
+            if(e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+                try {
+                    Desktop.getDesktop().browse(e.getURL().toURI());
+                } catch (IOException | URISyntaxException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
+
+        try {
+            URL initialFile = getClass().getClassLoader().getResource("initial.html");
+            if(initialFile != null) {
+                initialHtml.setPage(initialFile);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 

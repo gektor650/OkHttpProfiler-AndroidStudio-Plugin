@@ -18,6 +18,7 @@ class RequestTableModel : DefaultTableModel() {
     }
 
     fun addOrUpdate(request: DebugRequest) {
+        if(! request.isValid()) return
         if (!requestMap.keys.contains(request)) {
             requestMap[request] = rowCount
             super.addRow(getRowData(request))

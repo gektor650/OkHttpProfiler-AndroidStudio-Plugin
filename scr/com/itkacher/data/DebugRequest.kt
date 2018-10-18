@@ -97,6 +97,10 @@ data class DebugRequest(val id: String) {
         return code?.compareTo(400) == 1 || isClosed && errorMessage != null
     }
 
+    fun isValid(): Boolean {
+        return method != null
+    }
+
     companion object {
         const val SPACE = " "
         const val NEW_LINE = "\r\n"

@@ -77,7 +77,7 @@
                 <properties>
                   <contentType value="text/html"/>
                   <editable value="false"/>
-                  <text resource-bundle="strings" key="rawData"/>
+                  <text value="&lt;html&gt;&#10;  &lt;head&gt;&#10;&#10;  &lt;/head&gt;&#10;  &lt;body&gt;&#10;    &#10;  &lt;/body&gt;&#10;&lt;/html&gt;&#10;"/>
                 </properties>
               </component>
             </children>

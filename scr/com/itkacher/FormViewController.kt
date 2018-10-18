@@ -8,7 +8,11 @@ import com.itkacher.views.form.MainForm
 import com.itkacher.views.list.ForcedListSelectionModel
 import com.itkacher.views.list.RequestTableCellRenderer
 import com.itkacher.views.list.RequestTableModel
+import java.awt.Dimension
 import java.awt.GridLayout
+import java.awt.event.ComponentAdapter
+import java.awt.event.ComponentEvent
+import javax.swing.JTabbedPane
 import javax.swing.JTable
 
 

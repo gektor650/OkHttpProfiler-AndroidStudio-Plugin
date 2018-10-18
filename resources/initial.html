@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>No data found</title>
+    <style>
+        .code {
+            padding:10px;
+            background:#ccdcde45;
+            color:blue;
+            display: inline-block;
+        }
+
+    </style>
+</head>
+<body style="padding:10px;">
+<h1>Debugger plugin for OkHttp library.</h1>
+<h3>
+    We don't receive any data from your android device.
+</h3>
+<p>For activating you need to include library to your android build.gradle file (module level)</p>
+<div class="code">
+    implementation 'com.itkacher.okhttpprofiler:okhttpprofiler:0.0.1'
+</div>
+<p>and add Interceptor to okHttpClient</p>
+<p>Java</p>
+<div class="code">
+    OkHttpClient mClient = new OkHttpClient.Builder().addInterceptor(
+    new OkHttpProfilerInterceptor()
+    ).build();
+</div>
+<p>Kotlin</p>
+<div class="code">
+    val client = OkHttpClient.Builder().addInterceptor(
+    new OkHttpProfilerInterceptor()
+    ).build()
+</div>
+<p>
+    More details by link: <a href="https://github.com/itkacher/OkHttpProfiler">https://github.com/itkacher/OkHttpProfiler</a>
+</p>
+</body>
+</html>

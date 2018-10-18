@@ -82,20 +82,15 @@ class DebuggerToolWindowFactory : ToolWindowFactory, DumbAware {
             }
         }
         AndroidDebugBridge.addClientChangeListener { client: Client?, _: Int ->
-            val clients = client?.device?.clients
-            if(clients != null) {
-                for (client in clients) {
-                    updateClient(client)
-                }
-            }
+            updateClient(client)
         }
         val bridge0 : AndroidDebugBridge? = AndroidSdkUtils.getDebugBridge(project)
         log("initDeviceList bridge0 ${bridge0?.isConnected}")
     }
 
-    private fun updateClient(client: Client) {
-        val clientData = client.clientData
-        val clientModel = debugger.appList.model
+    private fun updateClient(client: Client?) {
+        val clientData = client?.clientData
+        val clientModel = debugger.appList?.model
         if(clientData != null && clientModel != null) {
             for(i in 0 until clientModel.size) {
                 val model = clientModel.getElementAt(i)
@@ -105,7 +100,6 @@ class DebuggerToolWindowFactory : ToolWindowFactory, DumbAware {
                     break
                 }
             }
-            debugger.appList.invalidate()
         }
     }
 

@@ -1,10 +1,14 @@
 <idea-plugin>
-    <id>com.itkacher.okhttp_debugger</id>
-    <name>okhttp_debugger</name>
-    <vendor email="support@okhttp_debugger.com" url="http://www.okhttp_debugger.com">YourCompany</vendor>
+    <id>com.itkacher.okhttpprofiler</id>
+    <name>OkHttp Profiler</name>
+    <vendor email="itkacher@gmail.com" url="http://www.itkacher.com">itkacher.com</vendor>
+    <version>0.0.1</version>
 
     <description><![CDATA[
-    okhttp_debugger
+    Debugger plugin for OkHttp library.
+    Works ONLY with ANDROID.
+    For activation you need to enable android library.
+    More details by link: https://github.com/itkacher/OkHttpProfiler
     ]]></description>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
@@ -16,7 +20,7 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
-        <toolWindow id="OkHttp Requests" secondary="true" icon="/icons/plus.png" anchor="bottom"
+        <toolWindow id="OkHttp Profiler" secondary="true" icon="/icons/help-network.png" anchor="bottom"
                     factoryClass="com.itkacher.DebuggerToolWindowFactory"/>
     </extensions>
 
