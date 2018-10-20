@@ -5,10 +5,12 @@
     <version>0.0.2</version>
     <idea-version since-build="180"/>
     <description><![CDATA[
-    Debugger plugin for OkHttp library.
-    Works ONLY with ANDROID.
-    For activation you need to enable android library.
-    More details by link: https://github.com/itkacher/OkHttpProfiler
+    OkHttp Profiler plugin can show detail request information from <b>OkHttp</b> library directly in your Android Studio toolwindow.
+    It supports okhttp v3 (http://square.github.io/okhttp/) or Retrofit v2 (https://square.github.io/retrofit/)
+
+    Works ONLY with ANDROID
+
+    <b>More details by link:</b> <a href="https://github.com/itkacher/OkHttpProfiler">https://github.com/itkacher/OkHttpProfiler</a>
     ]]></description>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
