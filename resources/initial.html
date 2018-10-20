@@ -10,31 +10,52 @@
             color:blue;
             display: inline-block;
         }
-
     </style>
 </head>
 <body style="padding:10px;">
-<h1>Debugger plugin for OkHttp library.</h1>
-<h3>
+
+<h1>OkHttpProfiler Plugin</h1>
+<h2>
     We don't receive any data from your android device.
-</h3>
-<p>For activating you need to include library to your android build.gradle file (module level)</p>
-<div class="code">
-    implementation 'com.itkacher.okhttpprofiler:okhttpprofiler:0.0.1'
-</div>
-<p>and add Interceptor to okHttpClient</p>
-<p>Java</p>
-<div class="code">
-    OkHttpClient mClient = new OkHttpClient.Builder().addInterceptor(
-    new OkHttpProfilerInterceptor()
+</h2>
+<p>OkHttp Profiler plugin can show request from okhttp library directly in your Android Studio toolwindow.
+    It supports okhttp v3 (<a href="http://square.github.io/okhttp/" rel="nofollow">http://square.github.io/okhttp/</a>)
+    or Retrofit v2 (<a href="https://square.github.io/retrofit/" rel="nofollow">https://square.github.io/retrofit/</a>)
+</p>
+<hr>
+<h2>For installation you need to include library to your app build.gradle file</h2>
+<div class="code">implementation 'com.itkacher.okhttpprofiler:okhttpprofiler:0.0.1'</div>
+<p>and add Interceptor to okHttpClient in code</p>
+<h2>For OkHttp</h2>
+<h3>Java</h3>
+<div class="code">OkHttpClient mClient = new OkHttpClient.Builder().addInterceptor( new OkHttpProfilerInterceptor()
     ).build();
 </div>
-<p>Kotlin</p>
-<div class="code">
-    val client = OkHttpClient.Builder().addInterceptor(
-    new OkHttpProfilerInterceptor()
-    ).build()
+<h3>Kotlin</h3>
+<div class="code">val client = OkHttpClient.Builder().addInterceptor( OkHttpProfilerInterceptor() ).build()</div>
+<h2>
+    For Retrofit
+</h2>
+<h3>
+    Java
+</h3>
+<div class="code">OkHttpClient mClient = new OkHttpClient.Builder().addInterceptor( new OkHttpProfilerInterceptor()
+    ).build();
+    Retrofit retrofit = new Retrofit.Builder()
+    ......
+    .client(client)
+    .build();
 </div>
+<h3>
+    Kotlin
+</h3>
+<div class="code">val client = OkHttpClient.Builder().addInterceptor( OkHttpProfilerInterceptor() ).build()
+    val retrofit = Retrofit.Builder()
+    ......
+    .client(client)
+    .build()
+</div>
+
 <p>
     More details by link: <a href="https://github.com/itkacher/OkHttpProfiler">https://github.com/itkacher/OkHttpProfiler</a>
 </p>

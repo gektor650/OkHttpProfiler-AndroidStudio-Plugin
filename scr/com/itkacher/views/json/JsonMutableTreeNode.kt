@@ -54,13 +54,23 @@ class JsonMutableTreeNode : DefaultMutableTreeNode {
     override fun toString(): String {
         return if (type != NodeType.ARRAY && type != NodeType.OBJECT) {
             formattedText
-        } else {
-            val spaces = StringBuilder()
-            for (i in name.length until maxLength.get()) {
-                spaces.append(' ')
+        } else if(type == NodeType.ARRAY && isLeaf) {
+            var spaces = getSpaces()
+            if(spaces.length >= 3) {
+                spaces = spaces.substring(0, spaces.length - 3)
             }
-            "$name $spaces ${type.nodeName}"
+            "$name:[] $spaces ${type.nodeName}"
+        } else {
+            "$name ${getSpaces()} ${type.nodeName}"
         }
+    }
+
+    private fun getSpaces(): String {
+        val spaces = StringBuilder()
+        for (i in name.length until maxLength.get()) {
+            spaces.append(' ')
+        }
+        return spaces.toString()
     }
 
     enum class NodeType(val nodeName: String) {
