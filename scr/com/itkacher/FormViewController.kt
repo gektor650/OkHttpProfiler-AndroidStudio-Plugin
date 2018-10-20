@@ -8,20 +8,18 @@ import com.itkacher.views.form.MainForm
 import com.itkacher.views.list.ForcedListSelectionModel
 import com.itkacher.views.list.RequestTableCellRenderer
 import com.itkacher.views.list.RequestTableModel
-import java.awt.Dimension
 import java.awt.GridLayout
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
-import javax.swing.JTabbedPane
 import javax.swing.JTable
 
 
-class FormViewController(private val form: MainForm) {
+class FormViewController(private val form: MainForm, settings: PluginPreferences) {
 
     private val dataForm = DataForm()
     private val requestTable = dataForm.requestTable
     private val requestListModel = RequestTableModel()
-    private val tabsHelper = TabsHelper(dataForm.tabsPane)
+    private val tabsHelper = TabsHelper(dataForm.tabsPane, settings)
     private var firstLaunch = true
 
     init {
@@ -36,20 +34,41 @@ class FormViewController(private val form: MainForm) {
                 }
             }
         }
+        resizeTableColumnsWidth()
         form.clearButton.addActionListener {
             requestListModel.clear()
             tabsHelper.removeAllTabs()
         }
         form.scrollToBottomButton.addActionListener {
             requestTable.clearSelection()
-            requestTable.scrollRectToVisible(requestTable.getCellRect(requestTable.rowCount -1, 0, true))
+            requestTable.scrollRectToVisible(requestTable.getCellRect(requestTable.rowCount - 1, 0, true))
         }
     }
 
+    private fun resizeTableColumnsWidth() {
+        requestTable.addComponentListener(object : ComponentAdapter() {
+            override fun componentResized(e: ComponentEvent?) {
+                super.componentResized(e)
+                val tW = requestTable.width
+                val jTableColumnModel = requestTable.columnModel
+                val cantCols = jTableColumnModel.columnCount
+                for (i in 0 until cantCols) {
+                    val column = jTableColumnModel.getColumn(i)
+                    val percent = com.itkacher.views.list.TableColumn.values()[i].widthPercent
+                    val colW = (tW / 100) * percent
+                    column.preferredWidth = colW
+                }
+            }
+        })
+    }
+
     private fun fillRequestInfo(debugRequest: DebugRequest) {
+        tabsHelper.removeListener()
         tabsHelper.removeAllTabs()
         tabsHelper.addRawTab(Tabs.TAB_RAW_REQUEST.resName, debugRequest.getRawRequest())
-        tabsHelper.addHeaderTab(Tabs.TAB_REQUEST_HEADERS.resName, debugRequest.requestHeaders)
+        if (debugRequest.requestHeaders.isNotEmpty()) {
+            tabsHelper.addHeaderTab(Tabs.TAB_REQUEST_HEADERS.resName, debugRequest.requestHeaders)
+        }
         if (debugRequest.isClosed) {
             tabsHelper.addRawTab(Tabs.TAB_RAW_RESPONSE.resName, debugRequest.getRawResponse())
             val requestJson = debugRequest.getRequestBodyString()
@@ -57,13 +76,17 @@ class FormViewController(private val form: MainForm) {
             tabsHelper.addFormattedTab(Tabs.TAB_REQUEST_FORMATTED.resName, requestJson)
 
             val responseBody = debugRequest.getResponseBodyString()
-            tabsHelper.addHeaderTab(Tabs.TAB_RESPONSE_HEADERS.resName, debugRequest.responseHeaders)
+            if (debugRequest.responseHeaders.isNotEmpty()) {
+                tabsHelper.addHeaderTab(Tabs.TAB_RESPONSE_HEADERS.resName, debugRequest.responseHeaders)
+            }
             tabsHelper.addJsonTab(Tabs.TAB_JSON_RESPONSE.resName, responseBody)
             tabsHelper.addFormattedTab(Tabs.TAB_RESPONSE_FORMATTED.resName, responseBody)
-            if(debugRequest.errorMessage?.isNotEmpty() == true) {
+            if (debugRequest.errorMessage?.isNotEmpty() == true) {
                 tabsHelper.addRawTab(Tabs.TAB_ERROR_MESSAGE.resName, debugRequest.errorMessage)
             }
         }
+        tabsHelper.selectByPreference()
+        tabsHelper.addListener()
     }
 
     fun insertOrUpdate(debugRequest: DebugRequest) {
@@ -74,8 +97,8 @@ class FormViewController(private val form: MainForm) {
             form.mainContainer.add(dataForm.dataPanel)
             firstLaunch = false
         }
-        if(requestTable.selectedColumn == -1) {
-            requestTable.scrollRectToVisible(requestTable.getCellRect(requestTable.rowCount -1, 0, true))
+        if (requestTable.selectedColumn == -1) {
+            requestTable.scrollRectToVisible(requestTable.getCellRect(requestTable.rowCount - 1, 0, true))
         }
         requestListModel.addOrUpdate(debugRequest)
     }

@@ -5,6 +5,7 @@ import com.android.ddmlib.Client
 import com.android.ddmlib.IDevice
 import com.android.ddmlib.logcat.LogCatMessage
 import com.android.tools.idea.logcat.AndroidLogcatService
+import com.intellij.ide.util.PropertiesComponent
 import com.itkacher.views.form.MainForm
 import com.itkacher.data.DebugDevice
 import com.itkacher.data.DebugProcess
@@ -22,7 +23,7 @@ class DebuggerToolWindowFactory : ToolWindowFactory, DumbAware {
 
 
     private val debugger = MainForm()
-    private val requestTableController = FormViewController(debugger)
+    private lateinit var requestTableController: FormViewController
 
     private val logCatListener = AndroidLogcatService.getInstance()
 
@@ -49,12 +50,14 @@ class DebuggerToolWindowFactory : ToolWindowFactory, DumbAware {
     }
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
+        val settings = PropertiesComponent.getInstance(project)
+        requestTableController = FormViewController(debugger, PluginPreferences(settings))
         toolWindow.component.add(debugger.panel)
         initDeviceList(project)
     }
 
     private fun initDeviceList(project: Project) {
-        AndroidDebugBridge.addDeviceChangeListener(object: AndroidDebugBridge.IDeviceChangeListener {
+        AndroidDebugBridge.addDeviceChangeListener(object : AndroidDebugBridge.IDeviceChangeListener {
             override fun deviceChanged(device: IDevice?, p1: Int) {
                 log("deviceChanged $device")
                 device?.let {
@@ -84,17 +87,17 @@ class DebuggerToolWindowFactory : ToolWindowFactory, DumbAware {
         AndroidDebugBridge.addClientChangeListener { client: Client?, _: Int ->
             updateClient(client)
         }
-        val bridge0 : AndroidDebugBridge? = AndroidSdkUtils.getDebugBridge(project)
+        val bridge0: AndroidDebugBridge? = AndroidSdkUtils.getDebugBridge(project)
         log("initDeviceList bridge0 ${bridge0?.isConnected}")
     }
 
     private fun updateClient(client: Client?) {
         val clientData = client?.clientData
         val clientModel = debugger.appList?.model
-        if(clientData != null && clientModel != null) {
-            for(i in 0 until clientModel.size) {
+        if (clientData != null && clientModel != null) {
+            for (i in 0 until clientModel.size) {
                 val model = clientModel.getElementAt(i)
-                if(model.pid == clientData.pid) {
+                if (model.pid == clientData.pid) {
                     log("updateClient ${clientData.pid}")
                     model.packageName = clientData.packageName
                     break
@@ -105,7 +108,7 @@ class DebuggerToolWindowFactory : ToolWindowFactory, DumbAware {
 
     private fun updateDeviceList(devices: Array<IDevice>?) {
         log("updateDeviceList ${devices?.size}")
-        if(devices != null) {
+        if (devices != null) {
             debugger.mainContainer.isVisible = true
             val debugDevices = ArrayList<DebugDevice>()
             for (device in devices) {
@@ -173,7 +176,7 @@ class DebuggerToolWindowFactory : ToolWindowFactory, DumbAware {
         logCatListener.addListener(device, deviceListener)
         selectedDevice = device
         val clients = device.clients
-        if(clients != null) {
+        if (clients != null) {
             for (client in clients) {
                 updateClient(client)
             }

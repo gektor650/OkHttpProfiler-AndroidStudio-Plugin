@@ -27,22 +27,22 @@ class JsonMutableTreeNode : DefaultMutableTreeNode {
         when {
             value?.isTextual == true -> {
                 type = NodeType.STRING
-                formattedText = "\"$name\":\"${value.textValue()}\""
+                formattedText = "\"$name\": \"${value.textValue()}\""
                 return
             }
             value?.isNumber == true -> {
                 type = NodeType.NUMBER
-                formattedText = "\"$name\":${value.numberValue()}"
+                formattedText = "\"$name\": ${value.numberValue()}"
                 return
             }
             value?.isBoolean == true -> {
                 type = NodeType.BOOLEAN
-                formattedText = "\"$name\":${value.booleanValue()}"
+                formattedText = "\"$name\": ${value.booleanValue()}"
                 return
             }
             value?.isNull == true -> {
                 type = NodeType.NULL
-                formattedText = "\"$name\":null"
+                formattedText = "\"$name\": null"
             }
             else -> {
                 type = NodeType.OBJECT
@@ -52,7 +52,7 @@ class JsonMutableTreeNode : DefaultMutableTreeNode {
     }
 
     override fun toString(): String {
-        return if (isLeaf) {
+        return if (type != NodeType.ARRAY && type != NodeType.OBJECT) {
             formattedText
         } else {
             val spaces = StringBuilder()

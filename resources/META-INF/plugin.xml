@@ -2,8 +2,8 @@
     <id>com.itkacher.okhttpprofiler</id>
     <name>OkHttp Profiler</name>
     <vendor email="itkacher@gmail.com" url="http://www.itkacher.com">itkacher.com</vendor>
-    <version>0.0.1</version>
-
+    <version>0.0.2</version>
+    <idea-version since-build="180"/>
     <description><![CDATA[
     Debugger plugin for OkHttp library.
     Works ONLY with ANDROID.
