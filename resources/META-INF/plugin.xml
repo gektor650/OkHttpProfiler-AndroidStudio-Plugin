@@ -2,15 +2,15 @@
     <id>com.itkacher.okhttpprofiler</id>
     <name>OkHttp Profiler</name>
     <vendor email="itkacher@gmail.com" url="http://www.itkacher.com">itkacher.com</vendor>
-    <version>0.0.2</version>
+    <version>1.0.0</version>
     <idea-version since-build="180"/>
     <description><![CDATA[
-    OkHttp Profiler plugin can show detail request information from <b>OkHttp</b> library directly in your Android Studio toolwindow.
-    It supports okhttp v3 (http://square.github.io/okhttp/) or Retrofit v2 (https://square.github.io/retrofit/)
+    <p>OkHttp Profiler plugin can show detail request information from <b>OkHttp</b> library directly in your Android Studio toolwindow. </p>
+    <p>It supports <b>OkHttp</b> v3 (http://square.github.io/okhttp/) or <b>Retrofit</b> v2 (https://square.github.io/retrofit/)</p>
 
-    Works ONLY with ANDROID
+    <p><b>Works ONLY with ANDROID</b></p>
 
-    <b>More details by link:</b> <a href="https://github.com/itkacher/OkHttpProfiler">https://github.com/itkacher/OkHttpProfiler</a>
+    <p>More details by link: <a href="https://github.com/itkacher/OkHttpProfiler">https://github.com/itkacher/OkHttpProfiler</a></p>
     ]]></description>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
