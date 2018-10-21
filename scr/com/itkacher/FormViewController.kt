@@ -1,10 +1,15 @@
 package com.itkacher
 
+import com.intellij.openapi.fileChooser.FileChooser
+import com.intellij.openapi.fileChooser.FileChooserDescriptor
+import com.intellij.openapi.project.Project
 import com.itkacher.data.DebugRequest
 import com.itkacher.views.Tabs
 import com.itkacher.views.TabsHelper
 import com.itkacher.views.form.DataForm
 import com.itkacher.views.form.MainForm
+import com.itkacher.views.json.JTreeItemMenuListener
+import com.itkacher.views.json.JsonMutableTreeNode
 import com.itkacher.views.list.ForcedListSelectionModel
 import com.itkacher.views.list.RequestTableCellRenderer
 import com.itkacher.views.list.RequestTableModel
@@ -14,12 +19,12 @@ import java.awt.event.ComponentEvent
 import javax.swing.JTable
 
 
-class FormViewController(private val form: MainForm, settings: PluginPreferences) {
+class FormViewController(private val form: MainForm, settings: PluginPreferences,val project: Project) : JTreeItemMenuListener {
 
     private val dataForm = DataForm()
     private val requestTable = dataForm.requestTable
     private val requestListModel = RequestTableModel()
-    private val tabsHelper = TabsHelper(dataForm.tabsPane, settings)
+    private val tabsHelper = TabsHelper(dataForm.tabsPane, settings, this)
     private var firstLaunch = true
 
     init {
@@ -107,4 +112,12 @@ class FormViewController(private val form: MainForm, settings: PluginPreferences
         requestListModel.clear()
     }
 
+    override fun createJavaModel(node: JsonMutableTreeNode) {
+        println(node)
+        FileChooser.chooseFiles(FileChooserDescriptor(true, true, false, false, false, false), project, null)
+    }
+
+    override fun createKotlinModel(node: JsonMutableTreeNode) {
+        println(node)
+    }
 }

@@ -8,25 +8,28 @@ import com.itkacher.views.form.HeaderForm
 import com.itkacher.views.form.JsonPlainTextForm
 import com.itkacher.views.form.JsonTreeForm
 import com.itkacher.views.form.RawForm
+import com.itkacher.views.json.JTreeItemMenuListener
 import com.itkacher.views.json.JsonTreeModel
+import com.itkacher.views.json.JTreeMenuMouseAdapter
 import com.jgoodies.common.collect.ArrayListModel
 import java.io.IOException
 import java.util.ArrayList
 import javax.swing.JTabbedPane
-import javax.swing.event.ChangeEvent
 import javax.swing.event.ChangeListener
+import kotlin.collections.HashMap
+import kotlin.collections.set
 
 
-class TabsHelper(private val tabbedPane: JTabbedPane,val settings: PluginPreferences) {
+class TabsHelper(private val tabbedPane: JTabbedPane,
+                 private val settings: PluginPreferences,
+                 private val menuListener: JTreeItemMenuListener) {
 
     private val nodeHash = HashMap<String, JsonNode>()
 
-    private val tabListener = object : ChangeListener {
-        override fun stateChanged(e: ChangeEvent?) {
-            if(tabbedPane.selectedIndex != -1) {
-                val selectedTabName = tabbedPane.getTitleAt(tabbedPane.selectedIndex)
-                settings.setSelectedTabName(selectedTabName)
-            }
+    private val tabListener = ChangeListener {
+        if(tabbedPane.selectedIndex != -1) {
+            val selectedTabName = tabbedPane.getTitleAt(tabbedPane.selectedIndex)
+            settings.setSelectedTabName(selectedTabName)
         }
     }
 
@@ -44,6 +47,7 @@ class TabsHelper(private val tabbedPane: JTabbedPane,val settings: PluginPrefere
             val model = JsonTreeModel(jsonNode)
             val jsonTreeForm = JsonTreeForm()
             jsonTreeForm.jtree.model = model
+            jsonTreeForm.jtree.addMouseListener(JTreeMenuMouseAdapter(menuListener))
             tabbedPane.addTab(Resources.getString(titleKey), jsonTreeForm.jtreePanel)
         }
     }

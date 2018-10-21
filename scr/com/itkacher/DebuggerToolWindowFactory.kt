@@ -51,7 +51,7 @@ class DebuggerToolWindowFactory : ToolWindowFactory, DumbAware {
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         val settings = PropertiesComponent.getInstance(project)
-        requestTableController = FormViewController(debugger, PluginPreferences(settings))
+        requestTableController = FormViewController(debugger, PluginPreferences(settings), project)
         toolWindow.component.add(debugger.panel)
         initDeviceList(project)
     }
