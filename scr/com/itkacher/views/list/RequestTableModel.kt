@@ -4,7 +4,6 @@ import com.itkacher.Resources
 import com.itkacher.data.DebugRequest
 import javax.swing.table.DefaultTableModel
 
-
 class RequestTableModel : DefaultTableModel() {
     private val requestMap = HashMap<DebugRequest, Int>()
     private val requestList = ArrayList<DebugRequest>()
@@ -65,6 +64,6 @@ class RequestTableModel : DefaultTableModel() {
     }
 
     fun isFallenDown(row: Int): Boolean {
-        return requestList[row].isFallenDown()
+        return requestList.getOrNull(row)?.isFallenDown() ?: true
     }
 }
