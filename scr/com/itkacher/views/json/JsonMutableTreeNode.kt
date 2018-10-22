@@ -7,15 +7,15 @@ import javax.swing.tree.DefaultMutableTreeNode
 class JsonMutableTreeNode : DefaultMutableTreeNode {
 
     private val type: NodeType
-    private val name: String
-    private val value: JsonNode?
+    val name: String
+    val value: JsonNode?
     private val formattedText: String
     private val maxLength: AtomicInteger
 
-    constructor(name: String, type: NodeType, maxLength: AtomicInteger) : super(name) {
+    constructor(name: String, node: JsonNode?, type: NodeType, maxLength: AtomicInteger) : super(name) {
         this.type = type
         this.name = name
-        this.value = null
+        this.value = node
         this.formattedText = name
         this.maxLength = maxLength
     }

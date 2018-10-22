@@ -1,7 +1,9 @@
 package com.itkacher
 
+import com.intellij.openapi.util.IconLoader
 import java.util.*
 import javax.imageio.ImageIO
+import javax.swing.Icon
 import javax.swing.ImageIcon
 
 class Resources {
@@ -11,9 +13,8 @@ class Resources {
             return bundle.getString(key)
         }
 
-        fun getIcon(classLoader: ClassLoader, key: String) : ImageIcon {
-            val stream = classLoader.getResourceAsStream("/icons/$key")
-            return ImageIcon(ImageIO.read(stream))
+        fun getIcon(key: String) : Icon {
+            return IconLoader.getIcon("/icons/$key")
         }
     }
 }

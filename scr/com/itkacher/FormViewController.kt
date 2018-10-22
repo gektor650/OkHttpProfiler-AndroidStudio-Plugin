@@ -4,22 +4,25 @@ import com.intellij.openapi.fileChooser.FileChooser
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.project.Project
 import com.itkacher.data.DebugRequest
+import com.itkacher.data.JavaGenerationModel
 import com.itkacher.views.Tabs
 import com.itkacher.views.TabsHelper
 import com.itkacher.views.form.DataForm
+import com.itkacher.views.form.KForm
 import com.itkacher.views.form.MainForm
 import com.itkacher.views.json.JTreeItemMenuListener
 import com.itkacher.views.json.JsonMutableTreeNode
 import com.itkacher.views.list.ForcedListSelectionModel
 import com.itkacher.views.list.RequestTableCellRenderer
 import com.itkacher.views.list.RequestTableModel
+import java.awt.BorderLayout
 import java.awt.GridLayout
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
 import javax.swing.JTable
 
 
-class FormViewController(private val form: MainForm, settings: PluginPreferences,val project: Project) : JTreeItemMenuListener {
+class FormViewController(private val form: MainForm, settings: PluginPreferences, private val project: Project) : JTreeItemMenuListener {
 
     private val dataForm = DataForm()
     private val requestTable = dataForm.requestTable
@@ -97,9 +100,7 @@ class FormViewController(private val form: MainForm, settings: PluginPreferences
     fun insertOrUpdate(debugRequest: DebugRequest) {
         if (firstLaunch) {
             form.mainContainer.removeAll()
-            val panel = dataForm.dataPanel
-            panel.layout = GridLayout(1, 1)
-            form.mainContainer.add(dataForm.dataPanel)
+            form.mainContainer.add(dataForm.dataPanel, BorderLayout.CENTER)
             firstLaunch = false
         }
         if (requestTable.selectedColumn == -1) {
@@ -113,8 +114,8 @@ class FormViewController(private val form: MainForm, settings: PluginPreferences
     }
 
     override fun createJavaModel(node: JsonMutableTreeNode) {
-        println(node)
-        FileChooser.chooseFiles(FileChooserDescriptor(true, true, false, false, false, false), project, null)
+        JavaGenerationModel(node).generateClass()
+//        FileChooser.chooseFiles(FileChooserDescriptor(true, true, false, false, false, false), project, null)
     }
 
     override fun createKotlinModel(node: JsonMutableTreeNode) {

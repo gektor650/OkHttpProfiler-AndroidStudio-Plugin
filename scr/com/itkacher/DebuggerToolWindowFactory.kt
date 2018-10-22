@@ -6,7 +6,6 @@ import com.android.ddmlib.IDevice
 import com.android.ddmlib.logcat.LogCatMessage
 import com.android.tools.idea.logcat.AndroidLogcatService
 import com.intellij.ide.util.PropertiesComponent
-import com.itkacher.views.form.MainForm
 import com.itkacher.data.DebugDevice
 import com.itkacher.data.DebugProcess
 import com.itkacher.data.MessageType
@@ -15,6 +14,8 @@ import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
+import com.itkacher.views.form.KForm
+import com.itkacher.views.form.MainForm
 import org.jetbrains.android.sdk.AndroidSdkUtils
 import java.awt.event.ItemEvent
 import javax.swing.DefaultComboBoxModel
@@ -93,7 +94,7 @@ class DebuggerToolWindowFactory : ToolWindowFactory, DumbAware {
 
     private fun updateClient(client: Client?) {
         val clientData = client?.clientData
-        val clientModel = debugger.appList?.model
+        val clientModel = debugger.appList.model
         if (clientData != null && clientModel != null) {
             for (i in 0 until clientModel.size) {
                 val model = clientModel.getElementAt(i)
@@ -103,6 +104,8 @@ class DebuggerToolWindowFactory : ToolWindowFactory, DumbAware {
                     break
                 }
             }
+            debugger.appList.revalidate()
+            debugger.appList.repaint()
         }
     }
 

@@ -15,11 +15,13 @@ import com.jgoodies.common.collect.ArrayListModel
 import java.io.IOException
 import java.util.ArrayList
 import javax.swing.JTabbedPane
+import javax.swing.ListModel
 import javax.swing.event.ChangeListener
 import kotlin.collections.HashMap
 import kotlin.collections.set
 
 
+@Suppress("UNCHECKED_CAST")
 class TabsHelper(private val tabbedPane: JTabbedPane,
                  private val settings: PluginPreferences,
                  private val menuListener: JTreeItemMenuListener) {
@@ -46,9 +48,9 @@ class TabsHelper(private val tabbedPane: JTabbedPane,
         if (jsonNode != null) {
             val model = JsonTreeModel(jsonNode)
             val jsonTreeForm = JsonTreeForm()
-            jsonTreeForm.jtree.model = model
-            jsonTreeForm.jtree.addMouseListener(JTreeMenuMouseAdapter(menuListener))
-            tabbedPane.addTab(Resources.getString(titleKey), jsonTreeForm.jtreePanel)
+            jsonTreeForm.tree.model = model
+//            jsonTreeForm.tree.addMouseListener(JTreeMenuMouseAdapter(menuListener))
+            tabbedPane.addTab(Resources.getString(titleKey), jsonTreeForm.treePanel)
         }
     }
 
@@ -100,9 +102,10 @@ class TabsHelper(private val tabbedPane: JTabbedPane,
         }
     }
 
-    fun addHeaderTab(resName: String, requestHeaders: ArrayList<String>) {
+    fun addHeaderTab(resName: String, requestHeaders: List<String>) {
         val form = HeaderForm()
-        form.headersList.model = ArrayListModel<String>(requestHeaders)
+        val listModel = ArrayListModel<String>(requestHeaders)
+        form.headersList.model = listModel as ListModel<String>
         tabbedPane.addTab(Resources.getString(resName), form.panel)
     }
 

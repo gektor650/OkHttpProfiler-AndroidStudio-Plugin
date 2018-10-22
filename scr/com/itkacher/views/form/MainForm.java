@@ -24,13 +24,13 @@ public class MainForm {
 
     public MainForm() {
         scrollToBottomButton = new JButton();
-        scrollToBottomButton.setIcon(Resources.Companion.getIcon(getClass().getClassLoader(), "scroll.png"));
+        scrollToBottomButton.setIcon(Resources.Companion.getIcon("scroll.png"));
         GridBagConstraints scrollConstraints = new GridBagConstraints();
         scrollConstraints.gridx = 0;
         scrollConstraints.gridy = 0;
 
         clearButton = new JButton();
-        clearButton.setIcon(Resources.Companion.getIcon(getClass().getClassLoader(), "delete.png"));
+        clearButton.setIcon(Resources.Companion.getIcon("delete.png"));
         GridBagConstraints clearConstraints = new GridBagConstraints();
         clearConstraints.gridx = 1;
         clearConstraints.gridy = 0;

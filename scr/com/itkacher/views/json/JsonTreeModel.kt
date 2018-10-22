@@ -18,7 +18,7 @@ class JsonTreeModel(json: JsonNode) : DefaultTreeModel(JsonTreeModel.buildTree("
          */
         private fun buildTree(name: String, node: JsonNode, maxValueLength: AtomicInteger = AtomicInteger(0)): JsonMutableTreeNode {
             val parentType = if (node.isArray) JsonMutableTreeNode.NodeType.ARRAY else JsonMutableTreeNode.NodeType.OBJECT
-            val treeNode = JsonMutableTreeNode(name, parentType, maxValueLength)
+            val treeNode = JsonMutableTreeNode(name, node, parentType, maxValueLength)
             val it = node.fields()
             while (it.hasNext()) {
                 val entry = it.next()

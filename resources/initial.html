@@ -29,19 +29,19 @@
 <h2>For OkHttp</h2>
 <h3>Java</h3>
 <div class="code">
-    OkHttpClient.Builder builder = new OkHttpClient.Builder();
-    if (BuildConfig.DEBUG) {
-        builder.addInterceptor(new OkHttpProfilerInterceptor());
-    }
-    OkHttpClient client = builder.build();
+    OkHttpClient.Builder builder = new OkHttpClient.Builder();<br/>
+    if (BuildConfig.DEBUG) {<br/>
+    &emsp;builder.addInterceptor(new OkHttpProfilerInterceptor());<br/>
+    }<br/>
+    OkHttpClient client = builder.build();<br/>
 </div>
 <h3>Kotlin</h3>
 <div class="code">
-    val builder = OkHttpClient.Builder()
-    if (BuildConfig.DEBUG) {
-        builder.addInterceptor(OkHttpProfilerInterceptor() )
-    }
-    val client = builder.build()
+    val builder = OkHttpClient.Builder()<br/>
+    if (BuildConfig.DEBUG) {<br/>
+    &emsp;builder.addInterceptor(OkHttpProfilerInterceptor())<br/>
+    }<br/>
+    val client = builder.build()<br/>
 </div>
 <h2>
     For Retrofit
@@ -50,29 +50,29 @@
     Java
 </h3>
 <div class="code">
-    OkHttpClient.Builder builder = new OkHttpClient.Builder();
-    if (BuildConfig.DEBUG) {
-        builder.addInterceptor(new OkHttpProfilerInterceptor());
-    }
-    OkHttpClient client = builder.build();
-    Retrofit retrofit = new Retrofit.Builder()
-        ......
-        .client(client)
-        .build();
+    OkHttpClient.Builder builder = new OkHttpClient.Builder();<br/>
+    if (BuildConfig.DEBUG) {<br/>
+    &emsp;builder.addInterceptor(new OkHttpProfilerInterceptor());<br/>
+    }<br/>
+    OkHttpClient client = builder.build();<br/>
+    Retrofit retrofit = new Retrofit.Builder()<br/>
+    &emsp;......<br/>
+    &emsp;.client(client)<br/>
+    &emsp;.build();<br/>
 </div>
 <h3>
     Kotlin
 </h3>
-<div class="code">val client = OkHttpClient.Builder().addInterceptor( OkHttpProfilerInterceptor() ).build()
-    val builder = OkHttpClient.Builder()
-    if (BuildConfig.DEBUG) {
-        builder.addInterceptor( OkHttpProfilerInterceptor() )
-    }
-    val client = builder.build()
-    val retrofit = Retrofit.Builder()
-        ......
-        .client(client)
-        .build()
+<div class="code">
+    val builder = OkHttpClient.Builder()<br/>
+    if (BuildConfig.DEBUG) {<br/>
+    &emsp;builder.addInterceptor(OkHttpProfilerInterceptor())<br/>
+    }<br/>
+    val client = builder.build()<br/>
+    val retrofit = Retrofit.Builder()<br/>
+    &emsp;......<br/>
+    &emsp;.client(client)<br/>
+    &emsp;.build()<br/>
 </div>
 
 <p>
