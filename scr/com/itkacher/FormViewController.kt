@@ -14,6 +14,7 @@ import com.itkacher.views.json.JsonMutableTreeNode
 import com.itkacher.views.list.ForcedListSelectionModel
 import com.itkacher.views.list.RequestTableCellRenderer
 import com.itkacher.views.list.RequestTableModel
+import com.itkacher.views.list.TableMouseAdapter
 import java.awt.BorderLayout
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
@@ -29,6 +30,7 @@ class FormViewController(private val form: MainForm, settings: PluginPreferences
     private var firstLaunch = true
 
     init {
+        requestTable.addMouseListener(TableMouseAdapter())
         requestTable.autoResizeMode = JTable.AUTO_RESIZE_ALL_COLUMNS
         requestTable.model = requestListModel
         requestTable.setDefaultRenderer(Any::class.java, RequestTableCellRenderer())

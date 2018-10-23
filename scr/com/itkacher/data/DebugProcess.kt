@@ -5,6 +5,10 @@ class DebugProcess(
         var packageName: String?,
         var clientDescription: String?) {
     override fun toString(): String {
-        return "$packageName[$pid]"
+        return if(packageName == null) {
+            "Process [$pid]"
+        } else {
+            "$packageName[$pid]"
+        }
     }
 }
