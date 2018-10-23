@@ -1,14 +1,13 @@
 package com.itkacher
 
-import com.intellij.openapi.fileChooser.FileChooser
-import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.project.Project
 import com.itkacher.data.DebugRequest
-import com.itkacher.data.JavaGenerationModel
+import com.itkacher.data.generation.printer.JavaModelPrinter
+import com.itkacher.data.generation.NodeToClassesConverter
+import com.itkacher.data.generation.printer.KotlinModelPrinter
 import com.itkacher.views.Tabs
 import com.itkacher.views.TabsHelper
 import com.itkacher.views.form.DataForm
-import com.itkacher.views.form.KForm
 import com.itkacher.views.form.MainForm
 import com.itkacher.views.json.JTreeItemMenuListener
 import com.itkacher.views.json.JsonMutableTreeNode
@@ -16,7 +15,6 @@ import com.itkacher.views.list.ForcedListSelectionModel
 import com.itkacher.views.list.RequestTableCellRenderer
 import com.itkacher.views.list.RequestTableModel
 import java.awt.BorderLayout
-import java.awt.GridLayout
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
 import javax.swing.JTable
@@ -114,11 +112,13 @@ class FormViewController(private val form: MainForm, settings: PluginPreferences
     }
 
     override fun createJavaModel(node: JsonMutableTreeNode) {
-        JavaGenerationModel(node).generateClass()
+        val classes = NodeToClassesConverter().buildClasses(node).getClasses()
+        println(JavaModelPrinter(classes).buildString())
 //        FileChooser.chooseFiles(FileChooserDescriptor(true, true, false, false, false, false), project, null)
     }
 
     override fun createKotlinModel(node: JsonMutableTreeNode) {
-        println(node)
+        val classes = NodeToClassesConverter().buildClasses(node).getClasses()
+        println(KotlinModelPrinter(classes).buildString())
     }
 }

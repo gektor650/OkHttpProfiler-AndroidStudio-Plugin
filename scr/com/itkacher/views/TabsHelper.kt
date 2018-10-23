@@ -49,7 +49,7 @@ class TabsHelper(private val tabbedPane: JTabbedPane,
             val model = JsonTreeModel(jsonNode)
             val jsonTreeForm = JsonTreeForm()
             jsonTreeForm.tree.model = model
-//            jsonTreeForm.tree.addMouseListener(JTreeMenuMouseAdapter(menuListener))
+            jsonTreeForm.tree.addMouseListener(JTreeMenuMouseAdapter(menuListener))
             tabbedPane.addTab(Resources.getString(titleKey), jsonTreeForm.treePanel)
         }
     }

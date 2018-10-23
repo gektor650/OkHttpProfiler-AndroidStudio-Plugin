@@ -12,7 +12,7 @@ class JsonMutableTreeNode : DefaultMutableTreeNode {
     private val formattedText: String
     private val maxLength: AtomicInteger
 
-    constructor(name: String, node: JsonNode?, type: NodeType, maxLength: AtomicInteger) : super(name) {
+    constructor(name: String, node: JsonNode?, type: NodeType, maxLength: AtomicInteger = AtomicInteger()) : super(name) {
         this.type = type
         this.name = name
         this.value = node
@@ -20,7 +20,7 @@ class JsonMutableTreeNode : DefaultMutableTreeNode {
         this.maxLength = maxLength
     }
 
-    constructor(name: String, value: JsonNode?, maxLength: AtomicInteger) : super() {
+    constructor(name: String, value: JsonNode?, maxLength: AtomicInteger = AtomicInteger()) : super() {
         this.name = name
         this.value = value
         this.maxLength = maxLength
