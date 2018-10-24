@@ -1,6 +1,14 @@
 package com.itkacher
 
+import com.intellij.ide.scratch.ScratchRootType
+import com.intellij.lang.Language
+import com.intellij.openapi.editor.EditorFactory
+import com.intellij.openapi.fileEditor.FileDocumentManager
+import com.intellij.openapi.fileEditor.FileEditorProvider
+import com.intellij.openapi.fileTypes.FileType
 import com.intellij.openapi.project.Project
+import com.intellij.psi.PsiDocumentManager
+import com.intellij.psi.PsiManager
 import com.itkacher.data.DebugRequest
 import com.itkacher.data.generation.printer.JavaModelPrinter
 import com.itkacher.data.generation.NodeToClassesConverter
@@ -20,6 +28,13 @@ import java.awt.BorderLayout
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
 import javax.swing.JTable
+import com.sun.javafx.scene.CameraHelper.project
+import com.intellij.openapi.fileEditor.OpenFileDescriptor
+import com.intellij.testFramework.LightVirtualFile
+import com.intellij.openapi.fileEditor.FileEditorManager
+import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.psi.PsiFileFactory
+import com.intellij.psi.impl.file.PsiDirectoryFactory
 
 
 class FormViewController(private val form: MainForm, settings: PluginPreferences, private val project: Project) : JTreeItemMenuListener {
@@ -47,6 +62,7 @@ class FormViewController(private val form: MainForm, settings: PluginPreferences
         form.clearButton.addActionListener {
             requestListModel.clear()
             tabsHelper.removeAllTabs()
+            openFile()
         }
         form.scrollToBottomButton.addActionListener {
             requestTable.clearSelection()
@@ -125,5 +141,12 @@ class FormViewController(private val form: MainForm, settings: PluginPreferences
         val classes = NodeToClassesConverter().buildClasses(node).getClasses()
         println(KotlinModelPrinter(classes).buildString())
         SystemUtil.copyToClipBoard(KotlinModelPrinter(classes).buildString().toString())
+    }
+
+    fun openFile() {
+        val classText = "data class Test(val test: String)"
+        val jclassText = "class Test {}"
+        val vf = LightVirtualFile( "Dsadasdasd.java", jclassText)
+        FileEditorManager.getInstance(project).openFile(vf, true, true)
     }
 }
