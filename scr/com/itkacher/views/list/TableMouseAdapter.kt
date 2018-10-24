@@ -2,6 +2,8 @@ package com.itkacher.views.list
 
 import com.itkacher.Resources
 import com.itkacher.data.DebugRequest
+import com.itkacher.util.SystemUtil
+import java.awt.Desktop
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 import java.awt.event.MouseAdapter
@@ -20,15 +22,27 @@ class TableMouseAdapter : MouseAdapter() {
         val row = source.rowAtPoint(e.point)
         val model = (source.model as RequestTableModel).getRequest(row)
         val popup = JPopupMenu()
-        val javaClassItem = JMenuItem(Resources.getString("jtable_popup_copy_response"))
-        javaClassItem.addActionListener {
+        val copyUrl = JMenuItem(Resources.getString("jtable_popup_copy_url"))
+        copyUrl.addActionListener {
             if(model != null) {
-                val stringSelection = StringSelection(model.url)
-                val clipboard = Toolkit.getDefaultToolkit().systemClipboard
-                clipboard.setContents(stringSelection, null)
+                SystemUtil.openUrlInBrowser(model.url)
             }
         }
-        popup.add(javaClassItem)
+        val openUrl = JMenuItem(Resources.getString("jtable_popup_open_url_in_browser"))
+        openUrl.addActionListener {
+            if(model != null) {
+                SystemUtil.copyToClipBoard(model.url)
+            }
+        }
+        val copyResponse = JMenuItem(Resources.getString("jtable_popup_copy_response"))
+        copyResponse.addActionListener {
+            if(model != null) {
+                SystemUtil.copyToClipBoard(model.getRawResponse())
+            }
+        }
+        popup.add(copyUrl)
+        popup.add(openUrl)
+        popup.add(copyResponse)
         popup.show(source, x, y)
     }
 

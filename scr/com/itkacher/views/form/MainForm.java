@@ -1,8 +1,10 @@
 package com.itkacher.views.form;
 
+import com.intellij.util.ui.HtmlPanel;
 import com.itkacher.Resources;
 import com.itkacher.data.DebugDevice;
 import com.itkacher.data.DebugProcess;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
@@ -42,7 +44,7 @@ public class MainForm {
         initialHtml.setEditable(false);
 
         initialHtml.addHyperlinkListener(e -> {
-            if(e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+            if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
                 try {
                     Desktop.getDesktop().browse(e.getURL().toURI());
                 } catch (IOException | URISyntaxException e1) {
@@ -52,12 +54,18 @@ public class MainForm {
         });
 
         try {
-            URL initialFile = getClass().getClassLoader().getResource("initial.html");
-            if(initialFile != null) {
-                initialHtml.setPage(initialFile);
-            }
+            URL url = new URL("https://okhttp-profiler.firebaseapp.com/plugin_initial.html");
+            initialHtml.setPage(url);
         } catch (IOException e) {
             e.printStackTrace();
+            URL initialFile = getClass().getClassLoader().getResource("initial.html");
+            if (initialFile != null) {
+                try {
+                    initialHtml.setPage(initialFile);
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
         }
 
     }

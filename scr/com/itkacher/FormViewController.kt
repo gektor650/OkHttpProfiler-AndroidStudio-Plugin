@@ -5,6 +5,7 @@ import com.itkacher.data.DebugRequest
 import com.itkacher.data.generation.printer.JavaModelPrinter
 import com.itkacher.data.generation.NodeToClassesConverter
 import com.itkacher.data.generation.printer.KotlinModelPrinter
+import com.itkacher.util.SystemUtil
 import com.itkacher.views.Tabs
 import com.itkacher.views.TabsHelper
 import com.itkacher.views.form.DataForm
@@ -116,11 +117,13 @@ class FormViewController(private val form: MainForm, settings: PluginPreferences
     override fun createJavaModel(node: JsonMutableTreeNode) {
         val classes = NodeToClassesConverter().buildClasses(node).getClasses()
         println(JavaModelPrinter(classes).buildString())
+        SystemUtil.copyToClipBoard(JavaModelPrinter(classes).buildString().toString())
 //        FileChooser.chooseFiles(FileChooserDescriptor(true, true, false, false, false, false), project, null)
     }
 
     override fun createKotlinModel(node: JsonMutableTreeNode) {
         val classes = NodeToClassesConverter().buildClasses(node).getClasses()
         println(KotlinModelPrinter(classes).buildString())
+        SystemUtil.copyToClipBoard(KotlinModelPrinter(classes).buildString().toString())
     }
 }
