@@ -136,6 +136,7 @@ class DebuggerToolWindowFactory : ToolWindowFactory, DumbAware {
                     log("Selected ${list.selectedItem}")
                     val device = list.selectedItem as DebugDevice
                     attachToDevice(device.device)
+                    preferences.setSelectedDevice(device.device.name)
                     requestTableController.clear()
                 }
             }
