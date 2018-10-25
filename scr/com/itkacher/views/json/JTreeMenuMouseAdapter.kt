@@ -43,18 +43,19 @@ class JTreeMenuMouseAdapter(private val listener: JTreeItemMenuListener) : Mouse
         openItem.addActionListener {
             listener.openInEditor(treeNode)
         }
-//        val javaClassItem = JMenuItem(Resources.getString("jtree_popup_create_java_class"))
-//        javaClassItem.addActionListener {
-//            listener.createJavaModel(treeNode)
-//        }
-//        popup.add(javaClassItem)
-//        val kotlinClassItem = JMenuItem(Resources.getString("jtree_popup_create_kotlin_class"))
-//        kotlinClassItem.addActionListener {
-//            listener.createKotlinModel(treeNode)
-//        }
-//        popup.add(kotlinClassItem)
+        val javaClassItem = JMenuItem(Resources.getString("jtree_popup_create_java_class"))
+        javaClassItem.addActionListener {
+            listener.createJavaModel(treeNode)
+        }
+        popup.add(javaClassItem)
+        val kotlinClassItem = JMenuItem(Resources.getString("jtree_popup_create_kotlin_class"))
+        kotlinClassItem.addActionListener {
+            listener.createKotlinModel(treeNode)
+        }
         popup.add(copyItem)
         popup.add(openItem)
+        popup.add(javaClassItem)
+        popup.add(kotlinClassItem)
         popup.show(tree, x, y)
     }
 

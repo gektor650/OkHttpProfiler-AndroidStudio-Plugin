@@ -5,5 +5,6 @@ data class FieldModel(
         val originName: String,
         val type: FieldType,
         val typeObjectName: String? = null,
-        val genericType: FieldType? = null
+        val genericType: FieldType? = null,
+        val fieldWarning: String? = null
 )

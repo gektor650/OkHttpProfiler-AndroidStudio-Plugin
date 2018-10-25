@@ -1,10 +1,10 @@
 package com.itkacher.data.generation.printer
 
-import com.itkacher.data.generation.ClassModel
+import com.itkacher.data.generation.ObjectClassModel
 import com.itkacher.data.generation.FieldModel
 import com.itkacher.data.generation.FieldType
 
-class KotlinModelPrinter(private val classModels: List<ClassModel>) : BaseClassModelPrinter() {
+class KotlinModelPrinter(private val classModels: List<ObjectClassModel>) : BaseClassModelPrinter() {
 
     override fun addField(field: FieldModel) {
         addSerializationAnnotation(field.originName)
@@ -20,7 +20,11 @@ class KotlinModelPrinter(private val classModels: List<ClassModel>) : BaseClassM
             field.type == FieldType.LIST -> {
                 builder.append(FieldType.LIST.kotlin)
                 builder.append(GENERIC_START)
-                builder.append(field.typeObjectName)
+                if (field.typeObjectName != null) {
+                    builder.append(field.typeObjectName)
+                } else {
+                    builder.append(field.genericType?.kotlin)
+                }
                 builder.append(GENERIC_END)
             }
             field.typeObjectName != null -> builder.append(field.typeObjectName)
@@ -48,6 +52,9 @@ class KotlinModelPrinter(private val classModels: List<ClassModel>) : BaseClassM
                 classModel.fields.forEachIndexed { index, field ->
                     addField(field)
                     if (index != classModel.fields.size - 1) {
+                        if (field.fieldWarning?.isNotEmpty() == true) {
+                            builder.append(TODO, field.fieldWarning)
+                        }
                         builder.append(ARG_DELIMITER)
                     }
                     builder.append(LINE_BREAK)

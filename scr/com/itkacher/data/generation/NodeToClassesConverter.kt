@@ -1,21 +1,22 @@
 package com.itkacher.data.generation
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.JsonNodeType
+import com.itkacher.Resources
 import com.itkacher.data.generation.printer.BaseClassModelPrinter
 import com.itkacher.extension.isPrimitive
 import com.itkacher.views.json.JsonMutableTreeNode
 
 class NodeToClassesConverter {
 
-    private val nodesNameMap = HashMap<ClassModel, HashMap<String, Int>>()
+    private val nodesNameMap = HashMap<ObjectClassModel, HashMap<String, Int>>()
     private val classNameMap = HashMap<String, Int>()
 
-    private val classModels = ArrayList<ClassModel>()
+    private val classModels = ArrayList<ObjectClassModel>()
 
-    private fun createUniqueField(classModel: ClassModel?, key: String, node: JsonNode): FieldModel {
+    private fun createUniqueField(classModel: ObjectClassModel, key: String, node: JsonNode): FieldModel {
         val type = getFieldType(node)
         var listGenericType: FieldType? = null
+        var fieldWarnings: String? = null
         val ifObjectName = when (type) {
             FieldType.OBJECT -> {
                 val innerClassName = getUniqueClassName(key).capitalize()
@@ -23,46 +24,37 @@ class NodeToClassesConverter {
                 innerClassName
             }
             FieldType.LIST -> {
-                val classOfList = getClassOfArrayNode(key, node)
-                listGenericType = classOfList?.second
-                classOfList?.first
+                if (node.size() == 0) {
+                    listGenericType = FieldType.OBJECT
+                    null
+                } else {
+                    val firstChild: JsonNode? = node.get(0)
+                    firstChild?.let {
+                        when {
+                            it.isObject -> {
+                                val innerClassName = getUniqueClassName(key).capitalize()
+                                createAndFillClass(innerClassName, node, classModel)
+                                innerClassName
+                            }
+                            it.isArray -> {
+                                fieldWarnings = Resources.getString("class_generation_array_of_array")
+                                null
+                            }
+                            it.isPrimitive() ||
+                                    it.isNull -> {
+                                listGenericType = getFieldType(firstChild)
+                                null
+                            }
+                            else -> {
+                                null
+                            }
+                        }
+                    }
+                }
             }
             else -> null
         }
-        return if (classModel != null) {
-            FieldModel(getUniqueNodeName(classModel, key), key, type, ifObjectName, listGenericType)
-        } else {
-            FieldModel(key, key, type, ifObjectName, listGenericType)
-        }
-    }
-
-    private fun getClassOfArrayNode(arrayName: String, node: JsonNode): Pair<String?, FieldType?>? {
-        val firstNodeType: JsonNodeType? = node.get(0)?.nodeType
-        val fields = HashMap<String, JsonNode>()
-
-        var fieldTypeIfPrimitive: FieldType? = null
-
-        node.forEachIndexed { index, jsonNode ->
-            if (firstNodeType != jsonNode.nodeType) {
-                return Pair(String.format(UNSUPPORTED_CLASS, arrayName), FieldType.UNDEFINED);
-            }
-            when {
-                jsonNode.isObject -> {
-//                    for (field in jsonNode.fields()) {
-//                        fields[field.key] = createUniqueField(null, field.key, field.value)
-//                    }
-//                    classModel.fields.addAll(fields.values)
-                }
-                jsonNode.isArray -> {
-
-                }
-                jsonNode.isPrimitive() -> {
-                    return Pair(null, getFieldType(node))
-                }
-                else -> {}
-            }
-        }
-        return Pair(null, null)
+        return FieldModel(getUniqueNodeName(classModel, key), key, type, ifObjectName, listGenericType, fieldWarnings)
     }
 
     private fun getFieldType(node: JsonNode): FieldType {
@@ -80,19 +72,39 @@ class NodeToClassesConverter {
         }
     }
 
-    private fun createAndFillClass(name: String, node: JsonNode?, parentClass: ClassModel? = null) {
+    private fun createAndFillClass(name: String, node: JsonNode?, parentClass: ObjectClassModel? = null) {
+        val classModel = ObjectClassModel()
         when {
             node?.isObject == true -> {
-                val classModel = ClassModel(name.capitalize(), parentClass)
+                classModel.name = name.capitalize()
+                classModel.parentClass = parentClass
                 classModels.add(classModel)
                 val fields = node.fields()
                 fields.forEach {
                     classModel.fields.add(createUniqueField(classModel, it.key, it.value))
                 }
             }
-            node?.isArray == true -> { }
+            node?.isArray == true -> {
+                val child: JsonNode? = node.get(0)
+                if(child != null) {
+                    val fieldType = getFieldType(child)
+                    val newName = "list"
+                    if(fieldType == FieldType.OBJECT || fieldType == FieldType.LIST) {
+                        val className = getUniqueClassName(newName).capitalize()
+                        createAndFillClass(className, child, classModel)
+                        classModel.fields.add(FieldModel(newName, name, FieldType.LIST, className))
+                    } else {
+                        classModel.fields.add(FieldModel(newName, name, fieldType))
+                    }
+                    classModels.add(classModel)
+                }
+            }
+            else -> {
+                classModel.name = name
+            }
 //            node != null -> generateSingleVar(node.name, node.value)
         }
+        classModels.add(classModel)
     }
 
     fun buildClasses(node: JsonMutableTreeNode): NodeToClassesConverter {
@@ -100,7 +112,7 @@ class NodeToClassesConverter {
         return this
     }
 
-    fun getClasses(): ArrayList<ClassModel> {
+    fun getClasses(): ArrayList<ObjectClassModel> {
         return classModels
     }
 
@@ -124,7 +136,7 @@ class NodeToClassesConverter {
     }
 
 
-    private fun getUniqueNodeName(classModels: ClassModel, name: String): String {
+    private fun getUniqueNodeName(classModels: ObjectClassModel, name: String): String {
         var map = nodesNameMap[classModels]
         if (map == null) {
             map = HashMap()
@@ -147,9 +159,5 @@ class NodeToClassesConverter {
             map[newName] = count.inc()
             "$newName$count"
         }
-    }
-
-    companion object {
-        const val UNSUPPORTED_CLASS = "ARRAY_(%s)_IS_UNSUPPORTED_BECAUSE_OF_DIFFERENT_VAL_TYPES"
     }
 }

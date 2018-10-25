@@ -119,14 +119,14 @@ class FormViewController(private val form: MainForm, settings: PluginPreferences
     override fun createJavaModel(node: JsonMutableTreeNode) {
         val classes = NodeToClassesConverter().buildClasses(node).getClasses()
         val javaText = JavaModelPrinter(classes).build()
-        openFile("Test.java", javaText.toString())
+        openFile("Request.java", javaText.toString())
 //        FileChooser.chooseFiles(FileChooserDescriptor(true, true, false, false, false, false), project, null)
     }
 
     override fun createKotlinModel(node: JsonMutableTreeNode) {
         val classes = NodeToClassesConverter().buildClasses(node).getClasses()
         val kotlinText = KotlinModelPrinter(classes).build()
-        openFile("Test.kt", kotlinText.toString())
+        openFile("Request.kt", kotlinText.toString())
     }
 
     override fun copyToClipboard(node: JsonMutableTreeNode) {
