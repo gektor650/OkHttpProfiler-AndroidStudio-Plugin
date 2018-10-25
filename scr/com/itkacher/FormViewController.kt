@@ -1,17 +1,11 @@
 package com.itkacher
 
-import com.intellij.ide.scratch.ScratchRootType
-import com.intellij.lang.Language
-import com.intellij.openapi.editor.EditorFactory
-import com.intellij.openapi.fileEditor.FileDocumentManager
-import com.intellij.openapi.fileEditor.FileEditorProvider
-import com.intellij.openapi.fileTypes.FileType
 import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiManager
+import com.intellij.testFramework.LightVirtualFile
 import com.itkacher.data.DebugRequest
-import com.itkacher.data.generation.printer.JavaModelPrinter
 import com.itkacher.data.generation.NodeToClassesConverter
+import com.itkacher.data.generation.printer.JavaModelPrinter
 import com.itkacher.data.generation.printer.KotlinModelPrinter
 import com.itkacher.util.SystemUtil
 import com.itkacher.views.Tabs
@@ -28,13 +22,6 @@ import java.awt.BorderLayout
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
 import javax.swing.JTable
-import com.sun.javafx.scene.CameraHelper.project
-import com.intellij.openapi.fileEditor.OpenFileDescriptor
-import com.intellij.testFramework.LightVirtualFile
-import com.intellij.openapi.fileEditor.FileEditorManager
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.PsiFileFactory
-import com.intellij.psi.impl.file.PsiDirectoryFactory
 
 
 class FormViewController(private val form: MainForm, settings: PluginPreferences, private val project: Project) : JTreeItemMenuListener {
@@ -62,7 +49,6 @@ class FormViewController(private val form: MainForm, settings: PluginPreferences
         form.clearButton.addActionListener {
             requestListModel.clear()
             tabsHelper.removeAllTabs()
-            openFile()
         }
         form.scrollToBottomButton.addActionListener {
             requestTable.clearSelection()
@@ -132,21 +118,38 @@ class FormViewController(private val form: MainForm, settings: PluginPreferences
 
     override fun createJavaModel(node: JsonMutableTreeNode) {
         val classes = NodeToClassesConverter().buildClasses(node).getClasses()
-        println(JavaModelPrinter(classes).buildString())
-        SystemUtil.copyToClipBoard(JavaModelPrinter(classes).buildString().toString())
+        val javaText = JavaModelPrinter(classes).build()
+        openFile("Test.java", javaText.toString())
 //        FileChooser.chooseFiles(FileChooserDescriptor(true, true, false, false, false, false), project, null)
     }
 
     override fun createKotlinModel(node: JsonMutableTreeNode) {
         val classes = NodeToClassesConverter().buildClasses(node).getClasses()
-        println(KotlinModelPrinter(classes).buildString())
-        SystemUtil.copyToClipBoard(KotlinModelPrinter(classes).buildString().toString())
+        val kotlinText = KotlinModelPrinter(classes).build()
+        openFile("Test.kt", kotlinText.toString())
     }
 
-    fun openFile() {
-        val classText = "data class Test(val test: String)"
-        val jclassText = "class Test {}"
-        val vf = LightVirtualFile( "Dsadasdasd.java", jclassText)
-        FileEditorManager.getInstance(project).openFile(vf, true, true)
+    override fun copyToClipboard(node: JsonMutableTreeNode) {
+        SystemUtil.copyToClipBoard(node.value.toString())
+    }
+
+    override fun openInEditor(node: JsonMutableTreeNode) {
+        val text = node.value.toString()
+        openFile("${node.name}.json", text)
+    }
+
+    private fun openFile(className: String, classText: String) {
+        val vf = LightVirtualFile(className, classText)
+        val file = PsiManager.getInstance(project).findFile(vf)
+        file?.let {
+            file.navigate(true)
+        }
+//        CodeStyleManager.getInstance(project).reformatText(file, 0, file.textLength)
+//        PsiManager.getInstance(project).findFile(vf)?.navigate(true)
+//        FileEditorManager.getInstance(project).openFile(vf, true, true)
+//        val fileType = FileTypeManager.getInstance().getKnownFileTypeOrAssociate(vf, project)
+//        fileType?.let {
+//            PsiFileFactory.getInstance(project).createFileFromText(className, fileType ,className).navigate(true)
+//        }
     }
 }

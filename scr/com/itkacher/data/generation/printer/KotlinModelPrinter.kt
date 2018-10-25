@@ -2,31 +2,36 @@ package com.itkacher.data.generation.printer
 
 import com.itkacher.data.generation.ClassModel
 import com.itkacher.data.generation.FieldModel
+import com.itkacher.data.generation.FieldType
 
 class KotlinModelPrinter(private val classModels: List<ClassModel>) : BaseClassModelPrinter() {
 
     override fun addField(field: FieldModel) {
-        addSerializationAnnotation(field.fieldOriginName)
+        addSerializationAnnotation(field.originName)
         builder.append(
                 TABULATION,
-                VAR_TYPE
+                VAL_CONST
         )
         builder.append(
-                field.fieldName,
-                VAR_TYPE_DECLARATION
+                field.name,
+                VAL_DELIMITER
         )
-
-        if (field.fieldTypeObjectName != null) {
-            builder.append(field.fieldTypeObjectName)
-        } else {
-            builder.append(field.fieldType.kotlin)
+        when {
+            field.type == FieldType.LIST -> {
+                builder.append(FieldType.LIST.kotlin)
+                builder.append(GENERIC_START)
+                builder.append(field.typeObjectName)
+                builder.append(GENERIC_END)
+            }
+            field.typeObjectName != null -> builder.append(field.typeObjectName)
+            else -> builder.append(field.type.kotlin)
         }
     }
 
-    override fun buildString(): StringBuilder {
+    override fun build(): StringBuilder {
         addImport()
         classModels.forEach { classModel ->
-            if(classModel.fields.isEmpty()) {
+            if (classModel.fields.isEmpty()) {
                 builder.append(CLASS_NAME)
                 builder.append(classModel.name)
                 builder.append(LINE_BREAK)
@@ -60,8 +65,8 @@ class KotlinModelPrinter(private val classModels: List<ClassModel>) : BaseClassM
     companion object {
 
         const val DATA_CLASS = "data "
-        const val VAR_TYPE = "val "
-        const val VAR_TYPE_DECLARATION = ": "
+        const val VAL_CONST = "val "
+        const val VAL_DELIMITER = ": "
         const val ARG_START = '('
         const val ARG_END = ')'
         const val ARG_DELIMITER = ','

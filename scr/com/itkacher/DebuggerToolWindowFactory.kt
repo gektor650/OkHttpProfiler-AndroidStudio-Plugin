@@ -24,6 +24,7 @@ class DebuggerToolWindowFactory : ToolWindowFactory, DumbAware {
 
     private val debugger = MainForm()
     private lateinit var requestTableController: FormViewController
+    private lateinit var preferences: PluginPreferences
 
     private val logCatListener = AndroidLogcatService.getInstance()
 
@@ -50,8 +51,8 @@ class DebuggerToolWindowFactory : ToolWindowFactory, DumbAware {
     }
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
-        val settings = PropertiesComponent.getInstance(project)
-        requestTableController = FormViewController(debugger, PluginPreferences(settings), project)
+        preferences = PluginPreferences(PropertiesComponent.getInstance(project))
+        requestTableController = FormViewController(debugger, preferences, project)
         toolWindow.component.add(debugger.panel)
         initDeviceList(project)
     }
@@ -92,6 +93,7 @@ class DebuggerToolWindowFactory : ToolWindowFactory, DumbAware {
     }
 
     private fun updateClient(client: Client?) {
+        val prefSelectedPackage = preferences.getSelectedProcessPackage()
         val clientData = client?.clientData
         val clientModel = debugger.appList.model
         if (clientData != null && clientModel != null) {
@@ -100,6 +102,10 @@ class DebuggerToolWindowFactory : ToolWindowFactory, DumbAware {
                 if (model.pid == clientData.pid) {
                     log("updateClient ${clientData.pid}")
                     model.packageName = clientData.packageName
+                    if(model.packageName == prefSelectedPackage) {
+                        debugger.appList.selectedItem = model
+                        selectedProcess = model
+                    }
                     break
                 }
             }
@@ -110,11 +116,17 @@ class DebuggerToolWindowFactory : ToolWindowFactory, DumbAware {
 
     private fun updateDeviceList(devices: Array<IDevice>?) {
         log("updateDeviceList ${devices?.size}")
+        val selectedDeviceName = preferences.getSelectedDevice()
+        var selectedDevice: IDevice? = null
         if (devices != null) {
             debugger.mainContainer.isVisible = true
             val debugDevices = ArrayList<DebugDevice>()
             for (device in devices) {
-                debugDevices.add(DebugDevice(device))
+                val debugDevice = DebugDevice(device)
+                if(device.name == selectedDeviceName) {
+                    selectedDevice = device
+                }
+                debugDevices.add(debugDevice)
             }
             val model = DefaultComboBoxModel<DebugDevice>(debugDevices.toTypedArray())
             val list = debugger.deviceList
@@ -124,7 +136,13 @@ class DebuggerToolWindowFactory : ToolWindowFactory, DumbAware {
                     log("Selected ${list.selectedItem}")
                     val device = list.selectedItem as DebugDevice
                     attachToDevice(device.device)
+                    requestTableController.clear()
                 }
+            }
+            if(selectedDevice != null) {
+                attachToDevice(selectedDevice)
+            } else {
+                attachToDevice(devices.first())
             }
         } else {
             debugger.mainContainer.isVisible = false
@@ -137,6 +155,8 @@ class DebuggerToolWindowFactory : ToolWindowFactory, DumbAware {
     }
 
     private fun createProcessList(device: IDevice) {
+        val prefSelectedPackage = preferences.getSelectedProcessPackage()
+        var defaultSelection: DebugProcess? = null
         val debugProcessList = ArrayList<DebugProcess>()
         log("createProcessList ${device.clients.size}")
         for (client in device.clients) {
@@ -146,6 +166,9 @@ class DebuggerToolWindowFactory : ToolWindowFactory, DumbAware {
                     clientData.packageName,
                     clientData.clientDescription
             )
+            if(prefSelectedPackage == process.packageName) {
+                defaultSelection = process
+            }
             log("addClient $process")
             debugProcessList.add(process)
         }
@@ -154,13 +177,18 @@ class DebuggerToolWindowFactory : ToolWindowFactory, DumbAware {
         debugger.appList.addItemListener {
             if (it.stateChange == ItemEvent.SELECTED) {
                 val client = debugger.appList.selectedItem as DebugProcess
+                preferences.setSelectedProcessPackage(client.packageName)
+                defaultSelection = client
                 selectedProcess = client
-                log("selectedProcess $selectedProcess")
+                log("selectedProcess $defaultSelection")
                 requestTableController.clear()
             }
         }
-        if (debugProcessList.isNotEmpty()) {
-            selectedProcess = debugProcessList[0]
+        if (defaultSelection != null) {
+            debugger.appList.selectedItem = defaultSelection
+            selectedProcess = defaultSelection
+        } else {
+            selectedProcess = debugProcessList.first()
         }
     }
 

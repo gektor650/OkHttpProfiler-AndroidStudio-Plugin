@@ -11,38 +11,46 @@ class JsonMutableTreeNode : DefaultMutableTreeNode {
     val value: JsonNode?
     private val formattedText: String
     private val maxLength: AtomicInteger
+    private var isArrayElement: Boolean
 
-    constructor(name: String, node: JsonNode?, type: NodeType, maxLength: AtomicInteger = AtomicInteger()) : super(name) {
+    constructor(name: String, node: JsonNode?, type: NodeType, maxLength: AtomicInteger = AtomicInteger(), isArrayElement: Boolean = false) : super(name) {
         this.type = type
         this.name = name
         this.value = node
         this.formattedText = name
         this.maxLength = maxLength
+        this.isArrayElement = isArrayElement
     }
 
-    constructor(name: String, value: JsonNode?, maxLength: AtomicInteger = AtomicInteger()) : super() {
+    constructor(name: String, value: JsonNode?, maxLength: AtomicInteger = AtomicInteger(), isArrayElement: Boolean = false) : super() {
         this.name = name
         this.value = value
         this.maxLength = maxLength
+        this.isArrayElement = isArrayElement
+        val pattern = if(isArrayElement) {
+            "%s: %s"
+        } else {
+            "\"%s\": %s"
+        }
         when {
             value?.isTextual == true -> {
                 type = NodeType.STRING
-                formattedText = "\"$name\": \"${value.textValue()}\""
+                formattedText = String.format(pattern, name, "\"${value.textValue()}\"")
                 return
             }
             value?.isNumber == true -> {
                 type = NodeType.NUMBER
-                formattedText = "\"$name\": ${value.numberValue()}"
+                formattedText = String.format(pattern, name, value.numberValue().toString())
                 return
             }
             value?.isBoolean == true -> {
                 type = NodeType.BOOLEAN
-                formattedText = "\"$name\": ${value.booleanValue()}"
+                formattedText = String.format(pattern, name, value.booleanValue().toString())
                 return
             }
             value?.isNull == true -> {
                 type = NodeType.NULL
-                formattedText = "\"$name\": null"
+                formattedText = String.format(pattern, name, NULL_STRING)
             }
             else -> {
                 type = NodeType.OBJECT
@@ -80,5 +88,9 @@ class JsonMutableTreeNode : DefaultMutableTreeNode {
         BOOLEAN("Boolean"),
         OBJECT("Object"),
         ARRAY("Array"),
+    }
+
+    companion object {
+        const val NULL_STRING = "null"
     }
 }

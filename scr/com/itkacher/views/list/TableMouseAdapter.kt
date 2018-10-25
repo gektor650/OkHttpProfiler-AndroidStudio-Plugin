@@ -25,19 +25,19 @@ class TableMouseAdapter : MouseAdapter() {
         val copyUrl = JMenuItem(Resources.getString("jtable_popup_copy_url"))
         copyUrl.addActionListener {
             if(model != null) {
-                SystemUtil.openUrlInBrowser(model.url)
+                SystemUtil.copyToClipBoard(model.url)
             }
         }
         val openUrl = JMenuItem(Resources.getString("jtable_popup_open_url_in_browser"))
         openUrl.addActionListener {
             if(model != null) {
-                SystemUtil.copyToClipBoard(model.url)
+                SystemUtil.openUrlInBrowser(model.url)
             }
         }
         val copyResponse = JMenuItem(Resources.getString("jtable_popup_copy_response"))
         copyResponse.addActionListener {
             if(model != null) {
-                SystemUtil.copyToClipBoard(model.getRawResponse())
+                SystemUtil.copyToClipBoard(model.getResponseBodyString())
             }
         }
         popup.add(copyUrl)

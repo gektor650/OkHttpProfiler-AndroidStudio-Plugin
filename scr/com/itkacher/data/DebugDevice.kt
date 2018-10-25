@@ -10,7 +10,8 @@ data class DebugDevice(
         return if(device.isEmulator) {
             "Emulator ${device.avdName.safe()} Android ${device.getProperty(IDevice.PROP_BUILD_VERSION).safe()}, API ${device.getProperty(IDevice.PROP_BUILD_API_LEVEL).safe()}"
         } else {
-            "${device.avdName.safe()} Android ${device.getProperty(IDevice.PROP_BUILD_VERSION).safe()}, API ${device.getProperty(IDevice.PROP_BUILD_API_LEVEL).safe()}"
+            val name = device.name.safe().replace("_", " ").substring(0, 20).capitalize()
+            "$name Android ${device.getProperty(IDevice.PROP_BUILD_VERSION).safe()}, API ${device.getProperty(IDevice.PROP_BUILD_API_LEVEL).safe()}"
         }
     }
 }

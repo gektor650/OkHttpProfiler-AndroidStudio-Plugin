@@ -1,8 +1,9 @@
 package com.itkacher.data.generation
 
 data class FieldModel(
-        val fieldName: String,
-        val fieldOriginName: String,
-        val fieldType: FieldType,
-        val fieldTypeObjectName: String? = null
+        val name: String,
+        val originName: String,
+        val type: FieldType,
+        val typeObjectName: String? = null,
+        val genericType: FieldType? = null
 )

@@ -16,9 +16,9 @@ class JsonTreeModel(json: JsonNode) : DefaultTreeModel(JsonTreeModel.buildTree("
          * @param node
          * @return root TreeNode
          */
-        private fun buildTree(name: String, node: JsonNode, maxValueLength: AtomicInteger = AtomicInteger(0)): JsonMutableTreeNode {
+        private fun buildTree(name: String, node: JsonNode, maxValueLength: AtomicInteger = AtomicInteger(0), isArrayElement: Boolean = false): JsonMutableTreeNode {
             val parentType = if (node.isArray) JsonMutableTreeNode.NodeType.ARRAY else JsonMutableTreeNode.NodeType.OBJECT
-            val treeNode = JsonMutableTreeNode(name, node, parentType, maxValueLength)
+            val treeNode = JsonMutableTreeNode(name, node, parentType, maxValueLength, isArrayElement)
             val it = node.fields()
             while (it.hasNext()) {
                 val entry = it.next()
@@ -35,13 +35,14 @@ class JsonTreeModel(json: JsonNode) : DefaultTreeModel(JsonTreeModel.buildTree("
             if (node.isArray) {
                 for (i in 0 until node.size()) {
                     val child = node.get(i)
+                    val arrayIndex = String.format("[%d]", i)
+                    if (maxValueLength.get().compareTo(name.length) == -1) {
+                        maxValueLength.set(name.length)
+                    }
                     if (child.isValueNode) {
-                        if (maxValueLength.get().compareTo(name.length) == -1) {
-                            maxValueLength.set(name.length)
-                        }
-                        treeNode.add(JsonMutableTreeNode(name, child, maxValueLength))
+                        treeNode.add(JsonMutableTreeNode(arrayIndex, child, maxValueLength, true))
                     } else {
-                        treeNode.add(buildTree(String.format("[%d]", i), child, maxValueLength))
+                        treeNode.add(buildTree(arrayIndex, child, maxValueLength, true))
                     }
                 }
             } else if (node.isValueNode) {

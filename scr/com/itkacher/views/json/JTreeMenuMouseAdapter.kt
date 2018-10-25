@@ -33,17 +33,28 @@ class JTreeMenuMouseAdapter(private val listener: JTreeItemMenuListener) : Mouse
         if (!isSelected) {
             tree.selectionPath = path
         }
+        val treeNode = rightClickedNode as JsonMutableTreeNode
         val popup = JPopupMenu()
-        val javaClassItem = JMenuItem(Resources.getString("jtree_popup_create_java_class"))
-        javaClassItem.addActionListener {
-            listener.createJavaModel(rightClickedNode as JsonMutableTreeNode)
+        val copyItem = JMenuItem(Resources.getString("jtree_popup_copy_to_clipboard"))
+        copyItem.addActionListener {
+            listener.copyToClipboard(treeNode)
         }
-        popup.add(javaClassItem)
-        val kotlinClassItem = JMenuItem(Resources.getString("jtree_popup_create_kotlin_class"))
-        kotlinClassItem.addActionListener {
-            listener.createKotlinModel(rightClickedNode as JsonMutableTreeNode)
+        val openItem = JMenuItem(Resources.getString("jtree_popup_open_in_editor"))
+        openItem.addActionListener {
+            listener.openInEditor(treeNode)
         }
-        popup.add(kotlinClassItem)
+//        val javaClassItem = JMenuItem(Resources.getString("jtree_popup_create_java_class"))
+//        javaClassItem.addActionListener {
+//            listener.createJavaModel(treeNode)
+//        }
+//        popup.add(javaClassItem)
+//        val kotlinClassItem = JMenuItem(Resources.getString("jtree_popup_create_kotlin_class"))
+//        kotlinClassItem.addActionListener {
+//            listener.createKotlinModel(treeNode)
+//        }
+//        popup.add(kotlinClassItem)
+        popup.add(copyItem)
+        popup.add(openItem)
         popup.show(tree, x, y)
     }
 

@@ -2,6 +2,7 @@ package com.itkacher.data.generation.printer
 
 import com.itkacher.data.generation.ClassModel
 import com.itkacher.data.generation.FieldModel
+import com.itkacher.data.generation.FieldType
 
 class JavaModelPrinter(private val classModels: List<ClassModel>) : BaseClassModelPrinter() {
 
@@ -11,21 +12,26 @@ class JavaModelPrinter(private val classModels: List<ClassModel>) : BaseClassMod
     }
 
     override fun addField(field: FieldModel) {
-        if(! field.fieldType.isJavaPrimitive) {
+        if(! field.type.isJavaPrimitive) {
             addNullableAnnotation()
         }
-        addSerializationAnnotation(field.fieldOriginName)
+        addSerializationAnnotation(field.originName)
         builder.append(
                 TABULATION,
                 CONST_VISIBILITY
         )
-        if(field.fieldTypeObjectName != null) {
-            builder.append(field.fieldTypeObjectName)
-        } else {
-            builder.append(field.fieldType.java)
+        when {
+            field.type == FieldType.LIST -> {
+                builder.append(FieldType.LIST.java)
+                builder.append(GENERIC_START)
+                builder.append(field.typeObjectName)
+                builder.append(GENERIC_END)
+            }
+            field.typeObjectName != null -> builder.append(field.typeObjectName)
+            else -> builder.append(field.type.java)
         }
         builder.append(SPACE)
-        builder.append(field.fieldName)
+        builder.append(field.name)
         builder.append(LINE_END)
         builder.append(LINE_BREAK)
         builder.append(LINE_BREAK)
@@ -40,7 +46,7 @@ class JavaModelPrinter(private val classModels: List<ClassModel>) : BaseClassMod
         return this
     }
 
-    override fun buildString(): StringBuilder {
+    override fun build(): StringBuilder {
         addImport()
         classModels.forEachIndexed { index, classModel ->
 
