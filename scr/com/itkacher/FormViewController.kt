@@ -1,10 +1,15 @@
 package com.itkacher
 
+import com.intellij.openapi.command.WriteCommandAction
+import com.intellij.openapi.fileChooser.FileChooser
+import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.psi.PsiManager
-import com.intellij.testFramework.LightVirtualFile
+import com.intellij.psi.codeStyle.CodeStyleManager
 import com.itkacher.data.DebugRequest
 import com.itkacher.data.generation.NodeToClassesConverter
+import com.itkacher.data.generation.ObjectClassModel
 import com.itkacher.data.generation.printer.JavaModelPrinter
 import com.itkacher.data.generation.printer.KotlinModelPrinter
 import com.itkacher.util.SystemUtil
@@ -21,7 +26,11 @@ import com.itkacher.views.list.TableMouseAdapter
 import java.awt.BorderLayout
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
+import java.io.File
 import javax.swing.JTable
+import java.io.IOException
+import java.io.FileWriter
+import java.io.BufferedWriter
 
 
 class FormViewController(private val form: MainForm, settings: PluginPreferences, private val project: Project) : JTreeItemMenuListener {
@@ -118,15 +127,12 @@ class FormViewController(private val form: MainForm, settings: PluginPreferences
 
     override fun createJavaModel(node: JsonMutableTreeNode) {
         val classes = NodeToClassesConverter().buildClasses(node).getClasses()
-        val javaText = JavaModelPrinter(classes).build()
-        openFile("Request.java", javaText.toString())
-//        FileChooser.chooseFiles(FileChooserDescriptor(true, true, false, false, false, false), project, null)
+        chooseFileAndWriteAndOpen(true, classes)
     }
 
     override fun createKotlinModel(node: JsonMutableTreeNode) {
         val classes = NodeToClassesConverter().buildClasses(node).getClasses()
-        val kotlinText = KotlinModelPrinter(classes).build()
-        openFile("Request.kt", kotlinText.toString())
+        chooseFileAndWriteAndOpen(false, classes)
     }
 
     override fun copyToClipboard(node: JsonMutableTreeNode) {
@@ -135,21 +141,89 @@ class FormViewController(private val form: MainForm, settings: PluginPreferences
 
     override fun openInEditor(node: JsonMutableTreeNode) {
         val text = node.value.toString()
-        openFile("${node.name}.json", text)
+        val directory = FileChooser.chooseFiles(FileChooserDescriptor(false, true, false, false, false, false), project, null)
+        directory.firstOrNull()?.let { selectedVirtualFile ->
+            val file = createUniqueFile(selectedVirtualFile.path, "response", "json")
+            writeAndOpenFile(file, text)
+        }
     }
 
-    private fun openFile(className: String, classText: String) {
-        val vf = LightVirtualFile(className, classText)
-        val file = PsiManager.getInstance(project).findFile(vf)
-        file?.let {
-            file.navigate(true)
+    private fun chooseFileAndWriteAndOpen(isJava: Boolean, classes: List<ObjectClassModel>) {
+        val directory = FileChooser.chooseFiles(FileChooserDescriptor(false, true, false, false, false, false), project, null)
+        directory.firstOrNull()?.let { selectedVirtualFile ->
+            val file: File? = classes.firstOrNull()?.let {
+                val extension = if (isJava) {
+                    ".java"
+                } else {
+                    ".kt"
+                }
+                val file = createUniqueFile(selectedVirtualFile.path, it.name, extension)
+                it.name = file.name.split(".")[0]
+                file
+            }
+            if (file != null && classes.isNotEmpty()) {
+                val segments = file.path.split(File.separator)
+                val parts = ArrayList<String>()
+                for (segment in segments.reversed()) {
+                    if (segment == file.name) continue
+                    if (segment == JAVA || segment == SCR) break
+                    parts.add(segment)
+                }
+                val packageName = parts.reversed().joinToString(".")
+                val textBuilder = if (isJava) {
+                    JavaModelPrinter(classes).build()
+                } else {
+                    KotlinModelPrinter(classes).build()
+                }
+                textBuilder.insert(0, "package $packageName;\r\n\r\n")
+                classes.firstOrNull()?.let {
+                    writeAndOpenFile(file, textBuilder.toString())
+                }
+            }
         }
-//        CodeStyleManager.getInstance(project).reformatText(file, 0, file.textLength)
-//        PsiManager.getInstance(project).findFile(vf)?.navigate(true)
-//        FileEditorManager.getInstance(project).openFile(vf, true, true)
-//        val fileType = FileTypeManager.getInstance().getKnownFileTypeOrAssociate(vf, project)
-//        fileType?.let {
-//            PsiFileFactory.getInstance(project).createFileFromText(className, fileType ,className).navigate(true)
-//        }
+    }
+
+    private fun createUniqueFile(path: String, name: String, extension: String, amount: Int = 0): File {
+        val file = if (amount > 0) {
+            File("$path${File.separator}${name}Generated$amount$extension")
+        } else {
+            File("$path${File.separator}$name$extension")
+        }
+        if (file.canRead()) {
+            return createUniqueFile(path, name, extension, amount + 1)
+        }
+        file.createNewFile()
+        return file
+    }
+
+    private fun writeAndOpenFile(file: File, classText: String) {
+        WriteCommandAction.runWriteCommandAction(project) {
+            file.createNewFile()
+            var writer: BufferedWriter? = null
+            try {
+                writer = BufferedWriter(FileWriter(file))
+                writer.write(classText)
+            } catch (e: IOException) {
+                e.printStackTrace()
+            } finally {
+                try {
+                    writer?.close()
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
+            }
+            LocalFileSystem.getInstance().refreshAndFindFileByIoFile(file)?.let { vFile ->
+                val psiFile = PsiManager.getInstance(project).findFile(vFile)
+                psiFile?.let {
+                    CodeStyleManager.getInstance(project).reformatText(psiFile, 0, psiFile.textLength)
+                    psiFile.navigate(true)
+                }
+            }
+        }
+    }
+
+    companion object {
+        const val JAVA = "java"
+        const val SCR = "scr"
     }
 }

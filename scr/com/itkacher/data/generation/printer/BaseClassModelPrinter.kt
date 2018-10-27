@@ -7,10 +7,7 @@ abstract class BaseClassModelPrinter {
     protected val builder = StringBuilder()
 
     protected open fun addImport() {
-        builder.append(LINE_BREAK)
         builder.append(IMPORT_GSON)
-        builder.append(IMPORT_LIST)
-        builder.append(LINE_BREAK)
         builder.append(LINE_BREAK)
     }
 

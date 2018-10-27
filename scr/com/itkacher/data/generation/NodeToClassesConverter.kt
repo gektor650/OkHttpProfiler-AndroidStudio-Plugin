@@ -41,7 +41,7 @@ class NodeToClassesConverter {
         nestingLevel.incrementAndGet()
         var type: FieldType = FieldType.OBJECT
         var className: String? = null
-        node.first()?.let {
+        node.firstOrNull()?.let {
             when {
                 it.isObject -> {
                     val innerClassName = getUniqueClassName(name).capitalize()
@@ -96,12 +96,17 @@ class NodeToClassesConverter {
             node?.isArray == true -> {
                 classModel.fields.add(createUniqueField(classModel, classModel.name, node))
             }
-//            node != null -> generateSingleVar(node.name, node.value)
+            else -> {
+                node?.let {
+                    val type = getFieldType(node)
+                    classModel.fields.add(FieldModel(name, name, type))
+                }
+            }
         }
     }
 
     fun buildClasses(node: JsonMutableTreeNode): NodeToClassesConverter {
-        createAndFillClass(getUniqueClassName(node.name), node.value)
+        createAndFillClass(node.name, node.value)
         return this
     }
 
@@ -143,7 +148,7 @@ class NodeToClassesConverter {
     }
 
     private fun getUniqueNameFromMap(map: HashMap<String, Int>, name: String): String {
-        val newName = if (name.startsWith("[")) {
+        var newName = if (name.startsWith("[")) {
             getUniqueClassName("ArrayListOf")
         } else {
             reformatName(name)
@@ -151,10 +156,31 @@ class NodeToClassesConverter {
         val count = map[newName]
         return if (count == null) {
             map[newName] = 1
-            newName
+            if(RESERVED_WORDS.contains(name)) {
+                "${newName}0"
+            } else {
+                newName
+            }
         } else {
             map[newName] = count.inc()
             "$newName$count"
         }
+    }
+
+    companion object {
+        val RESERVED_WORDS = arrayOf(
+                "package", "as", "typealias", "class", "this", "super", "val", "var",
+                "fun", "for", "null", "true", "false", "is", "in", "throw", "return", "break", "continue", "object", "if",
+                "try", "else", "while", "do", "when", "interface", "yield", "typeof", "abstract", "continue", "for", "new", "switch",
+                "assert", "default", "goto", "package", "synchronized",
+                "boolean", "do", "if", "private", "this",
+                "break", "double", "implements", "protected", "throw",
+                "byte", "else", "import", "public", "throws",
+                "case", "enum", "instanceof", "return", "transient",
+                "catch", "extends", "int", "short", "try",
+                "char", "final", "interface", "static", "void",
+                "class", "finally", "long", "strictfp", "volatile",
+                "const", "float", "native", "super", "while"
+        )
     }
 }

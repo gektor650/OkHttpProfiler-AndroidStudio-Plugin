@@ -8,6 +8,7 @@ class JavaModelPrinter(private val classModels: List<ObjectClassModel>) : BaseCl
 
     override fun addImport() {
         builder.append(IMPORT_NULLABLE)
+        builder.append(IMPORT_LIST)
         super.addImport()
     }
 
