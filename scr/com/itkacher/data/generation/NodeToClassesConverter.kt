@@ -1,10 +1,10 @@
 package com.itkacher.data.generation
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.itkacher.Resources
 import com.itkacher.data.generation.printer.BaseClassModelPrinter
 import com.itkacher.extension.isPrimitive
 import com.itkacher.views.json.JsonMutableTreeNode
+import java.util.concurrent.atomic.AtomicInteger
 
 class NodeToClassesConverter {
 
@@ -16,7 +16,7 @@ class NodeToClassesConverter {
     private fun createUniqueField(classModel: ObjectClassModel, key: String, node: JsonNode): FieldModel {
         val type = getFieldType(node)
         var listGenericType: FieldType? = null
-        var fieldWarnings: String? = null
+        var nestingLevel: AtomicInteger? = null
         val ifObjectName = when (type) {
             FieldType.OBJECT -> {
                 val innerClassName = getUniqueClassName(key).capitalize()
@@ -24,37 +24,47 @@ class NodeToClassesConverter {
                 innerClassName
             }
             FieldType.LIST -> {
-                if (node.size() == 0) {
-                    listGenericType = FieldType.OBJECT
-                    null
-                } else {
-                    val firstChild: JsonNode? = node.get(0)
-                    firstChild?.let {
-                        when {
-                            it.isObject -> {
-                                val innerClassName = getUniqueClassName(key).capitalize()
-                                createAndFillClass(innerClassName, node, classModel)
-                                innerClassName
-                            }
-                            it.isArray -> {
-                                fieldWarnings = Resources.getString("class_generation_array_of_array")
-                                null
-                            }
-                            it.isPrimitive() ||
-                                    it.isNull -> {
-                                listGenericType = getFieldType(firstChild)
-                                null
-                            }
-                            else -> {
-                                null
-                            }
-                        }
-                    }
-                }
+                nestingLevel = AtomicInteger()
+                val pair = getNestedFieldType(classModel, key, nestingLevel, node)
+                listGenericType = pair.second
+                pair.first
             }
             else -> null
         }
-        return FieldModel(getUniqueNodeName(classModel, key), key, type, ifObjectName, listGenericType, fieldWarnings)
+        return FieldModel(getUniqueNodeName(classModel, key), key, type, ifObjectName, listGenericType, nestingLevel)
+    }
+
+    private fun getNestedFieldType(classModel: ObjectClassModel,
+                                   name: String,
+                                   nestingLevel: AtomicInteger,
+                                   node: JsonNode): Pair<String?, FieldType> {
+        nestingLevel.incrementAndGet()
+        var type: FieldType = FieldType.OBJECT
+        var className: String? = null
+        node.first()?.let {
+            when {
+                it.isObject -> {
+                    val innerClassName = getUniqueClassName(name).capitalize()
+                    createAndFillClass(innerClassName, it, null)
+                    type = FieldType.OBJECT
+                    className = innerClassName
+                }
+                it.isArray -> {
+                    return getNestedFieldType(classModel, name, nestingLevel, it)
+                }
+                it.isPrimitive() ||
+                        it.isNull -> {
+                    type = getFieldType(it)
+                    className = null
+                }
+                else -> {
+                    type = getFieldType(it)
+                    className = null
+                }
+            }
+        }
+
+        return Pair(className, type)
     }
 
     private fun getFieldType(node: JsonNode): FieldType {
@@ -73,38 +83,21 @@ class NodeToClassesConverter {
     }
 
     private fun createAndFillClass(name: String, node: JsonNode?, parentClass: ObjectClassModel? = null) {
-        val classModel = ObjectClassModel()
+        val classModel = ObjectClassModel(getUniqueClassName(name).capitalize())
+        classModels.add(classModel)
         when {
             node?.isObject == true -> {
-                classModel.name = name.capitalize()
                 classModel.parentClass = parentClass
-                classModels.add(classModel)
                 val fields = node.fields()
                 fields.forEach {
                     classModel.fields.add(createUniqueField(classModel, it.key, it.value))
                 }
             }
             node?.isArray == true -> {
-                val child: JsonNode? = node.get(0)
-                if(child != null) {
-                    val fieldType = getFieldType(child)
-                    val newName = "list"
-                    if(fieldType == FieldType.OBJECT || fieldType == FieldType.LIST) {
-                        val className = getUniqueClassName(newName).capitalize()
-                        createAndFillClass(className, child, classModel)
-                        classModel.fields.add(FieldModel(newName, name, FieldType.LIST, className))
-                    } else {
-                        classModel.fields.add(FieldModel(newName, name, fieldType))
-                    }
-                    classModels.add(classModel)
-                }
-            }
-            else -> {
-                classModel.name = name
+                classModel.fields.add(createUniqueField(classModel, classModel.name, node))
             }
 //            node != null -> generateSingleVar(node.name, node.value)
         }
-        classModels.add(classModel)
     }
 
     fun buildClasses(node: JsonMutableTreeNode): NodeToClassesConverter {
@@ -150,7 +143,11 @@ class NodeToClassesConverter {
     }
 
     private fun getUniqueNameFromMap(map: HashMap<String, Int>, name: String): String {
-        val newName = reformatName(name)
+        val newName = if (name.startsWith("[")) {
+            getUniqueClassName("ArrayListOf")
+        } else {
+            reformatName(name)
+        }
         val count = map[newName]
         return if (count == null) {
             map[newName] = 1

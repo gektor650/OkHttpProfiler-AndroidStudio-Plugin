@@ -32,6 +32,13 @@ class KotlinModelPrinter(private val classModels: List<ObjectClassModel>) : Base
         }
     }
 
+    override fun getListType(field: FieldModel): String {
+        if(field.genericType != null) {
+            return field.genericType.kotlin
+        }
+        return field.type.kotlin
+    }
+
     override fun build(): StringBuilder {
         addImport()
         classModels.forEach { classModel ->
@@ -48,21 +55,14 @@ class KotlinModelPrinter(private val classModels: List<ObjectClassModel>) : Base
                 builder.append(classModel.name)
                 builder.append(ARG_START)
                 builder.append(LINE_BREAK)
-                builder.append(LINE_BREAK)
                 classModel.fields.forEachIndexed { index, field ->
                     addField(field)
                     if (index != classModel.fields.size - 1) {
-                        if (field.fieldWarning?.isNotEmpty() == true) {
-                            builder.append(TODO, field.fieldWarning)
-                        }
                         builder.append(ARG_DELIMITER)
                     }
                     builder.append(LINE_BREAK)
-                    builder.append(LINE_BREAK)
                 }
-                builder.append(LINE_BREAK)
                 builder.append(ARG_END)
-                builder.append(LINE_BREAK)
                 builder.append(LINE_BREAK)
             }
         }

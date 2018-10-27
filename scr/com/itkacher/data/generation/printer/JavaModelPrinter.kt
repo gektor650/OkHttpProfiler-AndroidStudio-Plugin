@@ -22,14 +22,7 @@ class JavaModelPrinter(private val classModels: List<ObjectClassModel>) : BaseCl
         )
         when {
             field.type == FieldType.LIST -> {
-                builder.append(FieldType.LIST.java)
-                builder.append(GENERIC_START)
-                if (field.typeObjectName != null) {
-                    builder.append(field.typeObjectName)
-                } else {
-                    builder.append(field.genericType?.javaWrapper)
-                }
-                builder.append(GENERIC_END)
+                addListDeclaration(field)
             }
             field.typeObjectName != null -> builder.append(field.typeObjectName)
             else -> builder.append(field.type.java)
@@ -38,7 +31,13 @@ class JavaModelPrinter(private val classModels: List<ObjectClassModel>) : BaseCl
         builder.append(field.name)
         builder.append(LINE_END)
         builder.append(LINE_BREAK)
-        builder.append(LINE_BREAK)
+    }
+
+    override fun getListType(field: FieldModel): String {
+        if(field.genericType != null) {
+            return field.genericType.javaWrapper
+        }
+        return field.type.javaWrapper
     }
 
     private fun addNullableAnnotation(): JavaModelPrinter {
@@ -58,19 +57,14 @@ class JavaModelPrinter(private val classModels: List<ObjectClassModel>) : BaseCl
             builder.append(classModel.name)
             builder.append(START_OF_CLASS)
             builder.append(LINE_BREAK)
-            builder.append(LINE_BREAK)
 
             if (classModel.fields.isEmpty()) {
                 builder.append(TODO_NULLABLE)
             } else {
                 classModel.fields.forEach { field ->
-                    if (field.fieldWarning?.isNotEmpty() == true) {
-                        builder.append(TODO, field.fieldWarning)
-                    }
                     addField(field)
                 }
             }
-            builder.append(LINE_BREAK)
             if (classModels.size > 1 && index == 0) {
 
             } else if (classModels.size > 1 && index == classModels.size - 1) {
