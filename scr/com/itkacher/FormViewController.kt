@@ -3,6 +3,7 @@ package com.itkacher
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.fileChooser.FileChooser
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
+import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.psi.PsiManager
@@ -149,7 +150,8 @@ class FormViewController(private val form: MainForm, settings: PluginPreferences
     }
 
     private fun chooseFileAndWriteAndOpen(isJava: Boolean, classes: List<ObjectClassModel>) {
-        val directory = FileChooser.chooseFiles(FileChooserDescriptor(false, true, false, false, false, false), project, null)
+        val descriptor = FileChooserDescriptorFactory.createSingleFolderDescriptor()
+        val directory = FileChooser.chooseFiles(descriptor, project, null)
         directory.firstOrNull()?.let { selectedVirtualFile ->
             val file: File? = classes.firstOrNull()?.let {
                 val extension = if (isJava) {
