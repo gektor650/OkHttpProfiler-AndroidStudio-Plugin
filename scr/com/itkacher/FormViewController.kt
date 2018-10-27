@@ -143,7 +143,7 @@ class FormViewController(private val form: MainForm, settings: PluginPreferences
         val text = node.value.toString()
         val directory = FileChooser.chooseFiles(FileChooserDescriptor(false, true, false, false, false, false), project, null)
         directory.firstOrNull()?.let { selectedVirtualFile ->
-            val file = createUniqueFile(selectedVirtualFile.path, "response", "json")
+            val file = createUniqueFile(selectedVirtualFile.path, "response", ".json")
             writeAndOpenFile(file, text)
         }
     }
