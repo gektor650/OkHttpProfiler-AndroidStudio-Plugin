@@ -151,15 +151,21 @@ class FormViewController(private val form: MainForm, settings: PluginPreferences
 
     private fun chooseFileAndWriteAndOpen(isJava: Boolean, classes: List<ObjectClassModel>) {
         val descriptor = FileChooserDescriptorFactory.createSingleFolderDescriptor()
-        val directory = FileChooser.chooseFiles(descriptor, project, null)
-        directory.firstOrNull()?.let { selectedVirtualFile ->
+        val selected = FileChooser.chooseFiles(descriptor, project, null)
+        selected.firstOrNull()?.let { selectedVirtualFile ->
+            val pathToDirectory = if(selectedVirtualFile.isDirectory) {
+                selectedVirtualFile.path
+            } else {
+                val theEndOfPath = selectedVirtualFile.path.length - selectedVirtualFile.name.length - 1
+                selectedVirtualFile.path.substring(0, theEndOfPath)
+            }
             val file: File? = classes.firstOrNull()?.let {
                 val extension = if (isJava) {
                     ".java"
                 } else {
                     ".kt"
                 }
-                val file = createUniqueFile(selectedVirtualFile.path, it.name, extension)
+                val file = createUniqueFile(pathToDirectory, it.name, extension)
                 it.name = file.name.split(".")[0]
                 file
             }
