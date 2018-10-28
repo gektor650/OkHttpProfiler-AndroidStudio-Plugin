@@ -54,7 +54,7 @@ public class MainForm {
         });
 
         try {
-            URL url = new URL("https://okhttp-profiler.firebaseapp.com/plugin_initial.html");
+            URL url = new URL("https://itkacher.github.io/OkHttpProfiler/plugin_initial.html");
             initialHtml.setPage(url);
         } catch (IOException e) {
             e.printStackTrace();
