@@ -143,7 +143,9 @@ class DebuggerToolWindowFactory : ToolWindowFactory, DumbAware {
             if(selectedDevice != null) {
                 attachToDevice(selectedDevice)
             } else {
-                attachToDevice(devices.first())
+                devices.firstOrNull()?.let {
+                    attachToDevice(it)
+                }
             }
         } else {
             debugger.mainContainer.isVisible = false
@@ -189,7 +191,7 @@ class DebuggerToolWindowFactory : ToolWindowFactory, DumbAware {
             debugger.appList.selectedItem = defaultSelection
             selectedProcess = defaultSelection
         } else {
-            selectedProcess = debugProcessList.first()
+            selectedProcess = debugProcessList.firstOrNull()
         }
     }
 
