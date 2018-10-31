@@ -2,12 +2,12 @@
     <id>com.itkacher.okhttpprofiler</id>
     <name>OkHttp Profiler</name>
     <vendor email="itkacher@gmail.com" url="http://www.itkacher.com">itkacher.com</vendor>
-    <version>1.0.3</version>
+    <version>1.0.4</version>
     <idea-version since-build="180"/>
     <description><![CDATA[
-    <p>OkHttp Profiler plugin can show detail request information from <b>OkHttp</b> library directly in your Android Studio toolwindow. </p>
+    <p>OkHttp Profiler plugin can show detail request information from <b>OkHttp</b> library directly in the Android Studio toolwindow. </p>
+    <p>Also, you can easily create a Java/Kotlin model from the response data. Just click the right mouse button on a root element of the tree (or any other), choose Java or Kotlin, and select a folder for a new file in the project (for example project/app/src/main/java/com/example/data).</p>
     <p>It supports <b>OkHttp</b> v3 (http://square.github.io/okhttp/) or <b>Retrofit</b> v2 (https://square.github.io/retrofit/)</p>
-
     <p><b>Works ONLY with ANDROID</b></p>
 
     <p>More details by link: <a href="https://github.com/itkacher/OkHttpProfiler">https://github.com/itkacher/OkHttpProfiler</a></p>
