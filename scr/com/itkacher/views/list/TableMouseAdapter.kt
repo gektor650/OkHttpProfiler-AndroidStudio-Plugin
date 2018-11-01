@@ -1,11 +1,7 @@
 package com.itkacher.views.list
 
 import com.itkacher.Resources
-import com.itkacher.data.DebugRequest
 import com.itkacher.util.SystemUtil
-import java.awt.Desktop
-import java.awt.Toolkit
-import java.awt.datatransfer.StringSelection
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 import javax.swing.JMenuItem
@@ -13,7 +9,7 @@ import javax.swing.JPopupMenu
 import javax.swing.JTable
 
 
-class TableMouseAdapter : MouseAdapter() {
+class TableMouseAdapter(val listener: TableClickListener) : MouseAdapter() {
 
     private fun popupEvent(e: MouseEvent) {
         val x = e.x
@@ -49,6 +45,16 @@ class TableMouseAdapter : MouseAdapter() {
     override fun mousePressed(e: MouseEvent) {
         if (e.isPopupTrigger) {
             popupEvent(e)
+        } else {
+            mouseEvent(e)
+        }
+    }
+
+    private fun mouseEvent(e: MouseEvent) {
+        val source = e.source as JTable
+        val row = source.rowAtPoint(e.point)
+        (source.model as RequestTableModel).getRequest(row)?.let {
+            listener.leftButtonClick(it)
         }
     }
 

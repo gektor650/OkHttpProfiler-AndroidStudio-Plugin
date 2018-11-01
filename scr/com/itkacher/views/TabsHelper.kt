@@ -14,6 +14,7 @@ import com.itkacher.views.json.JTreeMenuMouseAdapter
 import com.jgoodies.common.collect.ArrayListModel
 import java.io.IOException
 import java.util.ArrayList
+import java.util.concurrent.*
 import javax.swing.JTabbedPane
 import javax.swing.ListModel
 import javax.swing.event.ChangeListener
@@ -26,10 +27,10 @@ class TabsHelper(private val tabbedPane: JTabbedPane,
                  private val settings: PluginPreferences,
                  private val menuListener: JTreeItemMenuListener) {
 
-    private val nodeHash = HashMap<String, JsonNode>()
+    private val executor = Executors.newFixedThreadPool(3)
 
     private val tabListener = ChangeListener {
-        if(tabbedPane.selectedIndex != -1) {
+        if (tabbedPane.selectedIndex != -1) {
             val selectedTabName = tabbedPane.getTitleAt(tabbedPane.selectedIndex)
             settings.setSelectedTabName(selectedTabName)
         }
@@ -77,16 +78,9 @@ class TabsHelper(private val tabbedPane: JTabbedPane,
     }
 
     private fun parseModel(jsonString: String): JsonNode? {
-        if (nodeHash.containsKey(jsonString)) {
-            return nodeHash[jsonString]
-        }
         val objectMapper = ObjectMapper()
         return try {
-            val node: JsonNode? = objectMapper.readTree(jsonString)
-            if (node != null) {
-                nodeHash[jsonString] = node
-            }
-            node
+            objectMapper.readTree(jsonString)
         } catch (e: IOException) {
             null
         }
@@ -111,14 +105,33 @@ class TabsHelper(private val tabbedPane: JTabbedPane,
 
     fun selectByPreference() {
         val selectedTab = settings.getSelectedTabName()
-        if(selectedTab != null) {
-            for(i in 0 until tabbedPane.tabCount) {
-                if(tabbedPane.getTitleAt(i) == selectedTab) {
+        if (selectedTab != null) {
+            for (i in 0 until tabbedPane.tabCount) {
+                if (tabbedPane.getTitleAt(i) == selectedTab) {
                     tabbedPane.selectedIndex = i
                     break
                 }
             }
         }
+    }
+
+    fun addJsonTabs(treeTabName: String, formattedTabName: String, requestJson: String) {
+        executor.execute((Runnable {
+            val jsonNode = parseModel(requestJson)
+            jsonNode?.let {
+                val prettyJson = prettifyNode(it)
+                val jsonTreeForm = JsonTreeForm()
+                val model = JsonTreeModel(jsonNode)
+                jsonTreeForm.tree.model = model
+                jsonTreeForm.tree.addMouseListener(JTreeMenuMouseAdapter(menuListener))
+                tabbedPane.addTab(Resources.getString(treeTabName), jsonTreeForm.treePanel)
+
+                val plain = JsonPlainTextForm()
+                plain.editorPane.text = prettyJson
+                plain.editorPane.caretPosition = 0
+                tabbedPane.addTab(Resources.getString(formattedTabName), plain.panel)
+            }
+        }))
     }
 
 }

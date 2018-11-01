@@ -20,21 +20,18 @@ import com.itkacher.views.form.DataForm
 import com.itkacher.views.form.MainForm
 import com.itkacher.views.json.JTreeItemMenuListener
 import com.itkacher.views.json.JsonMutableTreeNode
-import com.itkacher.views.list.ForcedListSelectionModel
-import com.itkacher.views.list.RequestTableCellRenderer
-import com.itkacher.views.list.RequestTableModel
-import com.itkacher.views.list.TableMouseAdapter
+import com.itkacher.views.list.*
 import java.awt.BorderLayout
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
-import java.io.File
-import javax.swing.JTable
-import java.io.IOException
-import java.io.FileWriter
 import java.io.BufferedWriter
+import java.io.File
+import java.io.FileWriter
+import java.io.IOException
+import javax.swing.JTable
 
 
-class FormViewController(private val form: MainForm, settings: PluginPreferences, private val project: Project) : JTreeItemMenuListener {
+class FormViewController(private val form: MainForm, settings: PluginPreferences, private val project: Project) : JTreeItemMenuListener, TableClickListener {
 
     private val dataForm = DataForm()
     private val requestTable = dataForm.requestTable
@@ -43,18 +40,11 @@ class FormViewController(private val form: MainForm, settings: PluginPreferences
     private var firstLaunch = true
 
     init {
-        requestTable.addMouseListener(TableMouseAdapter())
+        requestTable.addMouseListener(TableMouseAdapter(this))
         requestTable.autoResizeMode = JTable.AUTO_RESIZE_ALL_COLUMNS
         requestTable.model = requestListModel
         requestTable.setDefaultRenderer(Any::class.java, RequestTableCellRenderer())
         requestTable.selectionModel = ForcedListSelectionModel()
-        requestTable.selectionModel.addListSelectionListener { it ->
-            if (!it.valueIsAdjusting) {
-                requestListModel.getRequest(requestTable.selectedRow)?.let {
-                    fillRequestInfo(it)
-                }
-            }
-        }
         resizeTableColumnsWidth()
         form.clearButton.addActionListener {
             requestListModel.clear()
@@ -83,6 +73,10 @@ class FormViewController(private val form: MainForm, settings: PluginPreferences
         })
     }
 
+    override fun leftButtonClick(debugRequest: DebugRequest) {
+        fillRequestInfo(debugRequest)
+    }
+
     private fun fillRequestInfo(debugRequest: DebugRequest) {
         tabsHelper.removeListener()
         tabsHelper.removeAllTabs()
@@ -93,15 +87,18 @@ class FormViewController(private val form: MainForm, settings: PluginPreferences
         if (debugRequest.isClosed) {
             tabsHelper.addRawTab(Tabs.TAB_RAW_RESPONSE.resName, debugRequest.getRawResponse())
             val requestJson = debugRequest.getRequestBodyString()
-            tabsHelper.addJsonTab(Tabs.TAB_JSON_REQUEST.resName, requestJson)
-            tabsHelper.addFormattedTab(Tabs.TAB_REQUEST_FORMATTED.resName, requestJson)
+            tabsHelper.addJsonTabs(Tabs.TAB_JSON_REQUEST.resName, Tabs.TAB_REQUEST_FORMATTED.resName, requestJson)
+
+//            tabsHelper.addJsonTab(Tabs.TAB_JSON_REQUEST.resName, requestJson)
+//            tabsHelper.addFormattedTab(Tabs.TAB_REQUEST_FORMATTED.resName, requestJson)
 
             val responseBody = debugRequest.getResponseBodyString()
             if (debugRequest.responseHeaders.isNotEmpty()) {
                 tabsHelper.addHeaderTab(Tabs.TAB_RESPONSE_HEADERS.resName, debugRequest.responseHeaders)
             }
-            tabsHelper.addJsonTab(Tabs.TAB_JSON_RESPONSE.resName, responseBody)
-            tabsHelper.addFormattedTab(Tabs.TAB_RESPONSE_FORMATTED.resName, responseBody)
+            tabsHelper.addJsonTabs(Tabs.TAB_JSON_RESPONSE.resName, Tabs.TAB_RESPONSE_FORMATTED.resName, responseBody)
+//            tabsHelper.addJsonTab(Tabs.TAB_JSON_RESPONSE.resName, responseBody)
+//            tabsHelper.addFormattedTab(Tabs.TAB_RESPONSE_FORMATTED.resName, responseBody)
             if (debugRequest.errorMessage?.isNotEmpty() == true) {
                 tabsHelper.addRawTab(Tabs.TAB_ERROR_MESSAGE.resName, debugRequest.errorMessage)
             }
@@ -153,7 +150,7 @@ class FormViewController(private val form: MainForm, settings: PluginPreferences
         val descriptor = FileChooserDescriptorFactory.createSingleFolderDescriptor()
         val selected = FileChooser.chooseFiles(descriptor, project, null)
         selected.firstOrNull()?.let { selectedVirtualFile ->
-            val pathToDirectory = if(selectedVirtualFile.isDirectory) {
+            val pathToDirectory = if (selectedVirtualFile.isDirectory) {
                 selectedVirtualFile.path
             } else {
                 val theEndOfPath = selectedVirtualFile.path.length - selectedVirtualFile.name.length - 1
