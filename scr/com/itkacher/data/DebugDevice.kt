@@ -12,7 +12,7 @@ data class DebugDevice(
         } else {
             val deviceName = device.name.safe().replace("_", " ")
             val shortened = if(deviceName.length > 20) {
-                deviceName.substring(0, 20).capitalize()
+                deviceName.substring(0, 20)
             } else {
                 deviceName
             }
