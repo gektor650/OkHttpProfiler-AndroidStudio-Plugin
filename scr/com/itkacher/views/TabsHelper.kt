@@ -57,23 +57,24 @@ class TabsHelper(private val tabbedPane: JTabbedPane,
                     addHeaderTab(Tabs.TAB_REQUEST_HEADERS.resName, debugRequest.requestHeaders)
                 }
                 if (debugRequest.isClosed) {
-                    addRawTab(Tabs.TAB_RAW_RESPONSE.resName, debugRequest.getRawResponse())
                     if (requestJsonPair != null) {
+                        addTreeTab(Tabs.TAB_JSON_REQUEST.resName, requestJsonPair.first)
                         requestJsonPair.second?.let {
                             addFormattedTab(Tabs.TAB_REQUEST_FORMATTED.resName, it)
                         }
-                        addTreeTab(Tabs.TAB_JSON_REQUEST.resName, requestJsonPair.first)
                     }
+
+                    addRawTab(Tabs.TAB_RAW_RESPONSE.resName, debugRequest.getRawResponse())
 
                     if (debugRequest.responseHeaders.isNotEmpty()) {
                         addHeaderTab(Tabs.TAB_RESPONSE_HEADERS.resName, debugRequest.responseHeaders)
                     }
 
                     if (responseJsonPair != null) {
+                        addTreeTab(Tabs.TAB_JSON_RESPONSE.resName, responseJsonPair.first)
                         responseJsonPair.second?.let {
                             addFormattedTab(Tabs.TAB_RESPONSE_FORMATTED.resName, it)
                         }
-                        addTreeTab(Tabs.TAB_JSON_RESPONSE.resName, responseJsonPair.first)
                     }
 
                     if (debugRequest.errorMessage?.isNotEmpty() == true) {
