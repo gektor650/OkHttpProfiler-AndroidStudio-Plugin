@@ -2,7 +2,7 @@
     <id>com.itkacher.okhttpprofiler</id>
     <name>OkHttp Profiler</name>
     <vendor email="itkacher@gmail.com" url="http://www.itkacher.com">itkacher.com</vendor>
-    <version>1.0.5</version>
+    <version>1.0.6</version>
     <idea-version since-build="180"/>
     <description><![CDATA[
     <p>The OkHttp Profiler plugin can show detail request information from the <b>OkHttp</b> library directly in the Android Studio toolwindow. </p>

@@ -28,6 +28,7 @@ import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
 import java.io.IOException
+import java.util.*
 import javax.swing.JTable
 
 
@@ -54,6 +55,13 @@ class FormViewController(private val form: MainForm, settings: PluginPreferences
             requestTable.clearSelection()
             requestTable.scrollRectToVisible(requestTable.getCellRect(requestTable.rowCount - 1, 0, true))
         }
+        requestTable.selectionModel.addListSelectionListener { it ->
+            if (!it.valueIsAdjusting) {
+                requestListModel.getRequest(requestTable.selectedRow)?.let {
+                    fillRequestInfo(it)
+                }
+            }
+        }
     }
 
     private fun resizeTableColumnsWidth() {
@@ -74,37 +82,11 @@ class FormViewController(private val form: MainForm, settings: PluginPreferences
     }
 
     override fun leftButtonClick(debugRequest: DebugRequest) {
-        fillRequestInfo(debugRequest)
+//        fillRequestInfo(debugRequest)
     }
 
     private fun fillRequestInfo(debugRequest: DebugRequest) {
-        tabsHelper.removeListener()
-        tabsHelper.removeAllTabs()
-        tabsHelper.addRawTab(Tabs.TAB_RAW_REQUEST.resName, debugRequest.getRawRequest())
-        if (debugRequest.requestHeaders.isNotEmpty()) {
-            tabsHelper.addHeaderTab(Tabs.TAB_REQUEST_HEADERS.resName, debugRequest.requestHeaders)
-        }
-        if (debugRequest.isClosed) {
-            tabsHelper.addRawTab(Tabs.TAB_RAW_RESPONSE.resName, debugRequest.getRawResponse())
-            val requestJson = debugRequest.getRequestBodyString()
-            tabsHelper.addJsonTabs(Tabs.TAB_JSON_REQUEST.resName, Tabs.TAB_REQUEST_FORMATTED.resName, requestJson)
-
-//            tabsHelper.addJsonTab(Tabs.TAB_JSON_REQUEST.resName, requestJson)
-//            tabsHelper.addFormattedTab(Tabs.TAB_REQUEST_FORMATTED.resName, requestJson)
-
-            val responseBody = debugRequest.getResponseBodyString()
-            if (debugRequest.responseHeaders.isNotEmpty()) {
-                tabsHelper.addHeaderTab(Tabs.TAB_RESPONSE_HEADERS.resName, debugRequest.responseHeaders)
-            }
-            tabsHelper.addJsonTabs(Tabs.TAB_JSON_RESPONSE.resName, Tabs.TAB_RESPONSE_FORMATTED.resName, responseBody)
-//            tabsHelper.addJsonTab(Tabs.TAB_JSON_RESPONSE.resName, responseBody)
-//            tabsHelper.addFormattedTab(Tabs.TAB_RESPONSE_FORMATTED.resName, responseBody)
-            if (debugRequest.errorMessage?.isNotEmpty() == true) {
-                tabsHelper.addRawTab(Tabs.TAB_ERROR_MESSAGE.resName, debugRequest.errorMessage)
-            }
-        }
-        tabsHelper.selectByPreference()
-        tabsHelper.addListener()
+        tabsHelper.fill(debugRequest)
     }
 
     fun insertOrUpdate(debugRequest: DebugRequest) {

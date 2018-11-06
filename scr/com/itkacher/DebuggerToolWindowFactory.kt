@@ -102,7 +102,8 @@ class DebuggerToolWindowFactory : ToolWindowFactory, DumbAware {
                 if (model.pid == clientData.pid) {
                     log("updateClient ${clientData.pid}")
                     model.packageName = clientData.packageName
-                    if(model.packageName == prefSelectedPackage) {
+                    model.clientDescription = clientData.clientDescription
+                    if(model.getClientKey() == prefSelectedPackage) {
                         debugger.appList.selectedItem = model
                         selectedProcess = model
                     }
@@ -169,7 +170,7 @@ class DebuggerToolWindowFactory : ToolWindowFactory, DumbAware {
                     clientData.packageName,
                     clientData.clientDescription
             )
-            if(prefSelectedPackage == process.packageName) {
+            if(prefSelectedPackage == process.getClientKey()) {
                 defaultSelection = process
             }
             log("addClient $process")
@@ -180,7 +181,7 @@ class DebuggerToolWindowFactory : ToolWindowFactory, DumbAware {
         debugger.appList.addItemListener {
             if (it.stateChange == ItemEvent.SELECTED) {
                 val client = debugger.appList.selectedItem as DebugProcess
-                preferences.setSelectedProcessPackage(client.packageName)
+                preferences.setSelectedProcessPackage(client.getClientKey())
                 defaultSelection = client
                 selectedProcess = client
                 log("selectedProcess $defaultSelection")

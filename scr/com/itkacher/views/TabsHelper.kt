@@ -2,8 +2,10 @@ package com.itkacher.views
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.intellij.openapi.application.ApplicationManager
 import com.itkacher.PluginPreferences
 import com.itkacher.Resources
+import com.itkacher.data.DebugRequest
 import com.itkacher.views.form.HeaderForm
 import com.itkacher.views.form.JsonPlainTextForm
 import com.itkacher.views.form.JsonTreeForm
@@ -13,13 +15,10 @@ import com.itkacher.views.json.JsonTreeModel
 import com.itkacher.views.json.JTreeMenuMouseAdapter
 import com.jgoodies.common.collect.ArrayListModel
 import java.io.IOException
-import java.util.ArrayList
 import java.util.concurrent.*
 import javax.swing.JTabbedPane
 import javax.swing.ListModel
 import javax.swing.event.ChangeListener
-import kotlin.collections.HashMap
-import kotlin.collections.set
 
 
 @Suppress("UNCHECKED_CAST")
@@ -29,6 +28,9 @@ class TabsHelper(private val tabbedPane: JTabbedPane,
 
     private val executor = Executors.newFixedThreadPool(3)
 
+    @Volatile
+    private var currentRequest: DebugRequest? = null
+
     private val tabListener = ChangeListener {
         if (tabbedPane.selectedIndex != -1) {
             val selectedTabName = tabbedPane.getTitleAt(tabbedPane.selectedIndex)
@@ -36,52 +38,88 @@ class TabsHelper(private val tabbedPane: JTabbedPane,
         }
     }
 
-    fun addListener() {
+
+    fun fill(debugRequest: DebugRequest) {
+        currentRequest = debugRequest
+        removeListener()
+        removeAllTabs()
+        executor.execute {
+            val requestJson = debugRequest.getRequestBodyString()
+            val responseBody = debugRequest.getResponseBodyString()
+
+            val requestJsonPair = getTreeModelPrettifyPair(requestJson)
+            val responseJsonPair = getTreeModelPrettifyPair(responseBody)
+
+            ApplicationManager.getApplication().invokeLater {
+                if(currentRequest != debugRequest) return@invokeLater
+                addRawTab(Tabs.TAB_RAW_REQUEST.resName, debugRequest.getRawRequest())
+                if (debugRequest.requestHeaders.isNotEmpty()) {
+                    addHeaderTab(Tabs.TAB_REQUEST_HEADERS.resName, debugRequest.requestHeaders)
+                }
+                if (debugRequest.isClosed) {
+                    addRawTab(Tabs.TAB_RAW_RESPONSE.resName, debugRequest.getRawResponse())
+                    if (requestJsonPair != null) {
+                        requestJsonPair.second?.let {
+                            addFormattedTab(Tabs.TAB_REQUEST_FORMATTED.resName, it)
+                        }
+                        addTreeTab(Tabs.TAB_JSON_REQUEST.resName, requestJsonPair.first)
+                    }
+
+                    if (debugRequest.responseHeaders.isNotEmpty()) {
+                        addHeaderTab(Tabs.TAB_RESPONSE_HEADERS.resName, debugRequest.responseHeaders)
+                    }
+
+                    if (responseJsonPair != null) {
+                        responseJsonPair.second?.let {
+                            addFormattedTab(Tabs.TAB_RESPONSE_FORMATTED.resName, it)
+                        }
+                        addTreeTab(Tabs.TAB_JSON_RESPONSE.resName, responseJsonPair.first)
+                    }
+
+                    if (debugRequest.errorMessage?.isNotEmpty() == true) {
+                        addRawTab(Tabs.TAB_ERROR_MESSAGE.resName, debugRequest.errorMessage)
+                    }
+                }
+                selectByPreference()
+                addListener()
+            }
+        }
+    }
+
+    private fun addListener() {
         tabbedPane.addChangeListener(tabListener)
     }
 
-    fun removeListener() {
+    private fun removeListener() {
         tabbedPane.removeChangeListener(tabListener)
-    }
-
-    fun addJsonTab(titleKey: String, json: String) {
-        val jsonNode = parseModel(json)
-        if (jsonNode != null) {
-            val model = JsonTreeModel(jsonNode)
-            val jsonTreeForm = JsonTreeForm()
-            jsonTreeForm.tree.model = model
-            jsonTreeForm.tree.addMouseListener(JTreeMenuMouseAdapter(menuListener))
-            tabbedPane.addTab(Resources.getString(titleKey), jsonTreeForm.treePanel)
-        }
     }
 
     fun removeAllTabs() {
         tabbedPane.removeAll()
     }
 
-    fun addFormattedTab(titleKey: String, json: String) {
-        val jsonNode = parseModel(json)
-        if (jsonNode != null) {
-            val prettyJson = prettifyNode(jsonNode)
-            val plain = JsonPlainTextForm()
-            plain.editorPane.text = prettyJson
-            plain.editorPane.caretPosition = 0
-            tabbedPane.addTab(Resources.getString(titleKey), plain.panel)
-        }
+    private fun addFormattedTab(titleKey: String, json: String) {
+        val plain = JsonPlainTextForm()
+        plain.editorPane.text = json
+        plain.editorPane.caretPosition = 0
+        tabbedPane.addTab(Resources.getString(titleKey), plain.panel)
     }
 
-    fun addRawTab(titleKey: String, data: String?) {
-        val form = RawForm()
-        form.editor.text = data
-        form.editor.caretPosition = 0
+    private fun addRawTab(titleKey: String, data: String?) {
+        val form = RawForm(data)
         tabbedPane.addTab(Resources.getString(titleKey), form.panel)
     }
 
     private fun parseModel(jsonString: String): JsonNode? {
-        val objectMapper = ObjectMapper()
-        return try {
-            objectMapper.readTree(jsonString)
-        } catch (e: IOException) {
+        val trimmed = jsonString.trim()
+        return if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
+            val objectMapper = ObjectMapper()
+            try {
+                objectMapper.readTree(trimmed)
+            } catch (e: IOException) {
+                null
+            }
+        } else {
             null
         }
     }
@@ -96,14 +134,14 @@ class TabsHelper(private val tabbedPane: JTabbedPane,
         }
     }
 
-    fun addHeaderTab(resName: String, requestHeaders: List<String>) {
+    private fun addHeaderTab(resName: String, requestHeaders: List<String>) {
         val form = HeaderForm()
         val listModel = ArrayListModel<String>(requestHeaders)
         form.headersList.model = listModel as ListModel<String>
         tabbedPane.addTab(Resources.getString(resName), form.panel)
     }
 
-    fun selectByPreference() {
+    private fun selectByPreference() {
         val selectedTab = settings.getSelectedTabName()
         if (selectedTab != null) {
             for (i in 0 until tabbedPane.tabCount) {
@@ -115,23 +153,21 @@ class TabsHelper(private val tabbedPane: JTabbedPane,
         }
     }
 
-    fun addJsonTabs(treeTabName: String, formattedTabName: String, requestJson: String) {
-        executor.execute((Runnable {
-            val jsonNode = parseModel(requestJson)
-            jsonNode?.let {
-                val prettyJson = prettifyNode(it)
-                val jsonTreeForm = JsonTreeForm()
-                val model = JsonTreeModel(jsonNode)
-                jsonTreeForm.tree.model = model
-                jsonTreeForm.tree.addMouseListener(JTreeMenuMouseAdapter(menuListener))
-                tabbedPane.addTab(Resources.getString(treeTabName), jsonTreeForm.treePanel)
+    private fun addTreeTab(name: String, model: JsonTreeModel) {
+        val jsonTreeForm = JsonTreeForm()
+        jsonTreeForm.tree.model = model
+        jsonTreeForm.tree.addMouseListener(JTreeMenuMouseAdapter(menuListener))
+        tabbedPane.addTab(Resources.getString(name), jsonTreeForm.treePanel)
+    }
 
-                val plain = JsonPlainTextForm()
-                plain.editorPane.text = prettyJson
-                plain.editorPane.caretPosition = 0
-                tabbedPane.addTab(Resources.getString(formattedTabName), plain.panel)
-            }
-        }))
+    private fun getTreeModelPrettifyPair(requestJson: String): Pair<JsonTreeModel, String?>? {
+        val jsonNode = parseModel(requestJson)
+        jsonNode?.let {
+            val prettyJson = prettifyNode(it)
+            val model = JsonTreeModel(jsonNode)
+            return Pair(model, prettyJson)
+        }
+        return null
     }
 
 }
