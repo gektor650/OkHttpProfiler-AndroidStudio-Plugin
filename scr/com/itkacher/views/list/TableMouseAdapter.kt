@@ -1,6 +1,7 @@
 package com.itkacher.views.list
 
 import com.itkacher.Resources
+import com.itkacher.data.generation.CurlRequest
 import com.itkacher.util.SystemUtil
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
@@ -36,7 +37,14 @@ class TableMouseAdapter(val listener: TableClickListener) : MouseAdapter() {
                 SystemUtil.copyToClipBoard(model.getResponseBodyString())
             }
         }
+        val copyCurlRequest = JMenuItem(Resources.getString("copy_curl_request"))
+        copyCurlRequest.addActionListener {
+            if(model != null) {
+                SystemUtil.copyToClipBoard(CurlRequest(model).toString())
+            }
+        }
         popup.add(copyUrl)
+        popup.add(copyCurlRequest)
         popup.add(openUrl)
         popup.add(copyResponse)
         popup.show(source, x, y)
