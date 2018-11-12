@@ -21,9 +21,9 @@ class CurlRequest(private val debugRequest: DebugRequest) {
             builder
                     .append(HEADER_PARAM)
                     .append(SPACE)
-                    .append(STRING_WRAPPER_1)
+                    .append(STRING_WRAPPER)
                     .append(header)
-                    .append(STRING_WRAPPER_1)
+                    .append(STRING_WRAPPER)
                     .append(SPACE)
         }
         val requestBodyString = debugRequest.getRequestBodyString()
@@ -31,17 +31,17 @@ class CurlRequest(private val debugRequest: DebugRequest) {
             builder
                     .append(DATA_BINARY)
                     .append(SPACE)
-                    .append(STRING_WRAPPER_2)
+                    .append(STRING_WRAPPER)
                     .append(requestBodyString)
-                    .append(STRING_WRAPPER_2)
+                    .append(STRING_WRAPPER)
                     .append(SPACE)
         }
 
         builder.append(COMPRESSED)
         builder.append(SPACE)
-        builder.append(STRING_WRAPPER_1)
+        builder.append(STRING_WRAPPER)
         builder.append(debugRequest.url)
-        builder.append(STRING_WRAPPER_1)
+        builder.append(STRING_WRAPPER)
 
         return builder.toString()
     }
@@ -52,10 +52,8 @@ class CurlRequest(private val debugRequest: DebugRequest) {
         const val METHOD = "-X"
         const val DATA_BINARY = "--data-binary"
         const val COMPRESSED = "--compressed"
-        const val STRING_WRAPPER_1 = "'"
-        const val STRING_WRAPPER_2 = '"'
+        const val STRING_WRAPPER = "'"
         const val SPACE = ' '
-        const val DELIMITER = ";"
     }
 
 }
