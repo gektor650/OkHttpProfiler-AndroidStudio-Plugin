@@ -42,7 +42,7 @@ class DebuggerToolWindowFactory : ToolWindowFactory, DumbAware {
                     val messageType = MessageType.fromString(sequences[2])
                     val debugRequest = RequestDataSource.logMessage(id, messageType, line.message)
                     if (debugRequest != null) {
-                        RequestDataSource.saveRequest(selected.getClientKey(), debugRequest)
+//                        RequestDataSource.saveRequest(selected.getClientKey(), debugRequest)
                         requestTableController.insertOrUpdate(debugRequest)
                     }
                 }
@@ -188,7 +188,7 @@ class DebuggerToolWindowFactory : ToolWindowFactory, DumbAware {
                 selectedProcess = client
                 log("selectedProcess $defaultSelection")
                 requestTableController.clear()
-                requestTableController.addAll(RequestDataSource.getRequestList(client.getClientKey()))
+//                requestTableController.addAll(RequestDataSource.getRequestList(client.getClientKey()))
             }
         }
         if (defaultSelection != null) {
