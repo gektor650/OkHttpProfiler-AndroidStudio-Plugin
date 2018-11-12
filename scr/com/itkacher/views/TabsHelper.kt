@@ -21,7 +21,6 @@ import javax.swing.ListModel
 import javax.swing.event.ChangeListener
 
 
-@Suppress("UNCHECKED_CAST")
 class TabsHelper(private val tabbedPane: JTabbedPane,
                  private val settings: PluginPreferences,
                  private val menuListener: JTreeItemMenuListener) {

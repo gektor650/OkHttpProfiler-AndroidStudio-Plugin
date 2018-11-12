@@ -66,4 +66,10 @@ class RequestTableModel : DefaultTableModel() {
     fun isFallenDown(row: Int): Boolean {
         return requestList.getOrNull(row)?.isFallenDown() ?: true
     }
+
+    fun addAll(requestList: List<DebugRequest>) {
+        for (request in requestList) {
+            addOrUpdate(request)
+        }
+    }
 }

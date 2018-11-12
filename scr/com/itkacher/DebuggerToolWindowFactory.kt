@@ -34,13 +34,15 @@ class DebuggerToolWindowFactory : ToolWindowFactory, DumbAware {
     private val deviceListener = object : AndroidLogcatService.LogcatListener {
         override fun onLogLineReceived(line: LogCatMessage) {
             val tag = line.tag
-            if (selectedProcess?.pid == line.pid && tag.startsWith(TAG_KEY)) {
+            val selected = selectedProcess
+            if (selected != null && selected.pid == line.pid && tag.startsWith(TAG_KEY)) {
                 val sequences = tag.split(TAG_DELIMITER)
                 if (sequences.size == 3) {
                     val id = sequences[1]
                     val messageType = MessageType.fromString(sequences[2])
                     val debugRequest = RequestDataSource.logMessage(id, messageType, line.message)
                     if (debugRequest != null) {
+                        RequestDataSource.saveRequest(selected.getClientKey(), debugRequest)
                         requestTableController.insertOrUpdate(debugRequest)
                     }
                 }
@@ -103,7 +105,7 @@ class DebuggerToolWindowFactory : ToolWindowFactory, DumbAware {
                     log("updateClient ${clientData.pid}")
                     model.packageName = clientData.packageName
                     model.clientDescription = clientData.clientDescription
-                    if(model.getClientKey() == prefSelectedPackage) {
+                    if (model.getClientKey() == prefSelectedPackage) {
                         debugger.appList.selectedItem = model
                         selectedProcess = model
                     }
@@ -124,7 +126,7 @@ class DebuggerToolWindowFactory : ToolWindowFactory, DumbAware {
             val debugDevices = ArrayList<DebugDevice>()
             for (device in devices) {
                 val debugDevice = DebugDevice(device)
-                if(device.name == selectedDeviceName) {
+                if (device.name == selectedDeviceName) {
                     selectedDevice = device
                 }
                 debugDevices.add(debugDevice)
@@ -141,7 +143,7 @@ class DebuggerToolWindowFactory : ToolWindowFactory, DumbAware {
                     requestTableController.clear()
                 }
             }
-            if(selectedDevice != null) {
+            if (selectedDevice != null) {
                 attachToDevice(selectedDevice)
             } else {
                 devices.firstOrNull()?.let {
@@ -170,7 +172,7 @@ class DebuggerToolWindowFactory : ToolWindowFactory, DumbAware {
                     clientData.packageName,
                     clientData.clientDescription
             )
-            if(prefSelectedPackage == process.getClientKey()) {
+            if (prefSelectedPackage == process.getClientKey()) {
                 defaultSelection = process
             }
             log("addClient $process")
@@ -186,6 +188,7 @@ class DebuggerToolWindowFactory : ToolWindowFactory, DumbAware {
                 selectedProcess = client
                 log("selectedProcess $defaultSelection")
                 requestTableController.clear()
+                requestTableController.addAll(RequestDataSource.getRequestList(client.getClientKey()))
             }
         }
         if (defaultSelection != null) {

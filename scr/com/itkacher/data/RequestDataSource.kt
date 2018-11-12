@@ -3,16 +3,18 @@ package com.itkacher.data
 class RequestDataSource {
 
     companion object {
-        private val requestMap = LinkedHashMap<String, DebugRequest>()
+
+        private val requestMapByClients = HashMap<String, ArrayList<DebugRequest>>()
+        private val requestMapById = LinkedHashMap<String, DebugRequest>()
 
         fun logMessage(id: String, type: MessageType, message: String): DebugRequest? {
             try {
                 if (type != MessageType.UNKNOWN) {
-                    val request = requestMap[id]
+                    val request = requestMapById[id]
                     return if (request == null) {
                         val newRequest = DebugRequest(id)
                         log(type, newRequest, message)
-                        requestMap[id] = newRequest
+                        requestMapById[id] = newRequest
                         newRequest
                     } else {
                         log(type, request, message)
@@ -51,6 +53,25 @@ class RequestDataSource {
             }
         }
 
+        fun getRequestList(clientKey: String): List<DebugRequest> {
+            return requestMapByClients[clientKey] ?: emptyList()
+        }
+
+        fun saveRequest(clientKey: String, debugRequest: DebugRequest) {
+            val list = requestMapByClients[clientKey]
+            if (list == null) {
+                val newList = ArrayList<DebugRequest>()
+                newList.add(debugRequest)
+                requestMapByClients[clientKey] = newList
+            } else {
+                list.add(debugRequest)
+            }
+        }
+
+        fun clear() {
+            requestMapByClients.clear()
+            requestMapById.clear()
+        }
     }
 
 

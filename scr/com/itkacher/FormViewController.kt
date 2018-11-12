@@ -9,12 +9,12 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.psi.PsiManager
 import com.intellij.psi.codeStyle.CodeStyleManager
 import com.itkacher.data.DebugRequest
+import com.itkacher.data.RequestDataSource
 import com.itkacher.data.generation.NodeToClassesConverter
 import com.itkacher.data.generation.ObjectClassModel
 import com.itkacher.data.generation.printer.JavaModelPrinter
 import com.itkacher.data.generation.printer.KotlinModelPrinter
 import com.itkacher.util.SystemUtil
-import com.itkacher.views.Tabs
 import com.itkacher.views.TabsHelper
 import com.itkacher.views.form.DataForm
 import com.itkacher.views.form.MainForm
@@ -49,6 +49,7 @@ class FormViewController(private val form: MainForm, settings: PluginPreferences
         resizeTableColumnsWidth()
         form.clearButton.addActionListener {
             requestListModel.clear()
+            RequestDataSource.clear()
             tabsHelper.removeAllTabs()
         }
         form.scrollToBottomButton.addActionListener {
@@ -207,6 +208,10 @@ class FormViewController(private val form: MainForm, settings: PluginPreferences
                 }
             }
         }
+    }
+
+    fun addAll(requestList: List<DebugRequest>) {
+        requestListModel.addAll(requestList)
     }
 
     companion object {
