@@ -29,6 +29,7 @@ import java.io.File
 import java.io.FileWriter
 import java.io.IOException
 import java.util.*
+import java.util.concurrent.atomic.AtomicBoolean
 import javax.swing.JTable
 
 
@@ -38,7 +39,7 @@ class FormViewController(private val form: MainForm, settings: PluginPreferences
     private val requestTable = dataForm.requestTable
     private val requestListModel = RequestTableModel()
     private val tabsHelper = TabsHelper(dataForm.tabsPane, settings, this)
-    private var firstLaunch = true
+    val firstLaunch = AtomicBoolean(true)
 
     init {
         requestTable.addMouseListener(TableMouseAdapter(this))
@@ -74,7 +75,7 @@ class FormViewController(private val form: MainForm, settings: PluginPreferences
                 val cantCols = jTableColumnModel.columnCount
                 for (i in 0 until cantCols) {
                     val column = jTableColumnModel.getColumn(i)
-                    val percent = com.itkacher.views.list.TableColumn.values()[i].widthPercent
+                    val percent = TableColumn.values()[i].widthPercent
                     val colW = (tW / 100) * percent
                     column.preferredWidth = colW
                 }
@@ -91,10 +92,14 @@ class FormViewController(private val form: MainForm, settings: PluginPreferences
     }
 
     fun insertOrUpdate(debugRequest: DebugRequest) {
-        if (firstLaunch) {
-            form.mainContainer.removeAll()
-            form.mainContainer.add(dataForm.dataPanel, BorderLayout.CENTER)
-            firstLaunch = false
+        if (firstLaunch.get()) {
+            synchronized(this) {
+                if(firstLaunch.get()) {
+                    form.mainContainer.removeAll()
+                    form.mainContainer.add(dataForm.dataPanel, BorderLayout.CENTER)
+                    firstLaunch.set(false)
+                }
+            }
         }
         if (requestTable.selectedColumn == -1) {
             requestTable.scrollRectToVisible(requestTable.getCellRect(requestTable.rowCount - 1, 0, true))

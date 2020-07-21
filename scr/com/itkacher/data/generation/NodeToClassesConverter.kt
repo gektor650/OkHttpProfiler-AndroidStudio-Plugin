@@ -168,7 +168,7 @@ class NodeToClassesConverter {
     }
 
     companion object {
-        val RESERVED_WORDS = arrayOf(
+        val RESERVED_WORDS = setOf(
                 "package", "as", "typealias", "class", "this", "super", "val", "var",
                 "fun", "for", "null", "true", "false", "is", "in", "throw", "return", "break", "continue", "object", "if",
                 "try", "else", "while", "do", "when", "interface", "yield", "typeof", "abstract", "continue", "for", "new", "switch",
