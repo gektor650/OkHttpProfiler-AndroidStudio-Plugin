@@ -3,6 +3,7 @@ package com.itkacher.views
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.ui.CollectionListModel
 import com.itkacher.PluginPreferences
 import com.itkacher.Resources
 import com.itkacher.data.DebugRequest
@@ -13,7 +14,6 @@ import com.itkacher.views.form.RawForm
 import com.itkacher.views.json.JTreeItemMenuListener
 import com.itkacher.views.json.JsonTreeModel
 import com.itkacher.views.json.JTreeMenuMouseAdapter
-import com.jgoodies.common.collect.ArrayListModel
 import java.io.IOException
 import java.util.concurrent.*
 import javax.swing.JTabbedPane
@@ -136,7 +136,7 @@ class TabsHelper(private val tabbedPane: JTabbedPane,
 
     private fun addHeaderTab(resName: String, requestHeaders: List<String>) {
         val form = HeaderForm()
-        val listModel = ArrayListModel<String>(requestHeaders)
+        val listModel = CollectionListModel<String>(requestHeaders)
         form.headersList.model = listModel as ListModel<String>
         tabbedPane.addTab(Resources.getString(resName), form.panel)
     }

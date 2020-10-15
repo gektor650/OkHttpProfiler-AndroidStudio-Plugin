@@ -2,8 +2,8 @@
     <id>com.itkacher.okhttpprofiler</id>
     <name>OkHttp Profiler</name>
     <vendor email="itkacher@gmail.com" url="http://localebro.com">localebro.com</vendor>
-    <version>1.0.11</version>
-    <idea-version since-build="183"/>
+    <version>1.0.12</version>
+    <idea-version since-build="201.8743.12"/>
     <description><![CDATA[
     <p>Created by <a href="https://localebro.com">LocaleBro</a> team.</p>
     <p>The OkHttp Profiler plugin can show detail request information from the <b>OkHttp</b> library directly in the Android Studio toolwindow. </p>
@@ -18,8 +18,8 @@
     <!-- uncomment to enable plugin in all products
     <depends>com.intellij.modules.lang</depends>
     -->
+<!--    <depends>com.intellij.modules.platform</depends>-->
     <depends>org.jetbrains.android</depends>
-    <depends>com.intellij.modules.java</depends>
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
         <toolWindow id="OkHttp Profiler" secondary="true" icon="/icons/help-network.png" anchor="bottom"
