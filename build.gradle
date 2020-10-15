@@ -56,6 +56,7 @@ group 'com.itkacher.okhttpprofiler'
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:${kotlin_version}"
     compile "org.jooq:joor-java-8:0.9.7"
+    compile fileTree(dir: "libs", include: ['*.jar'])
     compileOnly fileTree(dir: "$StudioCompilePath/plugins/android/lib", include: ['*.jar'])
     compileOnly fileTree(dir: "$StudioCompilePath/lib", include: ['*.jar'])
 
