@@ -1,6 +1,7 @@
 package com.itkacher
 
 import com.intellij.openapi.util.IconLoader
+import java.io.FileNotFoundException
 import java.util.*
 import javax.swing.Icon
 
@@ -12,7 +13,7 @@ class Resources {
         }
 
         fun getIcon(key: String) : Icon {
-            return IconLoader.getIcon("/icons/$key")
+            return IconLoader.findIcon("/icons/$key") ?: throw FileNotFoundException("Icon $key not found")
         }
     }
 }
