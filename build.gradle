@@ -44,8 +44,6 @@ intellij {
     pluginName 'OkHttpProfiler'
     updateSinceUntilBuild false
 
-    version '201.8743.12'
-    type 'IC'
     plugins 'android'
 
     intellij.localPath = project.hasProperty("StudioRunPath") ? StudioRunPath : StudioCompilePath
@@ -65,8 +63,6 @@ dependencies {
     testCompile fileTree(dir: "$StudioCompilePath/lib", include: ['*.jar'])
     testCompile "org.mockito:mockito-core:1.+"
     testCompile "com.google.truth:truth:1.0.1"
-
-
 }
 
 task(verifySetup) {
