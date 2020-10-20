@@ -1,5 +1,6 @@
 package com.itkacher
 
+import com.intellij.ide.BrowserUtil
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.fileChooser.FileChooser
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
@@ -48,6 +49,10 @@ class FormViewController(private val form: MainForm, settings: PluginPreferences
         requestTable.setDefaultRenderer(Any::class.java, RequestTableCellRenderer())
         requestTable.selectionModel = ForcedListSelectionModel()
         resizeTableColumnsWidth()
+        form.localizeButton.text = Resources.getString("localize") + " " + project.name;
+        form.localizeButton.addActionListener {
+            BrowserUtil.open("https://localebro.com/?utm_source=OkHttpProfiler&utm_medium=IDE&utm_campaign=localize-button")
+        }
         form.clearButton.addActionListener {
             requestListModel.clear()
             RequestDataSource.clear()

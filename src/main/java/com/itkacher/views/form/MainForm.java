@@ -1,14 +1,11 @@
 package com.itkacher.views.form;
 
-import com.intellij.util.ui.HtmlPanel;
 import com.itkacher.Resources;
 import com.itkacher.data.DebugDevice;
 import com.itkacher.data.DebugProcess;
-import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
-import javax.swing.event.HyperlinkListener;
 import java.awt.*;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -23,22 +20,36 @@ public class MainForm {
     private JPanel buttonContainer;
     private final JButton scrollToBottomButton;
     private final JButton clearButton;
+    private final JButton localizeButton;
 
     public MainForm() {
+        localizeButton = new JButton();
+        localizeButton.setPreferredSize(new Dimension(200,30));
+        localizeButton.setIcon(Resources.Companion.getIcon("localebro.png"));
+//        localizeButton.setOpaque(true);
+//        localizeButton.setBorder(null);
+//        localizeButton.setBackground(JBColor.WHITE);
+//        localizeButton.setForeground(JBColor.DARK_GRAY);
+        localizeButton.setText(Resources.Companion.getString("localize"));
+        GridBagConstraints localeBroConstraints = new GridBagConstraints();
+        localeBroConstraints.gridx = 0;
+        localeBroConstraints.gridy = 0;
+
         scrollToBottomButton = new JButton();
         scrollToBottomButton.setIcon(Resources.Companion.getIcon("scroll.png"));
         scrollToBottomButton.setPreferredSize(new Dimension(30,30));
         GridBagConstraints scrollConstraints = new GridBagConstraints();
-        scrollConstraints.gridx = 0;
+        scrollConstraints.gridx = 1;
         scrollConstraints.gridy = 0;
 
         clearButton = new JButton();
         clearButton.setPreferredSize(new Dimension(30,30));
         clearButton.setIcon(Resources.Companion.getIcon("delete.png"));
         GridBagConstraints clearConstraints = new GridBagConstraints();
-        clearConstraints.gridx = 1;
+        clearConstraints.gridx = 2;
         clearConstraints.gridy = 0;
 
+        buttonContainer.add(localizeButton, localeBroConstraints);
         buttonContainer.add(scrollToBottomButton, scrollConstraints);
         buttonContainer.add(clearButton, clearConstraints);
 
@@ -90,6 +101,10 @@ public class MainForm {
 
     public JButton getClearButton() {
         return clearButton;
+    }
+
+    public JButton getLocalizeButton() {
+        return localizeButton;
     }
 
     public JPanel getMainContainer() {
