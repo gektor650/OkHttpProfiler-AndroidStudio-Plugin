@@ -13,11 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.itkacher.views.json
+package com.itkacher
 
-interface JTreeItemMenuListener {
-    fun copyToClipboard(node: JsonMutableTreeNode)
-    fun openInEditor(node: JsonMutableTreeNode)
-    fun createJavaModel(node: JsonMutableTreeNode)
-    fun createKotlinModel(node: JsonMutableTreeNode)
-}
+import com.intellij.ui.components.JBPanel
+import java.awt.LayoutManager
+
+class JBKPanel(layoutManager: LayoutManager) : JBPanel<JBKPanel>(layoutManager)

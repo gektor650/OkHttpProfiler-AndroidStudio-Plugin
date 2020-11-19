@@ -1,43 +1,27 @@
-buildscript {
-
-    ext.kotlin_version = '1.3.72'
-
-    repositories {
-        mavenCentral()
-        jcenter()
-    }
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    }
-}
-
 plugins {
-    id "org.jetbrains.intellij" version "0.4.16"
+    id 'java'
+    id 'org.jetbrains.intellij' version '0.6.3'
+    id 'org.jetbrains.kotlin.jvm' version '1.3.72'
 }
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
-
-
-
-apply plugin: 'java'
-apply plugin: 'kotlin'
-
+group 'com.itkacher.okhttpprofiler'
+version '1.0.14'
 
 repositories {
     mavenCentral()
     jcenter()
 }
 
-sourceSets {
-    main {
-        resources {
-        }
-    }
-}
-
 if (!hasProperty('StudioCompilePath')) {
     throw new GradleException("No StudioCompilePath value was set, please create gradle.properties file")
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    implementation fileTree(dir: "libs", include: ['*.jar'])
+    compileOnly fileTree(dir: "$StudioCompilePath/plugins/android/lib", include: ['*.jar'])
+    compileOnly fileTree(dir: "$StudioCompilePath/lib", include: ['*.jar'])
 }
 
 intellij {
@@ -49,19 +33,16 @@ intellij {
     intellij.localPath = project.hasProperty("StudioRunPath") ? StudioRunPath : StudioCompilePath
 }
 
-group 'com.itkacher.okhttpprofiler'
-
-dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib:${kotlin_version}"
-    compile fileTree(dir: "libs", include: ['*.jar'])
-    compileOnly fileTree(dir: "$StudioCompilePath/plugins/android/lib", include: ['*.jar'])
-    compileOnly fileTree(dir: "$StudioCompilePath/lib", include: ['*.jar'])
-
-//    testCompile 'junit:junit:4.12'
-//    testCompile fileTree(dir: "$StudioCompilePath/plugins/android/lib", include: ['*.jar'])
-//    testCompile fileTree(dir: "$StudioCompilePath/lib", include: ['*.jar'])
-//    testCompile "org.mockito:mockito-core:1.+"
-//    testCompile "com.google.truth:truth:1.0.1"
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+patchPluginXml {
+    changeNotes """
+      Add change notes here.<br>
+      <em>most HTML tags may be used</em>"""
 }
 
 task(verifySetup) {
@@ -72,6 +53,5 @@ task(verifySetup) {
         }
     }
 }
-
 
 compileJava.dependsOn verifySetup

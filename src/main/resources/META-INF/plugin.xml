@@ -12,12 +12,7 @@
     <p><b>Works ONLY with ANDROID</b></p>
     <p>More details by link: <a href="https://github.com/itkacher/OkHttpProfiler">https://github.com/itkacher/OkHttpProfiler</a></p>
     ]]></description>
-
-    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
-         on how to target different products -->
-    <!-- uncomment to enable plugin in all products
-    <depends>com.intellij.modules.lang</depends>
-    -->
+    
     <depends>org.jetbrains.android</depends>
     <depends>com.intellij.modules.androidstudio</depends>
     <depends>com.intellij.modules.platform</depends>
@@ -27,7 +22,4 @@
         <toolWindow id="OkHttp Profiler" secondary="true" icon="/icons/help-network.png" anchor="bottom"
                     factoryClass="com.itkacher.DebuggerToolWindowFactory"/>
     </extensions>
-
-    <actions>
-    </actions>
 </idea-plugin>
