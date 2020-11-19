@@ -96,8 +96,8 @@ class AdbController(val mainForm: MainForm, project: Project, val preferences: P
             }
         })
         AndroidDebugBridge.addDebugBridgeChangeListener {
-            val devices = it.devices
-            if (devices.isNotEmpty()) {
+            val devices = it?.devices
+            if (devices?.isNotEmpty() == true) {
                 log("addDebugBridgeChangeListener $it")
                 updateDeviceList(devices)
             } else {
