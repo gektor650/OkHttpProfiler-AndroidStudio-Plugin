@@ -15,6 +15,7 @@
  */
 package com.itkacher.data
 
+import com.itkacher.Resources
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -43,13 +44,21 @@ data class DebugRequest(val id: String) {
     var errorMessage: String? = null
 
     private val trash = StringBuilder()
+    private var isRequestBodyLimitAchieved = false
+    private var isResponseBodyLimitAchieved = false
 
     fun addRequestHeader(header: String) {
         requestHeaders.add(header)
     }
 
     fun addRequestBody(bodyPart: String) {
-        requestBody.append(bodyPart)
+        if (!isRequestBodyLimitAchieved && requestBody.length < MAX_BODY_LENGTH) {
+            requestBody.append(bodyPart)
+        } else if(!isRequestBodyLimitAchieved){
+            requestBody.clear()
+            requestBody.append(Resources.getString("max_length"))
+            isRequestBodyLimitAchieved = true
+        }
     }
 
     fun addResponseHeader(header: String) {
@@ -57,7 +66,13 @@ data class DebugRequest(val id: String) {
     }
 
     fun addResponseBody(bodyPart: String) {
-        responseBody.append(bodyPart)
+        if (!isResponseBodyLimitAchieved && responseBody.length < MAX_BODY_LENGTH) {
+            responseBody.append(bodyPart)
+        } else if(!isResponseBodyLimitAchieved){
+            responseBody.clear()
+            responseBody.append(Resources.getString("max_length"))
+            isResponseBodyLimitAchieved = true
+        }
     }
 
     fun trash(message: String) {
@@ -119,5 +134,6 @@ data class DebugRequest(val id: String) {
     companion object {
         const val SPACE = " "
         const val NEW_LINE = "\r\n"
+        const val MAX_BODY_LENGTH = 100_000
     }
 }

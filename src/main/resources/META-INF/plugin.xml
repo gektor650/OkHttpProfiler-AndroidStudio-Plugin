@@ -2,7 +2,7 @@
     <id>com.itkacher.okhttpprofiler</id>
     <name>OkHttp Profiler</name>
     <vendor email="itkacher@gmail.com" url="http://localebro.com">localebro.com</vendor>
-    <version>1.0.14</version>
+    <version>1.0.15</version>
     <idea-version since-build="201.8743.12"/>
     <description><![CDATA[
     <p>Created by <a href="https://localebro.com">LocaleBro</a> team.</p>
@@ -11,6 +11,7 @@
     <p>It supports <b>OkHttp</b> v3 (http://square.github.io/okhttp/) or <b>Retrofit</b> v2 (https://square.github.io/retrofit/)</p>
     <p><b>Works ONLY with ANDROID</b></p>
     <p>More details by link: <a href="https://github.com/itkacher/OkHttpProfiler">https://github.com/itkacher/OkHttpProfiler</a></p>
+    <p>The Source Code: <a href="https://github.com/gektor650/OkHttpProfiler-AndroidStudio-Plugin">https://github.com/gektor650/OkHttpProfiler-AndroidStudio-Plugin</a></p>
     ]]></description>
     
     <depends>org.jetbrains.android</depends>

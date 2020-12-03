@@ -54,8 +54,8 @@ class FormViewController(private val form: MainForm, settings: PluginPreferences
     private val dataForm = DataForm()
     private val requestTable = dataForm.requestTable
     private val requestListModel = RequestTableModel()
-    private val tabsHelper = TabsHelper(dataForm.tabsPane, settings, this)
-    val firstLaunch = AtomicBoolean(true)
+    private val tabsHelper = TabsHelper(dataForm.tabsPane, this)
+    private val firstLaunch = AtomicBoolean(true)
 
     init {
         requestTable.addMouseListener(TableMouseAdapter(this))
@@ -71,7 +71,7 @@ class FormViewController(private val form: MainForm, settings: PluginPreferences
         form.clearButton.addActionListener {
             requestListModel.clear()
             RequestDataSource.clear()
-            tabsHelper.removeAllTabs()
+            tabsHelper.clearTabs()
         }
         form.scrollToBottomButton.addActionListener {
             requestTable.clearSelection()
@@ -84,6 +84,7 @@ class FormViewController(private val form: MainForm, settings: PluginPreferences
                 }
             }
         }
+        tabsHelper.initialize()
     }
 
     private fun resizeTableColumnsWidth() {

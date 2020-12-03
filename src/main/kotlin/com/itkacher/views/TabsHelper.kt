@@ -17,9 +17,8 @@ package com.itkacher.views
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.ui.CollectionListModel
-import com.itkacher.PluginPreferences
+import com.intellij.ui.components.JBTabbedPane
 import com.itkacher.Resources
 import com.itkacher.data.DebugRequest
 import com.itkacher.views.form.HeaderForm
@@ -29,15 +28,17 @@ import com.itkacher.views.form.RawForm
 import com.itkacher.views.json.JTreeItemMenuListener
 import com.itkacher.views.json.JsonTreeModel
 import com.itkacher.views.json.JTreeMenuMouseAdapter
+import java.awt.Color
+import java.awt.Dimension
 import java.io.IOException
+import java.util.*
 import java.util.concurrent.*
-import javax.swing.JTabbedPane
-import javax.swing.ListModel
-import javax.swing.event.ChangeListener
+import javax.swing.JLabel
+import javax.swing.SwingUtilities
+import kotlin.collections.HashMap
 
 
-class TabsHelper(private val tabbedPane: JTabbedPane,
-                 private val settings: PluginPreferences,
+class TabsHelper(private val tabbedPane: JBTabbedPane,
                  private val menuListener: JTreeItemMenuListener) {
 
     private val executor = Executors.newFixedThreadPool(3)
@@ -45,84 +46,209 @@ class TabsHelper(private val tabbedPane: JTabbedPane,
     @Volatile
     private var currentRequest: DebugRequest? = null
 
-    private val tabListener = ChangeListener {
-        if (tabbedPane.selectedIndex != -1) {
-            val selectedTabName = tabbedPane.getTitleAt(tabbedPane.selectedIndex)
-            settings.setSelectedTabName(selectedTabName)
-        }
+    private val tabTitles = HashMap<Int, String>()
+
+    private val requestHeadersFrom = HeaderForm()
+    private val requestRawForm = RawForm()
+    private val requestJsonTreeForm = JsonTreeForm()
+    private val requestJsonFormattedForm = JsonPlainTextForm()
+
+
+    private val responseHeadersFrom = HeaderForm()
+    private val responseRawForm = RawForm()
+    private val responseJsonTreeForm = JsonTreeForm()
+    private val responseJsonFormattedForm = JsonPlainTextForm()
+
+    private val errorRawForm = RawForm()
+
+    private var indexRequestRawTab = 0
+    private var indexRequestHeaderTab = 0
+    private var indexRequestTreeTab = 0
+    private var indexRequestFormattedTab = 0
+
+    private var indexResponseRawTab = 0
+    private var indexResponseHeaderTab = 0
+    private var indexResponseTreeTab = 0
+    private var indexResponseFormattedTab = 0
+
+    private var indexErrorTab = 0
+
+    private var defaultBackground = Color.GRAY
+
+    fun initialize() {
+        tabbedPane.minimumSize = Dimension(100, 50)
+
+        indexRequestRawTab = tabbedPane.tabCount
+        tabbedPane.addTab(Resources.getString(Tabs.TAB_REQUEST_RAW.resName), requestRawForm.panel)
+        indexRequestHeaderTab = tabbedPane.tabCount
+        tabbedPane.addTab(Resources.getString(Tabs.TAB_REQUEST_HEADERS.resName), requestHeadersFrom.panel)
+        indexRequestTreeTab = tabbedPane.tabCount
+        tabbedPane.addTab(Resources.getString(Tabs.TAB_REQUEST_JSON.resName), requestJsonTreeForm.treePanel)
+        indexRequestFormattedTab = tabbedPane.tabCount
+        tabbedPane.addTab(Resources.getString(Tabs.TAB_REQUEST_FORMATTED.resName), requestJsonFormattedForm.panel)
+        requestJsonTreeForm.tree.addMouseListener(JTreeMenuMouseAdapter(menuListener))
+
+        indexResponseRawTab = tabbedPane.tabCount
+        tabbedPane.addTab(Resources.getString(Tabs.TAB_RESPONSE_RAW.resName), responseRawForm.panel)
+        indexResponseHeaderTab = tabbedPane.tabCount
+        tabbedPane.addTab(Resources.getString(Tabs.TAB_RESPONSE_HEADERS.resName), responseHeadersFrom.panel)
+        indexResponseTreeTab = tabbedPane.tabCount
+        tabbedPane.addTab(Resources.getString(Tabs.TAB_RESPONSE_JSON.resName), responseJsonTreeForm.treePanel)
+        indexResponseFormattedTab = tabbedPane.tabCount
+        tabbedPane.addTab(Resources.getString(Tabs.TAB_RESPONSE_FORMATTED.resName), responseJsonFormattedForm.panel)
+
+        indexErrorTab = tabbedPane.tabCount
+        tabbedPane.addTab(Resources.getString(Tabs.TAB_ERROR_MESSAGE.resName), errorRawForm.panel)
+
+        responseJsonTreeForm.tree.addMouseListener(JTreeMenuMouseAdapter(menuListener))
+        defaultBackground = tabbedPane.getForegroundAt(0)
+
+        clearTabs()
     }
 
+    private fun updateRequestHeaderTab(headers: List<String>) {
+        val listModel = CollectionListModel<String>(headers)
+        requestHeadersFrom.headersList.model = listModel
+    }
+
+    private fun updateResponseHeaderTab(headers: List<String>) {
+        val listModel = CollectionListModel<String>(headers)
+        responseHeadersFrom.headersList.model = listModel
+    }
+
+    private val acceptedContentTypes = listOf(
+            "text/plain",
+            "text/html",
+            "application/json"
+    )
+
+    private val contentTypeHeader = "content-type:"
+
+    private fun isAcceptedHeaders(headers: ArrayList<String>): Boolean {
+        return headers.isEmpty() || headers.find {
+            var res = false
+            for (type in acceptedContentTypes) {
+                val text = it.toLowerCase()
+                if (text.startsWith(contentTypeHeader) && text.contains(type)) {
+                    res = true
+                }
+            }
+            res
+        } != null
+    }
 
     fun fill(debugRequest: DebugRequest) {
         currentRequest = debugRequest
-        removeListener()
-        removeAllTabs()
+        clearTabs(Resources.getString("processing"))
         executor.execute {
-            val requestJson = debugRequest.getRequestBodyString()
-            val responseBody = debugRequest.getResponseBodyString()
+            //Skip non text response/requests
+            val isRequestIsText = isAcceptedHeaders(debugRequest.requestHeaders)
+            val isResponseIsText = isAcceptedHeaders(debugRequest.responseHeaders)
 
+            val requestJson = if (isRequestIsText) {
+                debugRequest.getRequestBodyString()
+            } else {
+                null
+            }
             val requestJsonPair = getTreeModelPrettifyPair(requestJson)
+            val responseBody = if (isResponseIsText) {
+                debugRequest.getResponseBodyString()
+            } else {
+                null
+            }
+
             val responseJsonPair = getTreeModelPrettifyPair(responseBody)
 
-            ApplicationManager.getApplication().invokeLater {
-                if(currentRequest != debugRequest) return@invokeLater
-                addRawTab(Tabs.TAB_RAW_REQUEST.resName, debugRequest.getRawRequest())
+            SwingUtilities.invokeLater {
+                if (currentRequest != debugRequest) return@invokeLater
+
+                requestRawForm.setText(debugRequest.getRawRequest())
+                enableTab(indexRequestRawTab)
+
                 if (debugRequest.requestHeaders.isNotEmpty()) {
-                    addHeaderTab(Tabs.TAB_REQUEST_HEADERS.resName, debugRequest.requestHeaders)
+                    updateRequestHeaderTab(debugRequest.requestHeaders)
+                    enableTab(indexRequestHeaderTab)
+                } else {
+                    disableTab(indexRequestHeaderTab)
                 }
                 if (debugRequest.isClosed) {
-                    if (requestJsonPair != null) {
-                        addTreeTab(Tabs.TAB_JSON_REQUEST.resName, requestJsonPair.first)
-                        requestJsonPair.second?.let {
-                            addFormattedTab(Tabs.TAB_REQUEST_FORMATTED.resName, it)
-                        }
-                    }
-
-                    addRawTab(Tabs.TAB_RAW_RESPONSE.resName, debugRequest.getRawResponse())
+                    responseRawForm.setText(debugRequest.getRawResponse())
+                    enableTab(indexResponseRawTab)
 
                     if (debugRequest.responseHeaders.isNotEmpty()) {
-                        addHeaderTab(Tabs.TAB_RESPONSE_HEADERS.resName, debugRequest.responseHeaders)
+                        updateResponseHeaderTab(debugRequest.responseHeaders)
+                        enableTab(indexResponseHeaderTab)
+                    } else {
+                        disableTab(indexResponseHeaderTab)
                     }
 
-                    if (responseJsonPair != null) {
-                        addTreeTab(Tabs.TAB_JSON_RESPONSE.resName, responseJsonPair.first)
-                        responseJsonPair.second?.let {
-                            addFormattedTab(Tabs.TAB_RESPONSE_FORMATTED.resName, it)
-                        }
+                    if (requestJsonPair?.first != null) {
+                        requestJsonTreeForm.tree.model = requestJsonPair.first
+                        enableTab(indexRequestTreeTab)
+                    } else {
+                        disableTab(indexRequestTreeTab)
                     }
 
-                    if (debugRequest.errorMessage?.isNotEmpty() == true) {
-                        addRawTab(Tabs.TAB_ERROR_MESSAGE.resName, debugRequest.errorMessage)
+                    if (requestJsonPair?.second != null && requestJsonPair.second != "") {
+                        requestJsonFormattedForm.setText(requestJsonPair.second)
+                        enableTab(indexRequestFormattedTab)
+                    } else {
+                        disableTab(indexRequestFormattedTab)
+                    }
+
+                    if (responseJsonPair?.first != null) {
+                        responseJsonTreeForm.tree.model = responseJsonPair.first
+                        enableTab(indexResponseTreeTab)
+                    } else {
+                        disableTab(indexResponseTreeTab)
+                    }
+
+                    if (responseJsonPair?.second != null && responseJsonPair.second != "") {
+                        responseJsonFormattedForm.setText(responseJsonPair.second)
+                        enableTab(indexResponseFormattedTab)
+                    } else {
+                        disableTab(indexResponseFormattedTab)
+                    }
+
+                    if (debugRequest.errorMessage.isNullOrBlank()) {
+                        disableTab(indexErrorTab)
+                    } else {
+                        enableTab(indexErrorTab)
+                        errorRawForm.setText(debugRequest.errorMessage)
                     }
                 }
-                selectByPreference()
-                addListener()
             }
         }
     }
 
-    private fun addListener() {
-        tabbedPane.addChangeListener(tabListener)
+    private fun enableTab(tabIndex: Int) {
+        val title = tabTitles[tabIndex]
+        if (title != null) {
+            val label = tabbedPane.getTabComponentAt(tabIndex)
+            if (label is JLabel) {
+                label.text = title
+            }
+        }
+        tabbedPane.setEnabledAt(tabIndex, true)
+        tabbedPane.setForegroundAt(tabIndex, defaultBackground)
+        tabbedPane.setToolTipTextAt(tabIndex, null)
     }
 
-    private fun removeListener() {
-        tabbedPane.removeChangeListener(tabListener)
-    }
+    private fun disableTab(tabIndex: Int) {
+        val label = tabbedPane.getTabComponentAt(tabIndex)
+        if (label is JLabel) {
+            if (tabTitles[tabIndex] == null) {
+                tabTitles[tabIndex] = label.text
+            }
+            label.text = ""
+        }
 
-    fun removeAllTabs() {
-        tabbedPane.removeAll()
-    }
-
-    private fun addFormattedTab(titleKey: String, json: String) {
-        val plain = JsonPlainTextForm()
-        plain.editorPane.text = json
-        plain.editorPane.caretPosition = 0
-        tabbedPane.addTab(Resources.getString(titleKey), plain.panel)
-    }
-
-    private fun addRawTab(titleKey: String, data: String?) {
-        val form = RawForm(data)
-        tabbedPane.addTab(Resources.getString(titleKey), form.panel)
+        tabbedPane.setEnabledAt(tabIndex, false)
+        tabbedPane.setForegroundAt(tabIndex, Color.GRAY)
+        tabbedPane.setToolTipTextAt(tabIndex, Resources.getString("empty"))
+        if (tabbedPane.selectedIndex == tabIndex) {
+            tabbedPane.selectedIndex = 0
+        }
     }
 
     private fun parseModel(jsonString: String): JsonNode? {
@@ -149,40 +275,40 @@ class TabsHelper(private val tabbedPane: JTabbedPane,
         }
     }
 
-    private fun addHeaderTab(resName: String, requestHeaders: List<String>) {
-        val form = HeaderForm()
-        val listModel = CollectionListModel<String>(requestHeaders)
-        form.headersList.model = listModel as ListModel<String>
-        tabbedPane.addTab(Resources.getString(resName), form.panel)
-    }
-
-    private fun selectByPreference() {
-        val selectedTab = settings.getSelectedTabName()
-        if (selectedTab != null) {
-            for (i in 0 until tabbedPane.tabCount) {
-                if (tabbedPane.getTitleAt(i) == selectedTab) {
-                    tabbedPane.selectedIndex = i
-                    break
-                }
+    private fun getTreeModelPrettifyPair(requestJson: String?): Pair<JsonTreeModel, String?>? {
+        if(requestJson != null) {
+            val jsonNode = parseModel(requestJson)
+            jsonNode?.let {
+                val prettyJson = prettifyNode(it)
+                val model = JsonTreeModel(jsonNode)
+                return Pair(model, prettyJson)
             }
         }
-    }
-
-    private fun addTreeTab(name: String, model: JsonTreeModel) {
-        val jsonTreeForm = JsonTreeForm()
-        jsonTreeForm.tree.model = model
-        jsonTreeForm.tree.addMouseListener(JTreeMenuMouseAdapter(menuListener))
-        tabbedPane.addTab(Resources.getString(name), jsonTreeForm.treePanel)
-    }
-
-    private fun getTreeModelPrettifyPair(requestJson: String): Pair<JsonTreeModel, String?>? {
-        val jsonNode = parseModel(requestJson)
-        jsonNode?.let {
-            val prettyJson = prettifyNode(it)
-            val model = JsonTreeModel(jsonNode)
-            return Pair(model, prettyJson)
-        }
         return null
+    }
+
+    fun clearTabs(processingText: String = "") {
+        disableTab(indexRequestRawTab)
+        disableTab(indexRequestHeaderTab)
+        disableTab(indexRequestTreeTab)
+        disableTab(indexRequestFormattedTab)
+        disableTab(indexResponseRawTab)
+        disableTab(indexResponseHeaderTab)
+        disableTab(indexResponseTreeTab)
+        disableTab(indexResponseFormattedTab)
+        disableTab(indexErrorTab)
+
+        responseRawForm.setText(processingText)
+        updateResponseHeaderTab(Collections.singletonList(processingText))
+        requestJsonFormattedForm.setText(processingText)
+        requestJsonTreeForm.tree.model = null
+
+        requestRawForm.setText(processingText)
+        updateResponseHeaderTab(Collections.singletonList(processingText))
+        responseJsonFormattedForm.setText(processingText)
+        responseJsonTreeForm.tree.model = null
+
+        errorRawForm.setText(processingText)
     }
 
 }

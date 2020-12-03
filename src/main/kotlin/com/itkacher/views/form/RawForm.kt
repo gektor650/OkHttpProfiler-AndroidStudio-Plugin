@@ -18,12 +18,17 @@ package com.itkacher.views.form
 import com.itkacher.views.FrameScrollPanel
 import javax.swing.JTextPane
 
-class RawForm(data: String?)  {
+class RawForm  {
     private val editor = JTextPane()
     val panel = FrameScrollPanel(editor)
 
     init {
         editor.isEditable = false
+        editor.text = ""
+        editor.caretPosition = 0
+    }
+
+    fun setText(data: String?) {
         editor.text = data
         editor.caretPosition = 0
     }

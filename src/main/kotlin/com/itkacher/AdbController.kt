@@ -29,6 +29,7 @@ import com.itkacher.data.RequestDataSource
 import com.itkacher.views.form.MainForm
 import org.jetbrains.android.sdk.AndroidSdkUtils
 import java.awt.event.ItemEvent
+import java.util.concurrent.Executors
 import javax.swing.DefaultComboBoxModel
 import javax.swing.SwingUtilities
 
@@ -41,28 +42,27 @@ class AdbController(val mainForm: MainForm, project: Project, val preferences: P
 
     val requestTableController = FormViewController(mainForm, preferences, project)
 
+    private val executor = Executors.newFixedThreadPool(1)
+
     private val deviceListener = object : AndroidLogcatService.LogcatListener {
         override fun onLogLineReceived(line: LogCatMessage) {
-            val tag = line.tag
-            val selected = selectedProcess
-            if (selected != null && selected.pid == line.pid && tag.startsWith(TAG_KEY)) {
-                val sequences = tag.split(TAG_DELIMITER)
-                if (sequences.size == 3) {
-                    val id = sequences[1]
-                    val messageType = MessageType.fromString(sequences[2])
-                    val debugRequest = RequestDataSource.logMessage(id, messageType, line.message)
-                    if (debugRequest != null) {
-//                        RequestDataSource.saveRequest(selected.getClientKey(), debugRequest)
-                        if(requestTableController.firstLaunch.get()) {
+            executor.execute {
+                val tag = line.tag
+                val selected = selectedProcess
+                if (selected != null && selected.pid == line.pid && tag.startsWith(TAG_KEY)) {
+                    val sequences = tag.split(TAG_DELIMITER)
+                    if (sequences.size == 3) {
+                        val id = sequences[1]
+                        val messageType = MessageType.fromString(sequences[2])
+                        val debugRequest = RequestDataSource.getRequestFromMessage(id, messageType, line.message)
+                        if (debugRequest != null) {
                             try {
-                                SwingUtilities.invokeAndWait {
+                                SwingUtilities.invokeLater {
                                     requestTableController.insertOrUpdate(debugRequest)
                                 }
                             } catch (e: Exception) {
                                 e.printStackTrace()
                             }
-                        } else {
-                            requestTableController.insertOrUpdate(debugRequest)
                         }
                     }
                 }

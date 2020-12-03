@@ -15,27 +15,33 @@
  */
 package com.itkacher.data
 
+import java.util.concurrent.locks.ReentrantLock
+
 class RequestDataSource {
 
     companion object {
 
-        private val requestMapByClients = HashMap<String, ArrayList<DebugRequest>>()
-        private val requestMapById = LinkedHashMap<String, DebugRequest>()
+        private val requestMapById = HashMap<String, DebugRequest>()
+        private val reentrantLock = ReentrantLock()
 
-        fun logMessage(id: String, type: MessageType, message: String): DebugRequest? {
+        fun getRequestFromMessage(id: String, type: MessageType, message: String): DebugRequest? {
             try {
                 if (type != MessageType.UNKNOWN) {
-                    val request = requestMapById[id]
-                    return if (request == null) {
-                        val newRequest = DebugRequest(id)
-                        log(type, newRequest, message)
-                        requestMapById[id] = newRequest
-                        newRequest
-                    } else {
-                        log(type, request, message)
-                        request
+                    try {
+                        reentrantLock.lock()
+                        val request = requestMapById[id]
+                        return if (request == null) {
+                            val newRequest = DebugRequest(id)
+                            fillRequest(type, newRequest, message)
+                            requestMapById[id] = newRequest
+                            newRequest
+                        } else {
+                            fillRequest(type, request, message)
+                            request
+                        }
+                    } finally {
+                        reentrantLock.unlock()
                     }
-
                 }
             } catch (e: NumberFormatException) {
                 e.printStackTrace()
@@ -43,7 +49,7 @@ class RequestDataSource {
             return null
         }
 
-        private fun log(messageType: MessageType, request: DebugRequest, message: String) {
+        private fun fillRequest(messageType: MessageType, request: DebugRequest, message: String) {
             when (messageType) {
                 MessageType.REQUEST_URL -> request.url = message
                 MessageType.REQUEST_METHOD -> request.method = message
@@ -68,23 +74,7 @@ class RequestDataSource {
             }
         }
 
-        fun getRequestList(clientKey: String): List<DebugRequest> {
-            return requestMapByClients[clientKey] ?: emptyList()
-        }
-
-        fun saveRequest(clientKey: String, debugRequest: DebugRequest) {
-            val list = requestMapByClients[clientKey]
-            if (list == null) {
-                val newList = ArrayList<DebugRequest>()
-                newList.add(debugRequest)
-                requestMapByClients[clientKey] = newList
-            } else {
-                list.add(debugRequest)
-            }
-        }
-
         fun clear() {
-            requestMapByClients.clear()
             requestMapById.clear()
         }
     }

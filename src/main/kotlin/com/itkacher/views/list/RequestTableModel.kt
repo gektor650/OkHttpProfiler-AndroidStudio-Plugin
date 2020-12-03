@@ -20,7 +20,8 @@ import com.itkacher.data.DebugRequest
 import javax.swing.table.DefaultTableModel
 
 class RequestTableModel : DefaultTableModel() {
-    private val requestMap = HashMap<DebugRequest, Int>()
+    private val requestId2ColumnIndexMap = HashMap<String, Int>()
+    private val index2RequestMap = HashMap<Int, DebugRequest>()
     private val requestList = ArrayList<DebugRequest>()
 
     init {
@@ -32,18 +33,16 @@ class RequestTableModel : DefaultTableModel() {
     }
 
     fun addOrUpdate(request: DebugRequest) {
-        if(! request.isValid()) return
-        if (!requestMap.keys.contains(request)) {
-            requestMap[request] = rowCount
-            super.addRow(getRowData(request))
+        if (!request.isValid()) return
+        val rowIndex = requestId2ColumnIndexMap[request.id];
+        if (rowIndex == null) {
+            requestId2ColumnIndexMap[request.id] = rowCount
+            index2RequestMap[rowCount] = request
             requestList.add(request)
+            super.addRow(getRowData(request))
         } else {
-            val rowIndex = requestMap[request]
-            if (rowIndex != null) {
-                for ((i, any) in getRowData(request).withIndex()) {
-                    setValueAt(any, rowIndex, i)
-                    requestList[rowIndex] = request
-                }
+            for ((i, any) in getRowData(request).withIndex()) {
+                setValueAt(any, rowIndex, i)
             }
         }
     }
@@ -62,7 +61,8 @@ class RequestTableModel : DefaultTableModel() {
     }
 
     fun clear() {
-        requestMap.clear()
+        requestId2ColumnIndexMap.clear()
+        index2RequestMap.clear()
         requestList.clear()
         while (super.getRowCount().compareTo(0) == 1) {
             super.removeRow(0)
@@ -70,12 +70,7 @@ class RequestTableModel : DefaultTableModel() {
     }
 
     fun getRequest(selectedRow: Int): DebugRequest? {
-        for (mutableEntry in requestMap) {
-            if (mutableEntry.value == selectedRow) {
-                return mutableEntry.key
-            }
-        }
-        return null
+        return index2RequestMap[selectedRow]
     }
 
     fun isFallenDown(row: Int): Boolean {

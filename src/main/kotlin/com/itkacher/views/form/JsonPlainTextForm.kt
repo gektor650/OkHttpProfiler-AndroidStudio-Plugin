@@ -19,10 +19,15 @@ import com.itkacher.views.FrameScrollPanel
 import javax.swing.*
 
 class JsonPlainTextForm {
-    val editorPane = JTextPane()
+    private val editorPane = JTextPane()
     val panel = FrameScrollPanel(editorPane)
 
     init {
         editorPane.isEditable = false
+    }
+
+    fun setText(string: String?) {
+        editorPane.text = string ?: ""
+        editorPane.caretPosition = 0
     }
 }
