@@ -134,6 +134,6 @@ data class DebugRequest(val id: String) {
     companion object {
         const val SPACE = " "
         const val NEW_LINE = "\r\n"
-        const val MAX_BODY_LENGTH = 100_000
+        const val MAX_BODY_LENGTH = 300_000
     }
 }
