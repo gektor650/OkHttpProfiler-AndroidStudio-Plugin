@@ -13,6 +13,7 @@
     <p>More details by link: <a href="https://github.com/itkacher/OkHttpProfiler">https://github.com/itkacher/OkHttpProfiler</a></p>
     <p>The Source Code: <a href="https://github.com/gektor650/OkHttpProfiler-AndroidStudio-Plugin">https://github.com/gektor650/OkHttpProfiler-AndroidStudio-Plugin</a></p>
     ]]></description>
+    <change-notes>Improved plugin speed. Fixed bug with a long response/request body.</change-notes>
     
     <depends>org.jetbrains.android</depends>
     <depends>com.intellij.modules.androidstudio</depends>
