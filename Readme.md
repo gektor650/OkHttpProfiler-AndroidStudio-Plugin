@@ -12,13 +12,12 @@ Just click the right mouse button on a root element of the tree (or any other), 
 ![Screen2](https://github.com/itkacher/OkHttpProfiler/blob/master/demo.png?raw=true)
 
 ---
-[ ![Download](https://api.bintray.com/packages/itkacher/okhttpprofiler/com.itkacher.okhttpprofiler/images/download.svg) ](https://bintray.com/itkacher/okhttpprofiler/com.itkacher.okhttpprofiler/_latestVersion)
  
 ## Installation 
 
 For installation, you need to include the library to your app build.gradle file
 
-    implementation 'com.itkacher.okhttpprofiler:okhttpprofiler:1.0.7'
+    implementation 'com.localebro:okhttpprofiler:1.0.8'
 
 and add Interceptor to okHttpClient in code
 ##### For OkHttp

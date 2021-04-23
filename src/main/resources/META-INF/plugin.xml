@@ -1,8 +1,8 @@
 <idea-plugin>
     <id>com.itkacher.okhttpprofiler</id>
     <name>OkHttp Profiler</name>
-    <vendor email="itkacher@gmail.com" url="http://localebro.com">localebro.com</vendor>
-    <version>1.0.15</version>
+    <vendor email="admin@localebro.com" url="http://localebro.com">localebro.com</vendor>
+    <version>1.0.16</version>
     <idea-version since-build="201.8743.12"/>
     <description><![CDATA[
     <p>Created by <a href="https://localebro.com">LocaleBro</a> team.</p>
