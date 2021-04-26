@@ -68,6 +68,11 @@ class FormViewController(private val form: MainForm, settings: PluginPreferences
         form.localizeButton.addActionListener {
             BrowserUtil.open("https://localebro.com/?utm_source=OkHttpProfiler&utm_medium=IDE&utm_campaign=localize-button")
         }
+
+        form.donateButton.addActionListener {
+            BrowserUtil.open( "https://www.buymeacoffee.com/gektor650")
+        }
+
         form.clearButton.addActionListener {
             requestListModel.clear()
             RequestDataSource.clear()

@@ -36,6 +36,7 @@ public class MainForm {
     private final JButton scrollToBottomButton;
     private final JButton clearButton;
     private final JButton localizeButton;
+    private final JButton donateButton;
 
     public MainForm() {
         localizeButton = new JButton();
@@ -50,21 +51,30 @@ public class MainForm {
         localeBroConstraints.gridx = 0;
         localeBroConstraints.gridy = 0;
 
+        donateButton = new JButton();
+        donateButton.setPreferredSize(new Dimension(100,30));
+        donateButton.setText(Resources.Companion.getString("donate"));
+        donateButton.setIcon(Resources.Companion.getIcon("donate.png"));
+        GridBagConstraints donateButtonConstraints = new GridBagConstraints();
+        donateButtonConstraints.gridx = 1;
+        donateButtonConstraints.gridy = 0;
+
         scrollToBottomButton = new JButton();
         scrollToBottomButton.setIcon(Resources.Companion.getIcon("scroll.png"));
         scrollToBottomButton.setPreferredSize(new Dimension(30,30));
         GridBagConstraints scrollConstraints = new GridBagConstraints();
-        scrollConstraints.gridx = 1;
+        scrollConstraints.gridx = 2;
         scrollConstraints.gridy = 0;
 
         clearButton = new JButton();
         clearButton.setPreferredSize(new Dimension(30,30));
         clearButton.setIcon(Resources.Companion.getIcon("delete.png"));
         GridBagConstraints clearConstraints = new GridBagConstraints();
-        clearConstraints.gridx = 2;
+        clearConstraints.gridx = 3;
         clearConstraints.gridy = 0;
 
         buttonContainer.add(localizeButton, localeBroConstraints);
+        buttonContainer.add(donateButton, donateButtonConstraints);
         buttonContainer.add(scrollToBottomButton, scrollConstraints);
         buttonContainer.add(clearButton, clearConstraints);
 
@@ -120,6 +130,10 @@ public class MainForm {
 
     public JButton getLocalizeButton() {
         return localizeButton;
+    }
+
+    public JButton getDonateButton() {
+        return donateButton;
     }
 
     public JPanel getMainContainer() {
