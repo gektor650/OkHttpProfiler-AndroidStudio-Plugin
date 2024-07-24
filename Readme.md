@@ -1,7 +1,8 @@
 # OkHttpProfiler Android Studio Plugin
 
-### Created by [LocaleBro.com](https://localebro.com/?utm_source=github&utm_campaign=okprofiler&utm_media=link "LocaleBro.com") - Android Localization Platform
+### Created by [NerdyThings Channel](https://www.youtube.com/@Nerdy.Things "YouTube.com")
 
+### Developers Eugene Tkachenko && Hanna Tkachenko
 
 The [OkHttp Profiler plugin](https://plugins.jetbrains.com/plugin/11249-okhttp-profiler "OkHttp Profiler") can show requests from the OkHttp library directly in the Android Studio tool window.
 It supports the OkHttp v3 (http://square.github.io/okhttp/) and the Retrofit v2 (https://square.github.io/retrofit/)
